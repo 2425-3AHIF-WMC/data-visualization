@@ -1,4 +1,4 @@
-# This file will contain the code for the data analysis of the project.
+# This file will contain the code for the data_processing analysis of the project.
 
 import pandas as pd
 import requests
@@ -9,7 +9,7 @@ import requests
 # region 1. LOAD DATA
 def load_data(file_path):
     """
-    Loads data based on data ending automatically.
+    Loads data_processing based on data_processing ending automatically.
     Supporting formats: CSV, Excel, JSON
     """
     try:
@@ -25,12 +25,12 @@ def load_data(file_path):
         else:
             raise ValueError(f"File extension not supported for {file_path}.")
     except Exception as e:
-        raise RuntimeError(f"Failed to load data from {file_path}. Error: {e}")
+        raise RuntimeError(f"Failed to load data_processing from {file_path}. Error: {e}")
 
 
 def load_api_data(url):
     """
-    loads data from API (JSON-format expected).
+    loads data_processing from API (JSON-format expected).
     """
     response = requests.get(url)
     response.raise_for_status()
@@ -39,7 +39,7 @@ def load_api_data(url):
 
 def load_data_auto(source):
     """
-    loads automatically data from a file or API.
+    loads automatically data_processing from a file or API.
     """
     if source.startswith('http://') or source.startswith('https://'):
         return load_api_data(source)
@@ -74,5 +74,5 @@ df.dropna(axis=0, inplace=True)
 
 # endregion
 
-# visualize data
-# save data
+# visualize data_processing
+# save data_processing
