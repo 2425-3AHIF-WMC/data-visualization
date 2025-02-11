@@ -1,0 +1,1 @@
+// enthält Umgebungsvariablen (z.B. API-Keys, Ports)
