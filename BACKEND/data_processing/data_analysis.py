@@ -1,48 +1,52 @@
-# This file contains the code for data processing and analysis of the project.
-
 import pandas as pd
 import requests
+import logging
 from sqlalchemy import create_engine
+
+# Logging konfigurieren
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 
 # region 1. LOAD DATA
 def load_data(file_path):
     """
-    Loads data based on file extension automatically.
-    Supporting formats: CSV, Excel, JSON
+    Lädt Daten basierend auf der Dateierweiterung.
+    Unterstützt: CSV, Excel, JSON
     """
     try:
         if file_path.endswith('.csv'):
-            print(f"Loading CSV file: {file_path}")
+            logging.info(f"Loading CSV file: {file_path}")
             return pd.read_csv(file_path)
         elif file_path.endswith(('.xlsx', '.xls')):
-            print(f"Loading Excel file: {file_path}")
+            logging.info(f"Loading Excel file: {file_path}")
             return pd.read_excel(file_path)
         elif file_path.endswith('.json'):
-            print(f"Loading JSON file: {file_path}")
+            logging.info(f"Loading JSON file: {file_path}")
             return pd.read_json(file_path)
         else:
             raise ValueError(f"File extension not supported for {file_path}.")
     except Exception as e:
-        raise RuntimeError(f"Failed to load data from {file_path}. Error: {e}")
+        logging.error(f"Failed to load data from {file_path}. Error: {e}")
+        raise
 
 
 def load_api_data(url):
     """
-    Loads data from API (JSON format expected).
+    Lädt JSON-Daten von einer API.
     """
     try:
         response = requests.get(url)
         response.raise_for_status()
-        print(f"Loading data from API: {url}")
+        logging.info(f"Loading data from API: {url}")
         return pd.DataFrame(response.json())
     except Exception as e:
-        raise RuntimeError(f"Failed to load data from API. Error: {e}")
+        logging.error(f"Failed to load data from API. Error: {e}")
+        raise
 
 
 def load_data_auto(source):
     """
-    Loads data automatically from a file or API.
+    Automatische Datenquelle erkennen und laden.
     """
     if source.startswith('http://') or source.startswith('https://'):
         return load_api_data(source)
@@ -54,88 +58,54 @@ def load_data_auto(source):
 
 # endregion
 
-
 # region 2. CLEAN DATA
-
 def clean_data(df):
     """
-    Cleans the dataframe by removing duplicates, handling missing values, and standardizing column names.
+    Bereinigt das DataFrame durch:
+    - Entfernen von Duplikaten
+    - Behandeln fehlender Werte
+    - Standardisieren von Spaltennamen
     """
-    print("Cleaning data...")
+    logging.info("Cleaning data...")
 
-    # Standardize column names (lowercase & no spaces)
+    # Standardisieren von Spaltennamen
     df.columns = df.columns.str.strip().str.lower().str.replace(' ', '_')
 
-    # Remove duplicates based on 'id' column (if exists)
+    # Entfernen von Duplikaten basierend auf 'id' (falls vorhanden)
     if 'id' in df.columns:
         before = len(df)
         df.drop_duplicates(subset='id', inplace=True)
         after = len(df)
-        print(f"Removed {before - after} duplicate rows based on 'id' column.")
+        logging.info(f"Removed {before - after} duplicate rows based on 'id' column.")
 
-    # Remove rows containing at least one missing value
-    missing_before = df.isnull().sum().sum()
-    df.dropna(axis=0, inplace=True)
-    missing_after = df.isnull().sum().sum()
-    print(f"Removed {missing_before - missing_after} rows with missing values.")
+    # Fehlende Werte auffüllen
+    for col in df.select_dtypes(include=['number']).columns:
+        df[col].fillna(df[col].median(), inplace=True)
+    for col in df.select_dtypes(include=['object']).columns:
+        df[col].fillna('Unknown', inplace=True)
+
+    logging.info(f"Remaining missing values: {df.isnull().sum().sum()}")
 
     return df
 
 
-# Load test data
-df = load_data('testJSON.json')
-
-# Clean data
-df = clean_data(df)
-
-
 # endregion
 
-
-# region 3. ANALYSE DATA
-
-def analyze_data(df):
+# region 3. SAVE DATA
+def save_data(df, db_path="database.db"):
     """
-    Performs Exploratory Data Analysis (EDA) on the dataset.
+    Speichert die bereinigten Daten in eine SQL-Datenbank.
     """
-    print("\n--- DATA ANALYSIS ---\n")
+    logging.info("Saving data to database...")
 
-    print("Shape of dataset:", df.shape)
-    print("\nColumn Info:\n", df.info())
-    print("\nMissing Values:\n", df.isnull().sum())
-    print("\nSummary Statistics:\n", df.describe())
-
-    # Correlation matrix (useful for numerical data)
-    if df.select_dtypes(include=['number']).shape[1] > 1:
-        print("\nCorrelation Matrix:\n", df.corr())
-
-
-# Perform analysis
-analyze_data(df)
-
-
-# endregion
-
-
-# region 4. SAVE DATA
-
-def save_data(df, csv_path="cleaned_data.csv", db_path="database.db"):
-    """
-    Saves cleaned data to CSV and SQL database.
-    """
-    print("\nSaving data...")
-
-    # Save to CSV
-    df.to_csv(csv_path, index=False)
-    print(f"Data saved to CSV: {csv_path}")
-
-    # Save to SQL
     engine = create_engine(f"sqlite:///{db_path}")
     df.to_sql("cleaned_data", engine, if_exists="replace", index=False)
-    print(f"Data saved to SQL database: {db_path}")
+    logging.info(f"Data saved to SQL database: {db_path}")
 
-
-# Save cleaned data
-save_data(df)
 
 # endregion
+
+# Testlauf
+df = load_data('testJSON.json')
+df = clean_data(df)
+save_data(df)
