@@ -1,30 +1,16 @@
 import * as d3 from 'd3';
 
 class PieChart {
-    private svg: d3.Selection<SVGGElement, unknown, null, undefined>;
-    private width: number;
-    private height: number;
-    private radius: number;
-    private color: d3.ScaleOrdinal<string, string>;
+    createPieChart(){
+        var dataset = [80, 100, 56, 120, 180, 30, 40, 120, 160];
 
-    constructor(selector: string, private data: { label: string; value: number }[]) {
-        this.width = 400;
-        this.height = 400;
-        this.radius = Math.min(this.width, this.height) / 2;
+        var svgWidth = 500, svgHeight = 300, barPadding = 5;
+        var barWidth = svgWidth / dataset.length;
+        var svg = d3.select('.bar-chart')
+            .attr("width", svgWidth)
+            .attr("height", svgHeight);
 
-        this.color = d3.scaleOrdinal(d3.schemeCategory10);
 
-        const svgContainer = d3
-            .select(selector)
-            .append('svg')
-            .attr('width', this.width)
-            .attr('height', this.height);
-
-        this.svg = svgContainer
-            .append('g')
-            .attr('transform', `translate(${this.width / 2}, ${this.height / 2})`);
-
-        this.drawChart();
     }
 
     private drawChart(): void {
@@ -53,13 +39,10 @@ class PieChart {
             .attr('font-size', '12px')
             .text(d => d.data.label);
     }
+
 }
 
 // Beispiel zur Verwendung:
 document.addEventListener('DOMContentLoaded', () => {
-    new PieChart('#chart', [
-        { label: 'A', value: 30 },
-        { label: 'B', value: 70 },
-        { label: 'C', value: 50 }
-    ]);
+
 });
