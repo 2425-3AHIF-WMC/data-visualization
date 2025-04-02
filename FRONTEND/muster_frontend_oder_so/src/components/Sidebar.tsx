@@ -67,7 +67,7 @@ export const Sidebar = () => {
               <div className="w-8 h-8 rounded-md bg-primary flex items-center justify-center">
                 <span className="text-primary-foreground font-bold">D</span>
               </div>
-              <span className="font-semibold tracking-tight">DataViz</span>
+              <span className="font-semibold tracking-tight">Personalized Data Visualisation</span>
             </div>
           )}
           <button

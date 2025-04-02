@@ -1,4 +1,3 @@
-
 import { Bell, Search, Settings } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 import { useAuth } from "@/hooks/useAuth";
@@ -56,3 +55,5 @@ export const Navbar = () => {
     </header>
   );
 };
+
+
