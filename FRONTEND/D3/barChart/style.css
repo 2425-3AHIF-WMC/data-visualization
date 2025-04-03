@@ -1,0 +1,13 @@
+.bar-chart {
+    background-color: #C7D9D9;
+}
+
+.bar:nth-child(1) { fill: #1f77b4; }
+.bar:nth-child(2) { fill: #ff7f0e; }
+.bar:nth-child(3) { fill: #2ca02c; }
+.bar:nth-child(4) { fill: #d62728; }
+.bar:nth-child(5) { fill: #9467bd; }
+.bar:nth-child(6) { fill: #8c564b; }
+.bar:nth-child(7) { fill: #e377c2; }
+.bar:nth-child(8) { fill: #7f7f7f; }
+.bar:nth-child(9) { fill: #bcbd22; }
