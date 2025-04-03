@@ -1,0 +1,3 @@
+[submodule "newFrontend"]
+	path = newFrontend
+	url = https://github.com/ngimbisarah243/data-canvas-flow.git
