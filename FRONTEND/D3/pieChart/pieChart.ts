@@ -6,7 +6,7 @@ export class PieChart {
         const svgWidth = 500, svgHeight = 300;
         const radius = Math.min(svgWidth, svgHeight) / 2;
 
-        const svg = d3.select('.bar-chart')
+        const svg = d3.select('.pie-chart')
             .attr("width", svgWidth)
             .attr("height", svgHeight)
             .append("g")
