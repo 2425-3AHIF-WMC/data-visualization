@@ -81,5 +81,8 @@ var PieChart = /** @class */ (function () {
 // Initialisierung
 document.addEventListener("DOMContentLoaded", function () {
     new PieChart().createPieChart();
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 });
