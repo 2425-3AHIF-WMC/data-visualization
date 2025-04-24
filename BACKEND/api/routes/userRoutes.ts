@@ -1,12 +1,13 @@
-import { Router } from 'express';
+import {Router} from 'express';
+import {loginUser, signInUser} from '../controllers/userController';
 
-//TODO
-// import { login } from '../controllers/userController'; kommt noch
-
-const router = Router();
+const userRouter = Router();
 
 
 // TODO
-// router.post('/login', login);
+userRouter.post('/login', loginUser);
+userRouter.post('/signIn',signInUser);
 
-export default router;
+
+
+export default userRouter;

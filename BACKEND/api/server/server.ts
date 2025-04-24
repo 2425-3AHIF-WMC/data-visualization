@@ -38,6 +38,7 @@ const startServer= async ()=>{
 
     }
 }
-await startServer();
+//todo
+await startServer(); // boah digga idkkkkk
 
 export default app;

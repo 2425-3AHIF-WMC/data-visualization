@@ -1,6 +1,6 @@
 /* Stellt die Verbindung zur SQL db her (postgresql) */
 
-import {Pool} from 'pg';
+import {Pool} from 'pg'; // fixe ich später
 import {dbConfig} from "./config";
 
 export const pool = new Pool({
