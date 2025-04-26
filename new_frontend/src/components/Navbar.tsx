@@ -27,7 +27,7 @@ export function Navbar() {
         <div className="flex items-center">
           <Link to="/" className="flex items-center mr-6">
             <BarChart3 className="h-6 w-6 text-primary" />
-            <span className="ml-2 text-xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">DataViz</span>
+            <span className="ml-2 text-xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">Data Visualisation</span>
           </Link>
 
           {/* Desktop Navigation */}

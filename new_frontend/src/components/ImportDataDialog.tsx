@@ -44,13 +44,13 @@ export function ImportDataDialog({
   
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px]">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-[500px] h-[600px] fixed top-[10%] left-[33.6%] transform -translate-x-1/2 -translate-y-1/2">
+      <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Database className="h-5 w-5" />
-            <span>Import Data</span>
+            <span className="text-sm">Import Data</span>
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-xs">
             Import your data from various sources to start visualizing
           </DialogDescription>
         </DialogHeader>
@@ -63,21 +63,21 @@ export function ImportDataDialog({
               value={datasetName} 
               onChange={(e) => setDatasetName(e.target.value)} 
               placeholder="My Dataset"
-              className="mt-1"
+              className="mt-1 text-sm"
             />
           </div>
           
           <Tabs defaultValue="json" value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="w-full">
-              <TabsTrigger value="json" className="flex-1">
+            <TabsList className="w-full text-xs">
+              <TabsTrigger value="json" className="flex-1 text-xs">
                 <FileJson className="h-4 w-4 mr-2" />
                 JSON
               </TabsTrigger>
-              <TabsTrigger value="csv" className="flex-1">
+              <TabsTrigger value="csv" className="flex-1 text-xs">
                 <FileSpreadsheet className="h-4 w-4 mr-2" />
                 CSV
               </TabsTrigger>
-              <TabsTrigger value="sql" className="flex-1">
+              <TabsTrigger value="sql" className="flex-1 text-xs">
                 <Server className="h-4 w-4 mr-2" />
                 SQL
               </TabsTrigger>
@@ -87,9 +87,9 @@ export function ImportDataDialog({
               <div className="space-y-4">
                 <div>
                   <Label>Upload JSON File</Label>
-                  <div className="mt-1 border-2 border-dashed border-border rounded-md p-6 cursor-pointer hover:border-primary/50 transition-colors">
-                    <div className="flex flex-col items-center justify-center text-center">
-                      <FileUp className="h-8 w-8 text-muted-foreground mb-2" />
+                  <div className="mt-1 border-2 border-dashed border-border rounded-md p-4 cursor-pointer hover:border-primary/50 transition-colors">
+                    <div className="flex flex-col items-center justify-center text-center text-xs">
+                      <FileUp className="h-6 w-6 text-muted-foreground mb-2" />
                       <p className="text-sm text-muted-foreground">
                         Drag & drop your JSON file here, or click to browse
                       </p>
@@ -105,7 +105,7 @@ export function ImportDataDialog({
                     placeholder='[{"name": "Example", "value": 42}]'
                     value={jsonContent}
                     onChange={(e) => setJsonContent(e.target.value)}
-                    className="mt-1 font-mono text-sm h-[200px]"
+                    className="mt-1 font-mono text-xs h-[80px]"
                   />
                 </div>
               </div>
@@ -143,13 +143,14 @@ export function ImportDataDialog({
           </Tabs>
         </div>
         
-        <DialogFooter>
+        <DialogFooter className="space-x-2">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
           <Button 
             onClick={handleImport}
             disabled={!datasetName}
+            className="text-xs py-1 px-2"
           >
             Import
           </Button>
