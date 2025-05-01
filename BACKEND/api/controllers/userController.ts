@@ -21,6 +21,11 @@ export const loginUser = async (req: Request, res: Response) => {
             return;
         }
 
+        // TODO
+        // 3. JWT-Token erstellen
+
+        // 4. Erfolgreiches login: token zurückgeben
+
     } catch (error) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: "Server error", error});
         return;
