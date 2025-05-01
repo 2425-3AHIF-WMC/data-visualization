@@ -1,4 +1,4 @@
-
+//  Theme, lokale Daten, App-Verhalten
 import React from 'react';
 import { Layout } from '../components/Layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
