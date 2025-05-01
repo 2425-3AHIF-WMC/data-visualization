@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import DataImport from "./pages/DataImport";
 import Visualizations from "./pages/Visualizations";
 import Settings from "./pages/Settings";
+import SignIn from "@/pages/SignIn.tsx";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 
@@ -27,6 +28,7 @@ const App = () => (
             <Route path="/visualizations" element={<Visualizations />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/login" element={<Login />} />
+            <Route path="signin" element={<SignIn/>}/>
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
