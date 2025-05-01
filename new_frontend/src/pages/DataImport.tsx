@@ -5,10 +5,15 @@ import {processData} from '../utils/dataProcessor';
 import {Button} from '../components/ui/button';
 import {Database, Plus, Upload} from 'lucide-react';
 import {ImportDataDialog} from '../components/ImportDataDialog';
+import {useNavigate} from "react-router-dom";
+import {data} from "autoprefixer";
+import {useToast} from "@/hooks/use-toast.ts";
 
 const DataImport = () => {
+    const { toast } = useToast();
     const [processedData, setProcessedData] = useState<any>(null);
     const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
+    const navigate = useNavigate();
 
     const handleFileUpload = async (file: File) => {
         try {
@@ -36,9 +41,14 @@ const DataImport = () => {
 
     const handleDataImport = (data: any) => {
         console.log('Imported data:', data);
-        //Todo
-        // Process the imported data here
-        // This is where you'd normally send the data to your backend or store it locally
+        setProcessedData(data);
+        toast({
+            title: "Daten erfolgreich importiert",
+            description: `${data.data.length} Datensätze importiert`,
+        });
+
+        // Redirect to visualization page after successful import
+        navigate('/chart', { state: { processedData: data } });
     };
 
     return (
