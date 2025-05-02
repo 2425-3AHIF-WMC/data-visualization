@@ -10,7 +10,7 @@ import { toast } from '../components/ui/use-toast';
 import { useTheme } from '../utils/themeContext';
 import { Trash2 } from 'lucide-react';
 
-export default function Settings() {
+export default function AppSettings() {
   const { theme, setTheme, themes } = useTheme();
 
   const clearData = () => {

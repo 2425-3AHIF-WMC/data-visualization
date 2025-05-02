@@ -4,6 +4,7 @@ import dataRoutes from '../routes/dataRoutes';
 import userRoutes from '../routes/userRoutes';
 import analysisRoutes from '../routes/analysisRoutes';
 import systemRoutes from '../routes/systemRoutes';
+import authRoutes from "../routes/authRoutes";
 import {Database} from 'sqlite';
 import {StatusCodes} from "http-status-codes";
 import { connectToDatabase } from '../../config/db';
@@ -20,9 +21,10 @@ app.use(express.json());
 
 // Routen
 app.use('/api/data', dataRoutes);
-app.use('/api/users', userRoutes);
+app.use('/api/user', userRoutes);
 app.use('/api/analysis', analysisRoutes);
 app.use('/api/system', systemRoutes);
+// app use authroutes
 
 const PORT = process.env.PORT || 3000;
 

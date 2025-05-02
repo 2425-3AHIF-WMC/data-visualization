@@ -1,4 +1,4 @@
-
+//  Name, Avatar, Passwort etc.
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -8,11 +8,11 @@ import { ThemeProvider } from "./utils/themeContext";
 import Index from "./pages/Index";
 import DataImport from "./pages/DataImport";
 import Visualizations from "./pages/Visualizations";
-import Settings from "./pages/Settings";
+import AppSettings from "./pages/AppSettings.tsx";
+import {AccountSettings} from "@/pages/AccountSettings.tsx";
 import SignIn from "@/pages/SignIn.tsx";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
-
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -26,7 +26,8 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/import" element={<DataImport />} />
             <Route path="/visualizations" element={<Visualizations />} />
-            <Route path="/settings" element={<Settings />} />
+            <Route path="/settings" element={<AppSettings />} />
+            <Route path="/accountSettings" element={<AccountSettings/>}/>
             <Route path="/login" element={<Login />} />
             <Route path="signin" element={<SignIn/>}/>
             <Route path="*" element={<NotFound />} />
@@ -37,4 +38,5 @@ const App = () => (
   </QueryClientProvider>
 );
 
+// Todo /settings route muss noch namentlich angepasst werden, damit eindeutig ist
 export default App;
