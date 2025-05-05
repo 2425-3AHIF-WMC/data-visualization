@@ -1,4 +1,4 @@
-
+//  Theme, lokale Daten, App-Verhalten
 import React from 'react';
 import { Layout } from '../components/Layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
@@ -10,7 +10,7 @@ import { toast } from '../components/ui/use-toast';
 import { useTheme } from '../utils/themeContext';
 import { Trash2 } from 'lucide-react';
 
-export default function Settings() {
+export default function AppSettings() {
   const { theme, setTheme, themes } = useTheme();
 
   const clearData = () => {

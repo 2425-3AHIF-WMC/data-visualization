@@ -10,15 +10,34 @@ export class User {
             'values (?,?,?)';
         const values = [firstname, lastname, hashedPassword, mail, telNr, profile_pic]
 
-        return await pool.query(query, values)[0];
+        return await pool.query(query, values)
+    }
+
+    static async findByPk(pk:number){
+        const query= 'select * from user_profiles where id=?';
+        return await pool.query(query,[pk]);
     }
 
     static async findByEmail(email:string){
         const query = 'select mail from user_profiles where email= ?';
-      return await pool.query(query,[email])[0];
+      return await pool.query(query,[email]);
     }
 
+    static async deleteById(userId: number){
+        const query = 'delete from user_profiles where id=?';
+        return await  pool.query(query,[userId]);
+    }
+
+    static async getPasswordHashById(userId:number){
+        const query = 'select password from user_profiles where id=?';
+        return await  pool.query(query,[userId]);
+    }
     static async verifyPassword(storedHash:string,password:string){
         return  bcrypt.compare(password,storedHash);
+    }
+
+    static async updatePasswordById(userId:number,hashedPassword:string){
+        const query = 'update user_profiles set password =? where id = ?';
+        return await  pool.query(query,[hashedPassword,userId]);
     }
 }
