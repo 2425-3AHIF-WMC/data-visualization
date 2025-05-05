@@ -34,7 +34,7 @@ export function Layout({ children, className, fullWidth = false, heroContent }: 
         fullWidth ? "max-w-full" : "container",
         className
       )}>
-        <div className="relative z-20">
+        <div className="relative">
           {children}
         </div>
       </main>
