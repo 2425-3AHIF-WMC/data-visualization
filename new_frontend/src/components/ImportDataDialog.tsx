@@ -15,6 +15,8 @@ import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
 import { FileUp, Database, FileJson, FileSpreadsheet, Server } from 'lucide-react';
 
+
+
 interface ImportDataDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -29,7 +31,25 @@ export function ImportDataDialog({
   const [activeTab, setActiveTab] = useState('json');
   const [datasetName, setDatasetName] = useState('');
   const [jsonContent, setJsonContent] = useState('');
-  
+  const [url, setUrl] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleJsonFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const text = event.target?.result;
+      if (typeof text === 'string') {
+        setJsonContent(text);
+        if (!datasetName) {
+          setDatasetName(file.name.replace(/\.[^/.]+$/, ''));
+        }
+      }
+    };
+    reader.readAsText(file);
+  };
   const handleImport = () => {
     // Here you would process the data and send it to the parent component
     if (onImport) {
@@ -41,6 +61,45 @@ export function ImportDataDialog({
     }
     onOpenChange(false);
   };
+
+  const handleUrlFetch = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(url);
+      const text = await response.text();
+
+      if (activeTab === 'json') {
+        const parsed = JSON.parse(text);
+        setJsonContent(JSON.stringify(parsed, null, 2));
+      } else if (activeTab === 'csv') {
+        setJsonContent(text);
+      }
+    } catch (error) {
+      console.error('Fehler beim Laden:', error);
+      alert('Konnte die Datei nicht laden. Überprüfe die URL und das Format.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const isImportEnabled = () => {
+    if (!datasetName.trim()) return false;
+
+    switch (activeTab) {
+      case 'json':
+        return jsonContent.trim().length > 0;
+      case 'csv':
+        return jsonContent.trim().length > 0;
+      case 'sql':
+        return true;
+      case 'url':
+        return jsonContent.trim().length > 0;
+      default:
+        return false;
+    }
+  };
+
+
   
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -81,8 +140,12 @@ export function ImportDataDialog({
                 <Server className="h-4 w-4 mr-2" />
                 SQL
               </TabsTrigger>
+              <TabsTrigger value="url" className="flex-1 text-xs">
+                <FileJson className="h-4 w-4 mr-2" />
+                URL
+              </TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value="json" className="pt-4">
               <div className="space-y-4">
                 <div>
@@ -97,11 +160,11 @@ export function ImportDataDialog({
                     </div>
                   </div>
                 </div>
-                
+
                 <div>
                   <Label htmlFor="json-content">Or paste JSON</Label>
-                  <Textarea 
-                    id="json-content" 
+                  <Textarea
+                    id="json-content"
                     placeholder='[{"name": "Example", "value": 42}]'
                     value={jsonContent}
                     onChange={(e) => setJsonContent(e.target.value)}
@@ -110,7 +173,7 @@ export function ImportDataDialog({
                 </div>
               </div>
             </TabsContent>
-            
+
             <TabsContent value="csv" className="pt-4">
               <div className="space-y-4">
                 <div>
@@ -127,7 +190,7 @@ export function ImportDataDialog({
                 </div>
               </div>
             </TabsContent>
-            
+
             <TabsContent value="sql" className="pt-4">
               <div className="space-y-4">
                 <div>
@@ -140,6 +203,28 @@ export function ImportDataDialog({
                 </div>
               </div>
             </TabsContent>
+
+            <TabsContent value="url" className="pt-4">
+              <div className="space-y-4">
+                <Label htmlFor="url-input">URL to data file (CSV or JSON)</Label>
+                <div className="flex gap-2">
+                  <Input
+                      id="url-input"
+                      placeholder="https://example.com/data.csv"
+                      value={url}
+                      onChange={(e) => setUrl(e.target.value)}
+                  />
+                  <Button
+                      onClick={handleUrlFetch}
+                      disabled={!url.trim() || isLoading}
+                  >
+                    {isLoading ? "Loading..." : "Fetch"}
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Enter a URL to a JSON or CSV file                </p>
+              </div>
+            </TabsContent>
           </Tabs>
         </div>
         
@@ -147,10 +232,11 @@ export function ImportDataDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button 
-            onClick={handleImport}
-            disabled={!datasetName}
-            className="text-xs py-1 px-2"
+          <Button
+              onClick={handleImport}
+              disabled={
+                  !datasetName || (activeTab === 'json' && jsonContent.trim() === '')
+              }
           >
             Import
           </Button>
