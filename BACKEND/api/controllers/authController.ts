@@ -7,11 +7,13 @@ import {jwtConfig} from "../../config/jwtConfig";
 
 
 //TODO JWT kacke funktioniert nicht ahhhhhhh was ist dieser Errorrrrr
-const createToken = (userId: string): string => {
+// okay problem liegt by expires in
+
+const createToken = (userId: number): string => {
     return jwt.sign(
         { id: userId },           // Payload: Hier ist das Objekt, das in das Token eingebaut wird
         jwtConfig.secret ,         // Geheimer Schlüssel aus jwtConfig
-        { expiresIn: jwtConfig.expiresIn }  // Ablaufzeit aus jwtConfig
+        { expiresIn: '1h' }  // Ablaufzeit aus jwtConfig
     );
 };
 
@@ -30,7 +32,7 @@ export const loginUser = async (req: Request, res: Response) => {
             return res.status(StatusCodes.UNAUTHORIZED).json({ message: 'Wrong email or password' });
         }
 
-        const token = createToken(user.id);
+        const token = createToken(user.id!);
         return res.status(StatusCodes.OK).json({ token });
     } catch (error) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server error", error });
@@ -38,29 +40,32 @@ export const loginUser = async (req: Request, res: Response) => {
 };
 
 // signInUser
-export const signInUser = async (req: Request, res: Response) => {
+export const registerUser = async (req: Request, res: Response) => {
     const { firstname, lastname, password, email, telNr, profile_pic } = req.body;
-
     try {
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const user = new User({ firstname, lastname, mail: email, telNr, profile_pic, password });
+        await user.save();
 
-        const newUser = await User.create(
-            firstname,
-            lastname,
-            email,
-            telNr,
-            hashedPassword,
-            profile_pic
-        );
-
-        const token = createToken(newUser.id);
-        return res.status(StatusCodes.CREATED).json({ token });
-    } catch (error) {
-        return res.status(StatusCodes.BAD_REQUEST).json({ message: "Error", error });
+        const token = createToken(user.id!);
+        return res.status(StatusCodes.CREATED).json({ token, user: user.toJSON() });
+    } catch (err) {
+        return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Error creating user', error: err });
     }
 };
 //    Login-/Register-Logik inkl. JWT-Erzeugung
 /*Verantwortlich für Authentifizierung (also alles rund um Login, Registrierung, JWT-Erzeugung).
+
+//todo Token refresh
+
+// todo logout
+
+
+
+
+
+
+
+
 
 Typische Funktionen:
 

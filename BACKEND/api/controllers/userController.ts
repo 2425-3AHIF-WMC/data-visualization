@@ -23,12 +23,12 @@ export const deleteUser = async (req: RequestWithUser, res: Response) => {
         return
     }
     try {
-        const user = await User.findByPk(parseInt(userId));
+        const user = await User.findById(parseInt(userId));
         if (!user) {
             res.status(StatusCodes.NOT_FOUND).json({message: 'User not found'});
             return
         }
-        await User.deleteById(parseInt(userId));
+        await user.delete();
         res.status(StatusCodes.OK).json({message: 'User successfully deleted'});
         return
     } catch (error) {
@@ -38,59 +38,76 @@ export const deleteUser = async (req: RequestWithUser, res: Response) => {
 }
 
 export const changePassword = async (req: RequestWithUser, res: Response) => {
-    const userId = req.user?.id;
+    const id = req.user?.id;
     const {currentPassword, newPassword} = req.body;
+    if (!id) {
+        res.status(StatusCodes.UNAUTHORIZED).json({message: "Not authenticated"});
+        return
+    }
+
+    if (!currentPassword || !newPassword) {
+        res.status(StatusCodes.BAD_REQUEST).json({message: "Both passwords required"});
+        return
+    }
+
+    const user = await User.findById(+id);
+    if (!user) {
+        res.status(StatusCodes.NOT_FOUND).json({message: "User not found"});
+        return
+    }
+
+    const ok = await user.verifyPassword(currentPassword);
+    if (!ok) {
+        res.status(StatusCodes.UNAUTHORIZED).json({message: "Current password wrong"});
+        return
+    }
+
+    // Neues Passwort hashen und speichern
+    const newHash = await bcrypt.hash(newPassword, 10);
+    user.password = newHash;
+    // Entweder so, wenn du die statische Methode beibehältst:
+    await User.updatePasswordById(user.id!, newHash);
+    // Oder so, falls du im Model eine Instanz-Methode `updatePassword()` ergänzt:
+    // await user.updatePassword();
+
+    res.status(StatusCodes.OK).json({message: "Password changed"});
+    return
+};
+
+export const updateProfile = async (req: RequestWithUser, res: Response) => {
+    const userId = req.user?.id;
 
     if (!userId) {
-        res
+        return res
             .status(StatusCodes.UNAUTHORIZED)
             .json({message: 'Not authenticated'});
-        return
     }
-    if (!currentPassword || !newPassword) {
-        res
-            .status(StatusCodes.BAD_REQUEST)
-            .json({message: 'Both currentPassword and newPassword are required'});
-        return
-    }
+
+    const { firstname, lastname, mail, telNr, profile_pic } = req.body;
 
     try {
-        // 1. Aktuelles gehashte Passwort holen
-        const storedHash = await User.getPasswordHashById(parseInt(userId));
-        if (!storedHash) {
-            res
+        const user = await User.findById(+userId);
+        if (!user) {
+            return res
                 .status(StatusCodes.NOT_FOUND)
-                .json({message: 'User not found'});
-            return
+                .json({ message: 'User not found' });
         }
 
-        // 2. Prüfen, ob currentPassword stimmt
-        const matches = await User.verifyPassword(String(storedHash), currentPassword);
-        if (!matches) {
-            res
-                .status(StatusCodes.UNAUTHORIZED)
-                .json({message: 'Current password is incorrect'});
-            return
-        }
+        // Nur die übergebenen Felder updaten
+        await user.updateProfile({ firstname, lastname, mail, telNr, profile_pic });
 
-        // 3. Neues Passwort hashen
-        const newHash = await bcrypt.hash(newPassword, 10);
-
-        // 4. In der DB speichern
-        await User.updatePasswordById(parseInt(userId), newHash);
-
-        res
+        // Frisch serialisiertes Profil zurückgeben (ohne Passwort)
+        return res
             .status(StatusCodes.OK)
-            .json({message: 'Password changed successfully'});
-        return
+            .json({ user: user.toJSON() });
     } catch (err) {
-        console.error('changePassword error', err);
-        res
+        console.error('updateProfile error', err);
+        return res
             .status(StatusCodes.INTERNAL_SERVER_ERROR)
-            .json({message: 'Server error', error: err});
-        return
+            .json({ message: 'Server error', error: err });
     }
-};
+}
+
 
 /*export const loginUser = async (req: Request, res: Response) => {
     const {email, password} = req.body;
