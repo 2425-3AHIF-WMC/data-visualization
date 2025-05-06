@@ -50,6 +50,10 @@ export function ImportDataDialog({
         }
     };
 
+    const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+    };
+
     const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
         const file = e.dataTransfer.files?.[0];
