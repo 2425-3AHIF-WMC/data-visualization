@@ -8,7 +8,7 @@ const userRouter = Router();
 
 
 // TODO
-userRouter.patch('/change-password',verifyToken,changePassword)
+userRouter.post('/change-password',verifyToken,changePassword)
 userRouter.delete('/', verifyToken,deleteUser);
 
 

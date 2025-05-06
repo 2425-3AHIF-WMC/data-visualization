@@ -1,43 +1,103 @@
 import bcrypt from 'bcryptjs';
 import {pool} from "./config/db";
 
-export class User {
-    static async create(firstname: string, lastname: string, password: string, mail: string, telNr: string, profile_pic: string) {
-        //pw hashen
-        const hashedPassword = await bcrypt.hash(password, 10)
+// Define the shape of user data from the database
+export interface IUserProps {
+    id?: number;
+    firstname: string;
+    lastname: string;
+    mail: string;
+    telNr: string;
+    profile_pic?: string;
+    password: string;
+}
 
-        const query = 'insert into user_profiles (fistname,lastname,password,mail,telNr,profile_pic)' +
-            'values (?,?,?)';
-        const values = [firstname, lastname, hashedPassword, mail, telNr, profile_pic]
+export class User implements IUserProps {
+    id?: number;
+    firstname: string;
+    lastname: string;
+    mail: string;
+    telNr: string;
+    profile_pic?: string;
+    password: string;
 
-        return await pool.query(query, values)
+    constructor(data: IUserProps) {
+        this.id = data.id;
+        this.firstname = data.firstname;
+        this.lastname = data.lastname;
+        this.mail = data.mail;
+        this.telNr = data.telNr;
+        this.profile_pic = data.profile_pic;
+        this.password = data.password;
     }
 
-    static async findByPk(pk:number){
-        const query= 'select * from user_profiles where id=?';
-        return await pool.query(query,[pk]);
+    async save() {
+        if (this.id) throw new Error('User already exists. Use update() instead.');
+        const hashed = await bcrypt.hash(this.password, 10);
+        const sql = `INSERT INTO user_profiles (firstname, lastname, password, mail, telNr, profile_pic)
+                 VALUES (?, ?, ?, ?, ?, ?)`;
+        const values = [this.firstname, this.lastname, hashed, this.mail, this.telNr, this.profile_pic || null];
+        const [result]: any = await pool.query(sql, values);
+        this.id = result.insertId;
+        this.password = hashed;
     }
 
-    static async findByEmail(email:string){
-        const query = 'select mail from user_profiles where email= ?';
-      return await pool.query(query,[email]);
+    static async findById(id: number) {
+        const [rows]: any = await pool.query('SELECT * FROM user_profiles WHERE id = ?', [id]);
+        if (rows.length === 0) return null;
+        return new User(rows[0]);
     }
 
-    static async deleteById(userId: number){
-        const query = 'delete from user_profiles where id=?';
-        return await  pool.query(query,[userId]);
+    static async findByEmail(email: string) {
+        const [rows]: any = await pool.query('SELECT * FROM user_profiles WHERE mail = ?', [email]);
+        if (rows.length === 0) return null;
+        return new User(rows[0]);
     }
 
-    static async getPasswordHashById(userId:number){
+    async delete() {
+        if (!this.id) throw new Error('Cannot delete user without ID.');
+        await pool.query('DELETE FROM user_profiles WHERE id=?', [this.id]);
+    }
+
+    async getPasswordHashById(userId: number) {
         const query = 'select password from user_profiles where id=?';
-        return await  pool.query(query,[userId]);
-    }
-    static async verifyPassword(storedHash:string,password:string){
-        return  bcrypt.compare(password,storedHash);
+        return await pool.query(query, [userId]);
     }
 
-    static async updatePasswordById(userId:number,hashedPassword:string){
-        const query = 'update user_profiles set password =? where id = ?';
-        return await  pool.query(query,[hashedPassword,userId]);
+    async verifyPassword(candidate: string) {
+        return bcrypt.compare(candidate, this.password);
     }
+    static async updatePasswordById(id: number, newHashedPassword: string): Promise<void> {
+        await pool.query('UPDATE user_profiles SET password = ? WHERE id = ?', [newHashedPassword, id]);
+    }
+    async updateProfile(partialProps: Partial<Omit<IUserProps, 'id' | 'password'>>): Promise<void> {
+        if (!this.id) throw new Error('Cannot update profile without ID.');
+        // Merge provided properties
+        if (partialProps.firstname !== undefined) this.firstname = partialProps.firstname;
+        if (partialProps.lastname !== undefined) this.lastname = partialProps.lastname;
+        if (partialProps.mail !== undefined) this.mail = partialProps.mail;
+        if (partialProps.telNr !== undefined) this.telNr = partialProps.telNr;
+        if (partialProps.profile_pic !== undefined) this.profile_pic = partialProps.profile_pic;
+        // Persist changes
+        await this.update();
+    }
+
+    async update() {
+        if (!this.id) throw new Error('Cannot update user without ID.');
+        const sql = `UPDATE user_profiles
+                     SET firstname = ?,
+                         lastname = ?,
+                         mail = ?,
+                         telNr = ?,
+                         profile_pic = ?
+                     WHERE id = ?`;
+        const values = [this.firstname, this.lastname, this.mail, this.telNr, this.profile_pic || null, this.id];
+        await pool.query(sql, values);
+    }
+
+    toJSON() {
+        const { password, ...rest } = this;
+        return rest;
+    }
+    // to Json??????
 }

@@ -5,7 +5,6 @@ import userRoutes from '../routes/userRoutes';
 import analysisRoutes from '../routes/analysisRoutes';
 import systemRoutes from '../routes/systemRoutes';
 import authRoutes from "../routes/authRoutes";
-import {Database} from 'sqlite';
 import {StatusCodes} from "http-status-codes";
 import { connectToDatabase } from '../../config/db';
 

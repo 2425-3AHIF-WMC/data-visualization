@@ -8,7 +8,8 @@ export interface RequestWithUser extends Request {
 
 export const verifyToken = (req: RequestWithUser, res: Response, next: NextFunction) => {
     // Holen des Tokens aus dem Authorization-Header
-    const token = req.header('Authorization')?.replace('Bearer ', '');
+    // Todo
+    const token = req.header('Authorization')?.replace('Bearer ', ''); // was ist das
 
     if (!token) {
         res.status(401).json({ message: 'No token provided' }); return
