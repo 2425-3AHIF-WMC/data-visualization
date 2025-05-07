@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, {useState, useRef} from 'react';
 import {
     Dialog,
     DialogContent,
@@ -7,14 +7,14 @@ import {
     DialogHeader,
     DialogTitle,
 } from './ui/dialog';
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { Textarea } from './ui/textarea';
-import { FileUp, Database, FileJson, FileSpreadsheet, Server } from 'lucide-react';
-import { apiFetch } from '@/utils/api';
+import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
+import {Tabs, TabsContent, TabsList, TabsTrigger} from './ui/tabs';
+import {Button} from './ui/button';
+import {Input} from './ui/input';
+import {Label} from './ui/label';
+import {Textarea} from './ui/textarea';
+import {FileUp, Database, FileJson, FileSpreadsheet, Server, Globe} from 'lucide-react';
+import {apiFetch} from '@/utils/api';
 
 interface ImportDataDialogProps {
     open: boolean;
@@ -103,7 +103,7 @@ export function ImportDataDialog({
             const result = await apiFetch('/datasets/import/json', 'POST', payload);
 
             if (onImport) {
-                onImport({ ...payload, serverResponse: result });
+                onImport({...payload, serverResponse: result});
             }
 
             onOpenChange(false);
@@ -114,10 +114,11 @@ export function ImportDataDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[500px] h-[600px] fixed top-[10%] left-[33.6%] transform -translate-x-1/2 -translate-y-1/2">
+            <DialogContent
+                className="sm:max-w-[500px] h-[600px] fixed top-[10%] left-[33.6%] transform -translate-x-1/2 -translate-y-1/2">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
-                        <Database className="h-5 w-5" />
+                        <Database className="h-5 w-5"/>
                         <span className="text-sm">Import Data</span>
                     </DialogTitle>
                     <DialogDescription className="text-xs">
@@ -140,16 +141,16 @@ export function ImportDataDialog({
                     <Tabs value={activeTab} onValueChange={setActiveTab}>
                         <TabsList className="w-full text-xs">
                             <TabsTrigger value="json" className="flex-1 text-xs">
-                                <FileJson className="h-4 w-4 mr-2" /> JSON
+                                <FileJson className="h-4 w-4 mr-2"/> JSON
                             </TabsTrigger>
                             <TabsTrigger value="csv" className="flex-1 text-xs">
-                                <FileSpreadsheet className="h-4 w-4 mr-2" /> CSV
+                                <FileSpreadsheet className="h-4 w-4 mr-2"/> CSV
                             </TabsTrigger>
                             <TabsTrigger value="sql" className="flex-1 text-xs">
-                                <Server className="h-4 w-4 mr-2" /> SQL
+                                <Server className="h-4 w-4 mr-2"/> SQL
                             </TabsTrigger>
                             <TabsTrigger value="url" className="flex-1 text-xs">
-                                <FileJson className="h-4 w-4 mr-2" /> URL
+                                <Globe className="h-4 w-4 mr-2"/> URL
                             </TabsTrigger>
                         </TabsList>
 
@@ -162,7 +163,7 @@ export function ImportDataDialog({
                                 className="mt-1 border-2 border-dashed border-border rounded-md p-4 cursor-pointer hover:border-primary/50 transition-colors"
                             >
                                 <div className="flex flex-col items-center justify-center text-center text-xs">
-                                    <FileUp className="h-6 w-6 text-muted-foreground mb-2" />
+                                    <FileUp className="h-6 w-6 text-muted-foreground mb-2"/>
                                     <p className="text-sm text-muted-foreground">
                                         Drag & drop your JSON file here, or click to browse
                                     </p>
@@ -194,7 +195,7 @@ export function ImportDataDialog({
                                 className="mt-1 border-2 border-dashed border-border rounded-md p-6 cursor-pointer hover:border-primary/50 transition-colors"
                             >
                                 <div className="flex flex-col items-center justify-center text-center">
-                                    <FileUp className="h-8 w-8 text-muted-foreground mb-2" />
+                                    <FileUp className="h-8 w-8 text-muted-foreground mb-2"/>
                                     <p className="text-sm text-muted-foreground">
                                         Drag & drop your CSV file here, or click to browse
                                     </p>
@@ -238,7 +239,7 @@ export function ImportDataDialog({
                                 </Button>
                             </div>
                             <p className="text-xs text-muted-foreground mt-1">
-                                Enter a direct link to a JSON or CSV file.
+                                Enter a direct link to a file.
                             </p>
                         </TabsContent>
                     </Tabs>
