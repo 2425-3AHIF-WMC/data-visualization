@@ -12,11 +12,8 @@ import { Button } from "@/components/ui/button.tsx";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select.tsx";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs.tsx";
 import {
-    BarChart,
     Bar,
-    LineChart,
     Line,
-    PieChart,
     Pie,
     Cell,
     XAxis,
@@ -26,13 +23,13 @@ import {
     Legend,
     ResponsiveContainer,
     AreaChart,
-    Area
+    Area, BarChart, LineChart
 } from 'recharts';
 import { ChartBarBig, ChartLine, ChartPie, Save, ArrowLeft } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import D3BarChart from '../components/D3BarChart';
-import D3LineChart from '../components/D3LineChart';
-import D3PieChart from '../components/D3PieChart';
+import barChart from "@/lib/D3/barChart/barChart.tsx";
+import lineChart from '@/lib/D3/lineChart/lineChart.tsx';
+import PieChart from '@/lib/D3/pieChart/pieChart.tsx';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d', '#ffc658'];
 
@@ -48,6 +45,12 @@ const ChartVisualization = () => {
     const [availableFields, setAvailableFields] = useState<string[]>([]);
     const [processedData, setProcessedData] = useState<any>(null);
 
+
+    interface PieChartProps {
+        data: number[];
+        width: number;
+        height: number;
+    }
     useEffect(() => {
         // Check if data was passed via location state
         if (location.state && location.state.processedData) {
@@ -110,11 +113,11 @@ const ChartVisualization = () => {
 
         switch (chartType) {
             case 'bar':
-                return <D3BarChart data={chartData} width={600} height={300} />;
+                return <BarChart data={chartData} width={600} height={300} />;
             case 'line':
-                return <D3LineChart data={chartData} width={600} height={300} />;
+                return <LineChart data={chartData} width={600} height={300} />;
             case 'pie':
-                return <D3PieChart data={chartData} width={600} height={300} />;
+                return <PieChart data={chartData} width={600} height={300} />;
             default:
                 return null;
         }
