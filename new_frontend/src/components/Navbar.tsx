@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Database, BarChart3, Home, LogIn, Menu, Settings, ChevronDown, Plus } from 'lucide-react';
+import { Database, BarChart3, Home, LogIn, Menu, Settings, Plus } from 'lucide-react';
 import { Button } from './ui/button';
 import { ThemeSwitcher } from './ThemeSwitcher';
 import { Avatar, AvatarFallback } from './ui/avatar';
@@ -38,7 +38,7 @@ export function Navbar() {
                   "bg-primary/10 text-primary font-medium",
                   location.pathname === "/" && "bg-primary text-primary-foreground"
                 )}>
-                  Dashboard <ChevronDown className="h-4 w-4 ml-1" />
+                  Dashboard 
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <div className="grid gap-3 p-4 md:w-[500px] lg:w-[600px]">
@@ -75,7 +75,8 @@ export function Navbar() {
                   "font-medium",
                   location.pathname.startsWith("/analytics") && "bg-primary text-primary-foreground"
                 )}>
-                  Analytik <ChevronDown className="h-4 w-4 ml-1" />
+                  Analytik
+
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <div className="p-4 md:w-[400px]">
@@ -99,7 +100,7 @@ export function Navbar() {
                   "font-medium",
                   location.pathname === "/visualizations" && "bg-primary text-primary-foreground"
                 )}>
-                  Visualisierungen <ChevronDown className="h-4 w-4 ml-1" />
+                  Visualisierungen
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <div className="p-4 md:w-[400px]">
