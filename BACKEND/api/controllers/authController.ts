@@ -23,6 +23,7 @@ export const loginUser = async (req: Request, res: Response) => {
 
     try {
         const user = await User.findByEmail(email);
+
         if (!user) {
             return res.status(StatusCodes.UNAUTHORIZED).json({ message: 'Wrong email or password' });
         }
@@ -44,6 +45,11 @@ export const registerUser = async (req: Request, res: Response) => {
     const { firstname, lastname, password, email, telNr, profile_pic } = req.body;
     try {
         const user = new User({ firstname, lastname, mail: email, telNr, profile_pic, password });
+        const existingUser = await User.findByEmail(email);
+        if (existingUser) {
+            res.status(400).json({message: 'Email already registered'});
+            return;
+        }
         await user.save();
 
         const token = createToken(user.id!);
