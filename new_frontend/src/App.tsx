@@ -13,6 +13,8 @@ import {AccountSettings} from "@/pages/AccountSettings.tsx";
 import SignIn from "@/pages/SignIn.tsx";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
+import Datasets from "@/pages/Datasets.tsx";
+import Dashboards from "@/pages/Dashboards.tsx";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -28,6 +30,8 @@ const App = () => (
             <Route path="/visualizations" element={<Visualizations />} />
             <Route path="/settings" element={<AppSettings />} />
             <Route path="/accountSettings" element={<AccountSettings/>}/>
+            <Route path="/datasets" element={<Datasets/>}/>
+            <Route path="/dashboards" element={<Dashboards/>}/>
             <Route path="/login" element={<Login />} />
             <Route path="signin" element={<SignIn/>}/>
             <Route path="*" element={<NotFound />} />
