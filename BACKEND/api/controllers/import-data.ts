@@ -89,7 +89,7 @@ const importCSV= async (req:Request,res:Response)=>{
     }
 }
 
-export const importFromSQL = async (req: Request, res: Response) => {
+/*export const importFromSQL = async (req: Request, res: Response) => {
     const {dbType, host, user, password, database, port} = req.body;
 
     if (!dbType || !host || !user || !database) {
@@ -151,9 +151,9 @@ export const importFromSQL = async (req: Request, res: Response) => {
         console.error('Database error:', error);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error: 'Database connection or query failed.'});
     }
-};
+};*/
 // Route zum Abrufen der Daten aus einer ausgewählten Tabelle
-const getTableData = async (req: Request, res: Response) => {
+/*const getTableData = async (req: Request, res: Response) => {
     const {dbType, dbConfig, tableName} = req.body;
 
     if (!dbType || !dbConfig || !tableName) {
@@ -190,3 +190,4 @@ const getTableData = async (req: Request, res: Response) => {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error: 'Failed to fetch data from the table.'});
     }
 };
+*/

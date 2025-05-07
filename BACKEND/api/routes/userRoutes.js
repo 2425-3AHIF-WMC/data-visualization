@@ -1,7 +1,9 @@
+// Enthält die geschützten Routen, die nur zugänglich sind, wenn der Benutzer authentifiziert ist.
 import { Router } from 'express';
-//TODO
-// import { login } from '../controllers/userController'; kommt noch
-const router = Router();
+import { changePassword, deleteUser } from '../controllers/userController';
+import { verifyToken } from "../controllers/middlewares/verifyToken";
+const userRouter = Router();
 // TODO
-// router.post('/login', login);
-export default router;
+userRouter.post('/change-password', verifyToken, changePassword);
+userRouter.delete('/', verifyToken, deleteUser);
+export default userRouter;

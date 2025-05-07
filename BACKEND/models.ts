@@ -7,7 +7,7 @@ export interface IUserProps {
     firstname: string;
     lastname: string;
     mail: string;
-    telNr: string;
+    telNr?: string;
     profile_pic?: string;
     password: string;
 }
@@ -17,7 +17,7 @@ export class User implements IUserProps {
     firstname: string;
     lastname: string;
     mail: string;
-    telNr: string;
+    telNr?: string;
     profile_pic?: string;
     password: string;
 
@@ -32,15 +32,26 @@ export class User implements IUserProps {
     }
 
     async save() {
-        if (this.id) throw new Error('User already exists. Use update() instead.');
-        const hashed = await bcrypt.hash(this.password, 10);
-        const sql = `INSERT INTO user_profiles (firstname, lastname, password, mail, telNr, profile_pic)
-                 VALUES (?, ?, ?, ?, ?, ?)`;
-        const values = [this.firstname, this.lastname, hashed, this.mail, this.telNr, this.profile_pic || null];
-        const [result]: any = await pool.query(sql, values);
-        this.id = result.insertId;
-        this.password = hashed;
+        try {
+            if (this.id) throw new Error('User already exists. Use update() instead.');
+
+            const hashed = await bcrypt.hash(this.password, 10);
+            const sql = `INSERT INTO user_profiles (firstname, lastname, password, email, telNr, profile_pic)
+                     VALUES  ($1, $2, $3, $4, $5, $6) returning id`;
+            const values = [this.firstname, this.lastname, hashed, this.mail, this.telNr || null, this.profile_pic || null];
+
+            console.log(values);
+
+            const result: any = await pool.query(sql, values);
+            this.id = result.rows[0].id;
+            this.password = hashed;
+
+        } catch (error) {
+            console.error("Error saving user: ", error);
+            throw new Error(`Error saving user: ${error.message}`);
+        }
     }
+
 
     static async findById(id: number) {
         const [rows]: any = await pool.query('SELECT * FROM user_profiles WHERE id = ?', [id]);
@@ -57,6 +68,10 @@ export class User implements IUserProps {
     async delete() {
         if (!this.id) throw new Error('Cannot delete user without ID.');
         await pool.query('DELETE FROM user_profiles WHERE id=?', [this.id]);
+    }
+
+    async setProfilePicture(pictureInBinary:string){
+
     }
 
     async getPasswordHashById(userId: number) {

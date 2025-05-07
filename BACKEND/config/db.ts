@@ -16,6 +16,18 @@ export const connectToDatabase = async () => {
         const client = await pool.connect();
         console.log('✅ PostgreSQL verbunden');
 
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS user_profiles (
+                id SERIAL PRIMARY KEY,
+                first_name VARCHAR(100) not null,
+                last_name VARCHAR(100) not null,
+                password varchar(100) not null,
+                phone_number VARCHAR(30),
+                email VARCHAR(255) UNIQUE not null,
+                profile_picture BYTEA
+                );
+        `);
+
         // Optional: client freigeben, wenn du ihn nicht brauchst
         client.release();
     } catch (error) {

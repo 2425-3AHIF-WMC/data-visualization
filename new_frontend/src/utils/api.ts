@@ -12,7 +12,7 @@ export async function apiFetch<T>(
         ...customHeaders,
     };
 
-    const res = await fetch(import.meta.env.VITE_API_URL + path, {
+    const res = await fetch("http://localhost:3000/api/" + path, {
         method,
         headers,
         body: body ? JSON.stringify(body) : undefined,
@@ -26,3 +26,5 @@ export async function apiFetch<T>(
 
     return res.json();
 }
+
+

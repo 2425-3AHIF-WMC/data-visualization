@@ -5,6 +5,16 @@ import bcrypt from 'bcrypt';
 import {User} from "../../models";
 import {jwtConfig} from "../../config/jwtConfig";
 
+export interface RegisterResponse {
+    token: string;
+    user: {
+        id: number;
+        firstname: string;
+        lastname: string;
+        email: string;
+        telNr?: string;
+    };
+}
 
 //TODO JWT kacke funktioniert nicht ahhhhhhh was ist dieser Errorrrrr
 // okay problem liegt by expires in
@@ -24,32 +34,48 @@ export const loginUser = async (req: Request, res: Response) => {
     try {
         const user = await User.findByEmail(email);
         if (!user) {
-            return res.status(StatusCodes.UNAUTHORIZED).json({ message: 'Wrong email or password' });
+            res.status(StatusCodes.UNAUTHORIZED).json({ message: 'Wrong email or password' }); return
         }
 
         const isPasswordCorrect = bcrypt.compare(password, user.password);
         if (!isPasswordCorrect) {
-            return res.status(StatusCodes.UNAUTHORIZED).json({ message: 'Wrong email or password' });
+        res.status(StatusCodes.UNAUTHORIZED).json({ message: 'Wrong email or password' }); return
         }
 
         const token = createToken(user.id!);
-        return res.status(StatusCodes.OK).json({ token });
+        res.status(StatusCodes.OK).json({ token }); return
     } catch (error) {
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server error", error });
+         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server error", error }); return
     }
 };
 
 // signInUser
 export const registerUser = async (req: Request, res: Response) => {
-    const { firstname, lastname, password, email, telNr, profile_pic } = req.body;
+    const { firstname, lastname, password, email, telNr } = req.body;
+
+    console.log(firstname,lastname,email,telNr);
     try {
-        const user = new User({ firstname, lastname, mail: email, telNr, profile_pic, password });
+        const user = new User({ firstname, lastname, mail: email, telNr,  password });
+        console.log("user: "+user.mail,user.password,user.lastname,user.firstname,user.telNr)
         await user.save();
 
-        const token = createToken(user.id!);
-        return res.status(StatusCodes.CREATED).json({ token, user: user.toJSON() });
+        const token = createToken(user.id);
+
+        const response: RegisterResponse={
+            token,
+            user: {
+                id: user.id,
+                firstname: user.firstname,
+                lastname: user.lastname,
+                email: user.mail,
+                telNr: user.telNr,
+            }
+        }
+        res.status(StatusCodes.CREATED).json(response); return
+
+     //  res.status(StatusCodes.CREATED).json({ token, user: user.toJSON() }); return
     } catch (err) {
-        return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Error creating user', error: err });
+         res.status(StatusCodes.BAD_REQUEST).json({ message: 'Error creating user', error: err }); return
     }
 };
 //    Login-/Register-Logik inkl. JWT-Erzeugung
