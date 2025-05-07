@@ -108,6 +108,25 @@ export const updateProfile = async (req: RequestWithUser, res: Response) => {
     }
 }
 
+export const setProfilePic= async (req:RequestWithUser,res:Response)=>{
+    const userId= req.user.id;
+    const profilePic = req.body.profilePic; // kommt als binär datei
+
+    try {
+        const existingUser=  await User.findById(+userId);
+
+        if(existingUser){
+
+       await existingUser.setProfilePicture(profilePic);
+        }
+        res.status(StatusCodes.OK).json({ message: 'Profile picture updated successfully.' });
+
+    }catch (error){
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Error updating profile picture.' }); return
+    }
+}
+
+
 
 /*export const loginUser = async (req: Request, res: Response) => {
     const {email, password} = req.body;

@@ -4,7 +4,7 @@
     "client-dev": "npx tsc --watch",
     "prestart": "npx tsc",
     "start": "npx tsx api/server/server.ts",
-    "dev": "concurrently \"npm run server-dev\" \"npm run client-dev\""
+    "dev": "run-p server-dev client-dev"
   },
   "type": "module",
   "dependencies": {

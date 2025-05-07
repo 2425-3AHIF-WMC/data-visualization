@@ -16,11 +16,12 @@ export const loginUser = async (req, res) => {
     const { email, password } = req.body;
     try {
         const user = await User.findByEmail(email);
+        console.log("user " + user);
         if (!user) {
             res.status(StatusCodes.UNAUTHORIZED).json({ message: 'Wrong email or password' });
             return;
         }
-        const isPasswordCorrect = bcrypt.compare(password, user.password);
+        const isPasswordCorrect = await bcrypt.compare(password, user.password);
         if (!isPasswordCorrect) {
             res.status(StatusCodes.UNAUTHORIZED).json({ message: 'Wrong email or password' });
             return;
@@ -36,26 +37,13 @@ export const loginUser = async (req, res) => {
 };
 // signInUser
 export const registerUser = async (req, res) => {
-    const { firstname, lastname, password, email, telNr } = req.body;
-    console.log(firstname, lastname, email, telNr);
+    const { firstname, lastname, password, email, telNr, profile_pic } = req.body;
     try {
-        const user = new User({ firstname, lastname, mail: email, telNr, password });
-        console.log("user: " + user.mail, user.password, user.lastname, user.firstname, user.telNr);
+        const user = new User({ firstname, lastname, mail: email, telNr, profile_pic, password });
         await user.save();
         const token = createToken(user.id);
-        const response = {
-            token,
-            user: {
-                id: user.id,
-                firstname: user.firstname,
-                lastname: user.lastname,
-                email: user.mail,
-                telNr: user.telNr,
-            }
-        };
-        res.status(StatusCodes.CREATED).json(response);
+        res.status(StatusCodes.CREATED).json({ token, user: user.toJSON() });
         return;
-        //  res.status(StatusCodes.CREATED).json({ token, user: user.toJSON() }); return
     }
     catch (err) {
         res.status(StatusCodes.BAD_REQUEST).json({ message: 'Error creating user', error: err });

@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import { useNavigate } from 'react-router-dom';
 import {Layout} from '../components/Layout';
 import {Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter} from '@/components/ui/card';
 import {Button} from '@/components/ui/button';
@@ -14,15 +15,17 @@ export default function Login() {
     // State für die Eingabewerte
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const navigate = useNavigate();
+
 
     // Form-Submit-Handler
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         try {
-            const res = await apiFetch('/login', 'POST', {
-                email, password,
-            });
+            const token = await apiFetch('auth/login', 'POST', {email, password});
+
+            localStorage.setItem('token',token as string);
 
             toast({
                 title: "Login erfolgreich",
@@ -35,12 +38,11 @@ export default function Login() {
             // TODO zuletzt Weiterleitung zu Dashboard nach dem  einloggen
             // noch nicht fertig irgend ein problem mit next router gibt es
 //await router.push('/');
+            navigate('/');
 
         } catch (err: any) {
             toast({title: "Fehler", description: err.message});
         }
-
-
 
 
     };

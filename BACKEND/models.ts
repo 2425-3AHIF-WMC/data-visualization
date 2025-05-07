@@ -80,9 +80,10 @@ export class User implements IUserProps {
     }
 
     static async findByEmail(email: string) {
-        const [rows]: any = await pool.query('SELECT * FROM user_profiles WHERE mail = ?', [email]);
-        if (rows.length === 0) return null;
-        return new User(rows[0]);
+        const sql = 'SELECT * FROM user_profiles WHERE email = $1';
+        const result = await pool.query(sql, [email]);
+
+        return result.rows[0];
     }
 
     async delete() {
@@ -152,6 +153,13 @@ export class User implements IUserProps {
         user.confirmation_token = undefined;
         user.confirmation_token_expires = undefined;
         return user;
+    }
+
+     async setProfilePicture( picture:string){
+        const sql = 'UPDATE user_profiles SET profile_pic = $1 WHERE id = $2';
+        const result = await pool.query(sql, [picture, this.id]);
+this.profile_pic = picture;
+
     }
 
 

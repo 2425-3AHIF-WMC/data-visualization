@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
 import { pool } from "./config/db";
+import crypto from 'crypto';
 export class User {
     id;
     firstname;
@@ -8,6 +9,9 @@ export class User {
     telNr;
     profile_pic;
     password;
+    is_confirmed;
+    confirmation_token;
+    confirmation_token_expires;
     constructor(data) {
         this.id = data.id;
         this.firstname = data.firstname;
@@ -16,24 +20,38 @@ export class User {
         this.telNr = data.telNr;
         this.profile_pic = data.profile_pic;
         this.password = data.password;
+        this.is_confirmed = data.is_confirmed;
+        this.confirmation_token = data.confirmation_token;
+        this.confirmation_token_expires = data.confirmation_token_expires
+            ? new Date(data.confirmation_token_expires)
+            : undefined;
     }
     async save() {
-        try {
-            if (this.id)
-                throw new Error('User already exists. Use update() instead.');
-            const hashed = await bcrypt.hash(this.password, 10);
-            const sql = `INSERT INTO user_profiles (firstname, lastname, password, email, telNr, profile_pic)
-                     VALUES  ($1, $2, $3, $4, $5, $6) returning id`;
-            const values = [this.firstname, this.lastname, hashed, this.mail, this.telNr || null, this.profile_pic || null];
-            console.log(values);
-            const result = await pool.query(sql, values);
-            this.id = result.rows[0].id;
-            this.password = hashed;
-        }
-        catch (error) {
-            console.error("Error saving user: ", error);
-            throw new Error(`Error saving user: ${error.message}`);
-        }
+        if (this.id)
+            throw new Error('User already exists. Use update() instead.');
+        const hashed = await bcrypt.hash(this.password, 10);
+        // Token generieren
+        const token = crypto.randomBytes(32).toString('hex');
+        const expires = new Date(Date.now() + 1000 * 60 * 60); // 1 Stunde
+        const sql = `INSERT INTO user_profiles (firstname, lastname, password, mail, telNr, profile_pic)
+                     VALUES (?, ?, ?, ?, ?, ?)`;
+        const values = [
+            this.firstname,
+            this.lastname,
+            hashed,
+            this.mail,
+            this.telNr,
+            this.profile_pic || null,
+            false,
+            token,
+            expires,
+        ];
+        const [result] = await pool.query(sql, values);
+        this.id = result.insertId;
+        this.password = hashed;
+        this.is_confirmed = false;
+        this.confirmation_token = token;
+        this.confirmation_token_expires = expires;
     }
     static async findById(id) {
         const [rows] = await pool.query('SELECT * FROM user_profiles WHERE id = ?', [id]);
@@ -42,17 +60,14 @@ export class User {
         return new User(rows[0]);
     }
     static async findByEmail(email) {
-        const [rows] = await pool.query('SELECT * FROM user_profiles WHERE mail = ?', [email]);
-        if (rows.length === 0)
-            return null;
-        return new User(rows[0]);
+        const sql = 'SELECT * FROM user_profiles WHERE email = $1';
+        const result = await pool.query(sql, [email]);
+        return result.rows[0];
     }
     async delete() {
         if (!this.id)
             throw new Error('Cannot delete user without ID.');
         await pool.query('DELETE FROM user_profiles WHERE id=?', [this.id]);
-    }
-    async setProfilePicture(pictureInBinary) {
     }
     async getPasswordHashById(userId) {
         const query = 'select password from user_profiles where id=?';
@@ -85,14 +100,35 @@ export class User {
         if (!this.id)
             throw new Error('Cannot update user without ID.');
         const sql = `UPDATE user_profiles
-                     SET firstname = ?,
-                         lastname = ?,
-                         mail = ?,
-                         telNr = ?,
+                     SET firstname   = ?,
+                         lastname    = ?,
+                         mail        = ?,
+                         telNr       = ?,
                          profile_pic = ?
                      WHERE id = ?`;
         const values = [this.firstname, this.lastname, this.mail, this.telNr, this.profile_pic || null, this.id];
         await pool.query(sql, values);
+    }
+    static async confirmEmail(token) {
+        const now = new Date();
+        const [rows] = await pool.query(`SELECT * FROM user_profiles WHERE confirmation_token = ? AND confirmation_token_expires > ?`, [token, now]);
+        if (rows.length === 0)
+            return null;
+        const user = new User(rows[0]);
+        await pool.query(`UPDATE user_profiles
+         SET is_confirmed = TRUE,
+             confirmation_token = NULL,
+             confirmation_token_expires = NULL
+         WHERE id = ?`, [user.id]);
+        user.is_confirmed = true;
+        user.confirmation_token = undefined;
+        user.confirmation_token_expires = undefined;
+        return user;
+    }
+    async setProfilePicture(picture) {
+        const sql = 'UPDATE user_profiles SET profile_pic = $1 WHERE id = $2';
+        const result = await pool.query(sql, [picture, this.id]);
+        this.profile_pic = picture;
     }
     toJSON() {
         const { password, ...rest } = this;

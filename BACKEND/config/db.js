@@ -1,4 +1,5 @@
 /* Stellt die Verbindung zur SQL db her (postgresql) */
+// todo tabelle erstellen, und nicht vergessen: attribut: is_confirmed (bool), confirmation_token(string). confirmation_roken_expires (datetime)
 import { Pool } from 'pg'; // fixe ich später
 import { dbConfig } from "./config";
 export const pool = new Pool({

@@ -23,19 +23,21 @@ export const loginUser = async (req: Request, res: Response) => {
 
     try {
         const user = await User.findByEmail(email);
+        console.log("user "+user);
+
         if (!user) {
-            return res.status(StatusCodes.UNAUTHORIZED).json({ message: 'Wrong email or password' });
+             res.status(StatusCodes.UNAUTHORIZED).json({ message: 'Wrong email or password' }); return
         }
 
-        const isPasswordCorrect = bcrypt.compare(password, user.password);
+        const isPasswordCorrect = await bcrypt.compare(password, user.password);
         if (!isPasswordCorrect) {
-            return res.status(StatusCodes.UNAUTHORIZED).json({ message: 'Wrong email or password' });
+            res.status(StatusCodes.UNAUTHORIZED).json({ message: 'Wrong email or password' }); return
         }
 
         const token = createToken(user.id!);
-        return res.status(StatusCodes.OK).json({ token });
+        res.status(StatusCodes.OK).json({ token }); return
     } catch (error) {
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server error", error });
+         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server error", error }); return
     }
 };
 
@@ -47,9 +49,9 @@ export const registerUser = async (req: Request, res: Response) => {
         await user.save();
 
         const token = createToken(user.id!);
-        return res.status(StatusCodes.CREATED).json({ token, user: user.toJSON() });
+         res.status(StatusCodes.CREATED).json({ token, user: user.toJSON() }); return
     } catch (err) {
-        return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Error creating user', error: err });
+        res.status(StatusCodes.BAD_REQUEST).json({ message: 'Error creating user', error: err }); return
     }
 };
 //    Login-/Register-Logik inkl. JWT-Erzeugung
