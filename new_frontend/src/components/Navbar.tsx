@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Database, BarChart3, Home, LogIn, Menu, Settings, ChevronDown, Plus } from 'lucide-react';
@@ -40,20 +41,18 @@ export function Navbar() {
                   Dashboard <ChevronDown className="h-4 w-4 ml-1" />
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <Link to="/" className="block p-4 hover:bg-accent rounded-lg">
-                    <div className="grid gap-3 p-4 md:w-[500px] lg:w-[600px]">
-                      <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-                        <div className="flex items-center mb-2">
-                          <Home className="h-5 w-5 mr-2 text-primary" />
-                          <h3 className="text-base font-medium">Übersicht</h3>
-                        </div>
-                        <p className="text-sm text-muted-foreground">Alle Ihre Daten und Visualisierungen auf einen Blick</p>
+                  <div className="grid gap-3 p-4 md:w-[500px] lg:w-[600px]">
+                    <Link to="/" >
+                    <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                      <div className="flex items-center mb-2">
+                        <Home className="h-5 w-5 mr-2 text-primary" />
+                        <h3 className="text-base font-medium">Übersicht</h3>
                       </div>
+                      <p className="text-sm text-muted-foreground">Alle Ihre Daten und Visualisierungen auf einen Blick</p>
                     </div>
-                  </Link>
+                    </Link>
 
-
-                  <Link to="/dashboards" className="block p-4 hover:bg-accent rounded-lg">
+                    <Link to="/dashboards" className="block p-4 hover:bg-accent rounded-lg">
                       <div className="flex items-center mb-1">
                         <BarChart3 className="h-5 w-5 mr-2 text-primary" />
                         <h3 className="text-base font-medium">Meine Dashboards</h3>
@@ -67,6 +66,30 @@ export function Navbar() {
                       </div>
                       <p className="text-sm text-muted-foreground">Alle hochgeladenen Datensätze verwalten</p>
                     </Link>
+                  </div>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+
+              <NavigationMenuItem>
+                <NavigationMenuTrigger className={cn(
+                  "font-medium",
+                  location.pathname.startsWith("/analytics") && "bg-primary text-primary-foreground"
+                )}>
+                  Analytik <ChevronDown className="h-4 w-4 ml-1" />
+                </NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <div className="p-4 md:w-[400px]">
+                    <ul className="grid gap-3">
+                      <li className="p-2 hover:bg-accent rounded-md">
+                        <Link to="/analytics/reports" className="block">Berichte</Link>
+                      </li>
+                      <li className="p-2 hover:bg-accent rounded-md">
+                        <Link to="/analytics/trends" className="block">Trends</Link>
+                      </li>
+                      <li className="p-2 hover:bg-accent rounded-md">
+                        <Link to="/analytics/metrics" className="block">Kennzahlen</Link>
+                      </li>
+                    </ul>
                   </div>
                 </NavigationMenuContent>
               </NavigationMenuItem>
@@ -195,6 +218,29 @@ export function Navbar() {
                 </ul>
               </div>
 
+              <div>
+                <h3 className="font-medium text-lg mb-2">Analytik</h3>
+                <ul className="grid gap-1 pl-2">
+                  <li>
+                    <Link
+                      to="/analytics/reports"
+                      className="block py-2 hover:text-primary"
+                      onClick={toggleMobileMenu}
+                    >
+                      Berichte
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/analytics/trends"
+                      className="block py-2 hover:text-primary"
+                      onClick={toggleMobileMenu}
+                    >
+                      Trends
+                    </Link>
+                  </li>
+                </ul>
+              </div>
 
               <div>
                 <h3 className="font-medium text-lg mb-2">Visualisierungen</h3>
@@ -211,13 +257,15 @@ export function Navbar() {
                 </ul>
               </div>
 
+              <Button
                 className="mt-4"
                 asChild
-
+              >
                 <Link to="/import" onClick={toggleMobileMenu}>
                   <Plus className="h-4 w-4 mr-2" />
                   Daten importieren
                 </Link>
+              </Button>
             </nav>
           </div>
         </div>
