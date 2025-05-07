@@ -7,14 +7,27 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
-import { apiFetch } from "@/utils/api.ts";
+import {apiFetch} from "@/utils/api.ts";
+
+
+export interface RegisterResponse {
+    token: string;
+    user: {
+        id: number;
+        firstname: string;
+        lastname: string;
+        email: string;
+        telNr?: string;
+    };
+}
 //import { useRouter } from 'next/router';
 
 export default function SignIn() {
     const {toast}= useToast();
     // const router = useRouter();
 
-    const [name, setName] = useState('');
+    const [firstname, setFirstname] = useState('');
+    const [lastname, setLastname] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [telNr, setTelNr]= useState('');
@@ -24,19 +37,23 @@ export default function SignIn() {
         e.preventDefault();
 
         try {
-            const res = await apiFetch('/signIn', 'POST', {
-                name,
+            const res = await apiFetch('auth/register', 'POST', {
+                firstname,
+                lastname,
                 email,
                 password,
                 telNr
-            });
+            }) as RegisterResponse;
+
+            // Beispiel: Token speichern
+            localStorage.setItem('token', res.token);
 
             toast({
                 title: "Registrierung erfolgreich",
                 description: "Sie können sich jetzt einloggen.",
             });
 
-            // TODO: Weiterleitung nach erfolgreicher Registrierung
+            // TODO: Weiterleitung nach erfolgreicher Registrierung zu profilbild-frage
             // await router.push('/'); dashboard
 
         } catch (err: any) {
@@ -57,13 +74,24 @@ export default function SignIn() {
                     <CardContent>
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="space-y-2">
-                                <Label htmlFor="name">Name</Label>
+                                <Label htmlFor="name">Firstname</Label>
                                 <Input
-                                    id="name"
+                                    id="firstname"
                                     type="text"
-                                    placeholder="Max Mustermann"
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
+                                    placeholder="Jane"
+                                    value={firstname}
+                                    onChange={(e) => setFirstname(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="name">Lastname</Label>
+                                <Input
+                                    id="lastname"
+                                    type="text"
+                                    placeholder="Doe"
+                                    value={lastname}
+                                    onChange={(e) => setLastname(e.target.value)}
                                     required
                                 />
                             </div>
@@ -95,7 +123,6 @@ export default function SignIn() {
                                 type="telNr"
                                 value={telNr}
                                 onChange={(e) => setTelNr(e.target.value)}
-                                required
                             />
                             </div>
                             <Button type="submit" className="w-full">Registrieren</Button>

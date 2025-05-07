@@ -33,7 +33,7 @@ const App = () => (
             <Route path="/datasets" element={<Datasets/>}/>
             <Route path="/dashboards" element={<Dashboards/>}/>
             <Route path="/login" element={<Login />} />
-            <Route path="signin" element={<SignIn/>}/>
+            <Route path="/signin" element={<SignIn/>}/>
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
