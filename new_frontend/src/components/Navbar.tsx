@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import {jwtDecode} from 'jwt-decode';
+import {Link, useLocation, useNavigate} from 'react-router-dom';
 import { Database, BarChart3, Home, LogIn, Menu, Settings, Plus } from 'lucide-react';
 import { Button } from './ui/button';
 import { ThemeSwitcher } from './ThemeSwitcher';
@@ -18,8 +19,33 @@ import {
 export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate= useNavigate()
 
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
+
+  // Klick-Handler für Profile-Avatar
+  const handleProfileClick = () => {
+    const token = localStorage.getItem('jwtToken');
+    if (!token) {
+      // kein Token → Login
+      navigate('/login');
+      return;
+    }try {
+      const { exp } = jwtDecode<{ exp: number }>(token);
+      if (exp * 1000 < Date.now()) {
+        // abgelaufen → Token entfernen und Login
+        localStorage.removeItem('jwtToken');
+        navigate('/login');
+      } else {
+        // gültig → Account Settings
+        navigate('/settings/account');
+      }
+    } catch {
+      // ungültiges Token → entfernen und Login
+      localStorage.removeItem('jwtToken');
+      navigate('/login');
+    }
+  };
 
   return (
     <header className="w-full bg-background border-b border-border/30">
@@ -145,12 +171,16 @@ export function Navbar() {
 
           <ThemeSwitcher />
 
-          <Button variant="ghost" size="icon" asChild className="rounded-full">
-            <Link to="/login">
+          <Button
+              variant="ghost"
+              size="icon" asChild
+              onClick={handleProfileClick}
+              className="rounded-full">
+
               <Avatar className="h-8 w-8 border border-border">
                 <AvatarFallback>A</AvatarFallback>
               </Avatar>
-            </Link>
+
           </Button>
         </div>
       </div>

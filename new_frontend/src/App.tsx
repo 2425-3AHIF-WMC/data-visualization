@@ -9,7 +9,7 @@ import Index from "./pages/Index";
 import DataImport from "./pages/DataImport";
 import Visualizations from "./pages/Visualizations";
 import AppSettings from "./pages/AppSettings.tsx";
-import {AccountSettings} from "@/pages/AccountSettings.tsx";
+import AccountSettingsPage from "@/pages/AccountSettings.tsx";
 import SignIn from "@/pages/SignIn.tsx";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
@@ -29,7 +29,7 @@ const App = () => (
             <Route path="/import" element={<DataImport />} />
             <Route path="/visualizations" element={<Visualizations />} />
             <Route path="/settings" element={<AppSettings />} />
-            <Route path="/accountSettings" element={<AccountSettings/>}/>
+            <Route path="/settings/account" element={<AccountSettingsPage/>}/>
             <Route path="/datasets" element={<Datasets/>}/>
             <Route path="/dashboards" element={<Dashboards/>}/>
             <Route path="/login" element={<Login />} />
