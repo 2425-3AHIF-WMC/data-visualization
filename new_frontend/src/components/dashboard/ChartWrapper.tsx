@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { ResponsiveContainer } from 'recharts';
 import { cn } from '@/lib/utils';
@@ -27,27 +26,25 @@ export interface ChartConfig {
   showLegend?: boolean;
 }
 
-export function ChartWrapper({ 
-  children, 
-  height = 300, 
-  className,
-  fullWidth = false
-}: ChartWrapperProps) {
+export function ChartWrapper({
+                               children,
+                               height = 300,
+                               className,
+                               fullWidth = false
+                             }: ChartWrapperProps) {
   return (
-    <div 
-      style={{ 
-        width: '100%', 
-        height: typeof height === 'number' ? height : height 
-      }}
-      className={cn(
-        "transition-all duration-300 rounded-lg overflow-hidden", 
-        fullWidth ? "w-full" : "",
-        className
-      )}
-    >
-      <ResponsiveContainer width="100%" height="100%">
+      <div
+          style={{
+            width: '100%',
+            height: typeof height === 'number' ? height : height
+          }}
+          className={cn(
+              "transition-all duration-300 rounded-lg overflow-hidden",
+              fullWidth ? "w-full" : "",
+              className
+          )}
+      >
         {children}
-      </ResponsiveContainer>
-    </div>
+      </div>
   );
 }
