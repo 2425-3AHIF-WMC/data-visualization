@@ -10,8 +10,10 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Record } from '@/utils/dataProcessor';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { BarChart3, LineChart, PieChart } from 'lucide-react';
 import { ChartConfig as WrapperChartConfig } from './ChartWrapper';
+import BarChart from '@/lib/D3/BarChart.tsx';
+import PieChart from '@/lib/D3/PieChart.tsx';
+import LineChart from '@/lib/D3/LineChart.tsx';
 
 export type ChartType = 'bar' | 'line' | 'pie' | 'area' | 'scatter';
 
@@ -65,7 +67,7 @@ export function ChartCustomizer({ data, numericColumns, categoricalColumns, onAp
               size="sm"
               onClick={() => setChartType('bar')}
             >
-              <BarChart3 className="mr-2 h-4 w-4" />
+              <BarChart/>
               Balken
             </Button>
             <Button
@@ -73,7 +75,7 @@ export function ChartCustomizer({ data, numericColumns, categoricalColumns, onAp
               size="sm"
               onClick={() => setChartType('line')}
             >
-              <LineChart className="mr-2 h-4 w-4" />
+              <LineChart/>
               Linie
             </Button>
             <Button
@@ -81,7 +83,7 @@ export function ChartCustomizer({ data, numericColumns, categoricalColumns, onAp
               size="sm" 
               onClick={() => setChartType('pie')}
             >
-              <PieChart className="mr-2 h-4 w-4" />
+              <PieChart/>
               Kreis
             </Button>
             <Button
@@ -89,7 +91,7 @@ export function ChartCustomizer({ data, numericColumns, categoricalColumns, onAp
               size="sm"
               onClick={() => setChartType('area')}
             >
-              <LineChart className="mr-2 h-4 w-4" />
+              <LineChart/>
               Fläche
             </Button>
             <Button

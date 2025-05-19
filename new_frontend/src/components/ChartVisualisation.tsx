@@ -11,27 +11,13 @@ import {
 import { Button } from "@/components/ui/button.tsx";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select.tsx";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs.tsx";
-import {
-    Bar,
-    Line,
-    Pie,
-    Cell,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    Legend,
-    ResponsiveContainer,
-    AreaChart,
-    Area, BarChart, LineChart
-} from 'recharts';
 import { ChartBarBig, ChartLine, ChartPie, Save, ArrowLeft } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import barChart from "@/lib/D3/barChart/barChart.tsx";
-import lineChart from '@/lib/D3/lineChart/lineChart.tsx';
-import PieChart from '@/lib/D3/pieChart/pieChart.tsx';
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d', '#ffc658'];
+// Import your D3 chart components. Adjust import paths if needed.
+import BarChart from "@/lib/D3/BarChart";
+import LineChart from "@/lib/D3/LineChart";
+import PieChart from "@/lib/D3/PieChart";
 
 const ChartVisualization = () => {
     const location = useLocation();
@@ -45,14 +31,7 @@ const ChartVisualization = () => {
     const [availableFields, setAvailableFields] = useState<string[]>([]);
     const [processedData, setProcessedData] = useState<any>(null);
 
-
-    interface PieChartProps {
-        data: number[];
-        width: number;
-        height: number;
-    }
     useEffect(() => {
-        // Check if data was passed via location state
         if (location.state && location.state.processedData) {
             const data = location.state.processedData;
             setProcessedData(data);
@@ -88,13 +67,10 @@ const ChartVisualization = () => {
     }, [processedData, xAxis, yAxis]);
 
     const saveVisualization = () => {
-        // In a real application, you would save to a database or local storage
         toast({
             title: "Visualisierung gespeichert",
             description: `${chartTitle} wurde erfolgreich gespeichert.`
         });
-
-        // Navigate to visualizations page
         navigate('/visualizations');
     };
 
@@ -102,6 +78,7 @@ const ChartVisualization = () => {
         setChartTitle(e.target.value);
     };
 
+    // --- MARKED: DIAGRAM DISPLAY FUNCTION ---
     const renderChartByType = () => {
         if (!chartData || chartData.length === 0) {
             return (
@@ -113,11 +90,14 @@ const ChartVisualization = () => {
 
         switch (chartType) {
             case 'bar':
-                return <BarChart data={chartData} width={600} height={300} />;
+                // ** D3 Bar chart **
+                return <BarChart />;
             case 'line':
-                return <LineChart data={chartData} width={600} height={300} />;
+                // ** D3 Line chart **
+                return <LineChart />;
             case 'pie':
-                return <PieChart data={chartData} width={600} height={300} />;
+                // ** D3 Pie chart **
+                return <PieChart />;
             default:
                 return null;
         }
@@ -226,6 +206,7 @@ const ChartVisualization = () => {
                             <CardTitle>{chartTitle}</CardTitle>
                         </CardHeader>
                         <CardContent className="h-[350px]">
+                            {/* ---- HERE THE DIAGRAM IS DISPLAYED ---- */}
                             {renderChartByType()}
                         </CardContent>
                     </Card>
