@@ -1,10 +1,10 @@
-import React, {useState} from 'react';
-import {Link, useLocation} from 'react-router-dom';
-import {Database, BarChart3, Home, LogIn, Menu, Settings, LogOut} from 'lucide-react';
-import {Button} from './ui/button';
-import {ThemeSwitcher} from './ThemeSwitcher';
-import {Avatar, AvatarFallback} from './ui/avatar';
-import {cn} from '../lib/utils';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Database, BarChart3, Home, LogIn, Menu, Settings, LogOut, User } from 'lucide-react';
+import { Button } from './ui/button';
+import { ThemeSwitcher } from './ThemeSwitcher';
+import { Avatar, AvatarFallback } from './ui/avatar';
+import { cn } from '../lib/utils';
 import {
     NavigationMenu,
     NavigationMenuContent,
@@ -20,17 +20,50 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from './ui/dropdown-menu';
+import { AccountSettings } from "@/pages/AccountSettings";
+import { useToast } from "@/hooks/use-toast";
 
 export function Navbar() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const [isLoggedIn, setIsLoggedIn] = useState(false); // Zustand für Login-Status
+    const [isLoggedIn, setIsLoggedIn] = useState(() => {
+        const storedLogin = localStorage.getItem("isLoggedIn");
+        return storedLogin === "true";
+    });
+
+    const [user, setUser] = useState<{name: string; email: string} | null>(null);
     const location = useLocation();
+    const navigate = useNavigate();
+    const { toast } = useToast();
+
+    useEffect(() => {
+        // Check if user is logged in
+        const userJson = localStorage.getItem('user');
+        if (userJson) {
+            const userObj = JSON.parse(userJson);
+            if (userObj.isLoggedIn) {
+                setIsLoggedIn(true);
+                setUser({
+                    name: userObj.name || 'Benutzer',
+                    email: userObj.email || 'benutzer@beispiel.de'
+                });
+            }
+        }
+    }, []);
 
     const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
 
-    // Diese Funktion simuliert den Login/Logout
-    const toggleLogin = () => {
-        setIsLoggedIn(!isLoggedIn);
+    const handleLogout = () => {
+        // Remove user from localStorage
+        localStorage.removeItem('user');
+        setIsLoggedIn(false);
+        setUser(null);
+
+        toast({
+            title: "Erfolgreich abgemeldet",
+            description: "Auf Wiedersehen!",
+        });
+
+        navigate('/');
     };
 
     return (
@@ -39,9 +72,8 @@ export function Navbar() {
                 {/* Logo links */}
                 <div className="flex-1">
                     <Link to="/" className="flex items-center">
-                        <BarChart3 className="h-6 w-6 text-purple-600 dark:text-purple-400"/>
-                        <span
-                            className="ml-2 text-xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">Data-Visualisation</span>
+                        <BarChart3 className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+                        <span className="ml-2 text-xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">Data-Visualisation</span>
                     </Link>
                 </div>
 
@@ -58,35 +90,29 @@ export function Navbar() {
                             <NavigationMenuContent>
                                 <div className="grid gap-3 p-4 md:w-[500px] lg:w-[600px]">
                                     <Link to="/" className="block">
-                                        <div
-                                            className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/40 transition-colors">
+                                        <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/40 transition-colors">
                                             <div className="flex items-center mb-2">
-                                                <Home className="h-5 w-5 mr-2 text-purple-600 dark:text-purple-400"/>
+                                                <Home className="h-5 w-5 mr-2 text-purple-600 dark:text-purple-400" />
                                                 <h3 className="text-base font-medium">Übersicht</h3>
                                             </div>
-                                            <p className="text-sm text-muted-foreground">Alle Ihre Daten und
-                                                Visualisierungen auf einen Blick</p>
+                                            <p className="text-sm text-muted-foreground">Alle Ihre Daten und Visualisierungen auf einen Blick</p>
                                         </div>
                                     </Link>
 
-                                    <Link to="/dashboards"
-                                          className="block p-4 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg transition-colors">
+                                    <Link to="/dashboards" className="block p-4 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg transition-colors">
                                         <div className="flex items-center mb-1">
-                                            <BarChart3 className="h-5 w-5 mr-2 text-purple-600 dark:text-purple-400"/>
+                                            <BarChart3 className="h-5 w-5 mr-2 text-purple-600 dark:text-purple-400" />
                                             <h3 className="text-base font-medium">Meine Dashboards</h3>
                                         </div>
-                                        <p className="text-sm text-muted-foreground">Gespeicherte Dashboards anzeigen
-                                            und bearbeiten</p>
+                                        <p className="text-sm text-muted-foreground">Gespeicherte Dashboards anzeigen und bearbeiten</p>
                                     </Link>
 
-                                    <Link to="/datasets"
-                                          className="block p-4 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg transition-colors">
+                                    <Link to="/datasets" className="block p-4 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg transition-colors">
                                         <div className="flex items-center mb-1">
-                                            <Database className="h-5 w-5 mr-2 text-purple-600 dark:text-purple-400"/>
+                                            <Database className="h-5 w-5 mr-2 text-purple-600 dark:text-purple-400" />
                                             <h3 className="text-base font-medium">Meine Datensätze</h3>
                                         </div>
-                                        <p className="text-sm text-muted-foreground">Alle hochgeladenen Datensätze
-                                            verwalten</p>
+                                        <p className="text-sm text-muted-foreground">Alle hochgeladenen Datensätze verwalten</p>
                                     </Link>
                                 </div>
                             </NavigationMenuContent>
@@ -117,8 +143,7 @@ export function Navbar() {
                         </NavigationMenuItem>
 
                         <NavigationMenuItem>
-                            <Link to="/import"
-                                  className="inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-purple-50 dark:hover:bg-purple-900/20">
+                            <Link to="/import" className="inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-purple-50 dark:hover:bg-purple-900/20">
                                 Import
                             </Link>
                         </NavigationMenuItem>
@@ -128,68 +153,66 @@ export function Navbar() {
                 {/* Rechte Seite */}
                 <div className="flex flex-1 items-center justify-end gap-2">
                     <Button
-                        variant="outline"
-                        className="hidden md:flex items-center border-purple-200 dark:border-purple-800 hover:bg-purple-50 dark:hover:bg-purple-900/20"
-                        asChild
-                    >
-                    </Button>
-
-                    <Button
                         variant="ghost"
                         size="icon"
                         className="md:hidden"
                         onClick={toggleMobileMenu}
                     >
-                        <Menu className="h-5 w-5"/>
+                        <Menu className="h-5 w-5" />
                     </Button>
 
-                    <ThemeSwitcher/>
+                    <ThemeSwitcher />
 
                     {/* Bedingte Anzeige von Login oder Benutzer-Avatar */}
                     {isLoggedIn ? (
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" size="icon" className="rounded-full">
-                                    <Avatar
-                                        className="h-8 w-8 border border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-900/30">
-                                        <AvatarFallback
-                                            className="text-purple-700 dark:text-purple-300">A</AvatarFallback>
+                                    <Avatar className="h-8 w-8 border border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-900/30">
+                                        <AvatarFallback className="text-purple-700 dark:text-purple-300">
+                                            {user?.name?.charAt(0).toUpperCase() || 'B'}
+                                        </AvatarFallback>
                                     </Avatar>
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-56">
                                 <div className="flex items-center justify-start gap-2 p-2">
                                     <div className="flex flex-col space-y-1 leading-none">
-                                        <p className="font-medium">Benutzer</p>
-                                        <p className="text-sm text-muted-foreground">benutzer@beispiel.de</p>
+                                        <p className="font-medium">{user?.name || 'Benutzer'}</p>
+                                        <p className="text-sm text-muted-foreground">{user?.email || 'benutzer@beispiel.de'}</p>
                                     </div>
                                 </div>
-                                <DropdownMenuSeparator/>
-                                <DropdownMenuItem asChild>
-                                    <Link to="/profile" className="cursor-pointer">
-                                        <Settings className="mr-2 h-4 w-4"/>
-                                        <span>Profil bearbeiten</span>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem>
+                                    <Link to="/accountSettings" className="cursor-pointer flex items-center">
+                                        <User className="mr-2 h-4 w-4"/>
+                                        <span>Account-Einstellungen</span>
                                     </Link>
+
                                 </DropdownMenuItem>
                                 <DropdownMenuItem asChild>
-                                    <Link to="/settings" className="cursor-pointer">
-                                        <Settings className="mr-2 h-4 w-4"/>
+                                    <Link to="/settings" className="cursor-pointer flex items-center">
+                                        <Settings className="mr-2 h-4 w-4" />
                                         <span>Einstellungen</span>
                                     </Link>
                                 </DropdownMenuItem>
-                                <DropdownMenuSeparator/>
-                                <DropdownMenuItem onClick={toggleLogin}
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onClick={handleLogout}
                                                   className="cursor-pointer text-red-500 hover:text-red-500 focus:text-red-500">
-                                    <LogOut className="mr-2 h-4 w-4"/>
+                                    <LogOut className="mr-2 h-4 w-4" />
                                     <span>Abmelden</span>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     ) : (
-                        <Button variant="outline" onClick={toggleLogin}
-                                className="border-purple-200 dark:border-purple-800 hover:bg-purple-50 dark:hover:bg-purple-900/20">
-                            <LogIn className="h-4 w-4 mr-2 text-purple-600 dark:text-purple-400"/>
-                            Anmelden
+                        <Button variant="outline"
+                                className="border-purple-200 dark:border-purple-800 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                                asChild
+                        >
+                            <Link to="/login">
+                                <LogIn className="h-4 w-4 mr-2 text-purple-600 dark:text-purple-400" />
+                                Anmelden
+                            </Link>
                         </Button>
                     )}
                 </div>
@@ -198,15 +221,13 @@ export function Navbar() {
             {/* Mobile Menu */}
             {isMobileMenuOpen && (
                 <div className="fixed inset-0 z-50 md:hidden">
-                    <div className="fixed inset-0 bg-background/80 backdrop-blur-sm" onClick={toggleMobileMenu}/>
-                    <div
-                        className="fixed top-0 right-0 h-full w-3/4 max-w-xs bg-background p-6 shadow-lg animate-in slide-in-from-right">
+                    <div className="fixed inset-0 bg-background/80 backdrop-blur-sm" onClick={toggleMobileMenu} />
+                    <div className="fixed top-0 right-0 h-full w-3/4 max-w-xs bg-background p-6 shadow-lg animate-in slide-in-from-right">
                         {/* Mobile menu content */}
                         <div className="flex items-center justify-between mb-8">
                             <div className="flex items-center gap-2">
-                                <BarChart3 className="h-5 w-5 text-purple-600 dark:text-purple-400"/>
-                                <span
-                                    className="font-bold text-xl bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">DataViz</span>
+                                <BarChart3 className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                                <span className="font-bold text-xl bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">DataViz</span>
                             </div>
                             <Button variant="ghost" size="icon" onClick={toggleMobileMenu}>
                                 <span className="sr-only">Close</span>
@@ -222,8 +243,8 @@ export function Navbar() {
                                     strokeLinejoin="round"
                                     className="h-5 w-5"
                                 >
-                                    <path d="M18 6 6 18"/>
-                                    <path d="m6 6 12 12"/>
+                                    <path d="M18 6 6 18" />
+                                    <path d="m6 6 12 12" />
                                 </svg>
                             </Button>
                         </div>
@@ -261,7 +282,6 @@ export function Navbar() {
                                 </ul>
                             </div>
 
-
                             <div>
                                 <h3 className="font-medium text-lg mb-2 text-purple-700 dark:text-purple-300">Visualisierungen</h3>
                                 <ul className="grid gap-1 pl-2">
@@ -277,18 +297,17 @@ export function Navbar() {
                                 </ul>
                             </div>
 
-
                             {!isLoggedIn && (
                                 <Button
                                     variant="outline"
                                     className="mt-2 border-purple-200 dark:border-purple-800"
-                                    onClick={() => {
-                                        toggleLogin();
-                                        toggleMobileMenu();
-                                    }}
+                                    asChild
+                                    onClick={toggleMobileMenu}
                                 >
-                                    <LogIn className="h-4 w-4 mr-2 text-purple-600 dark:text-purple-400"/>
-                                    Anmelden
+                                    <Link to="/login">
+                                        <LogIn className="h-4 w-4 mr-2 text-purple-600 dark:text-purple-400" />
+                                        Anmelden
+                                    </Link>
                                 </Button>
                             )}
                         </nav>
