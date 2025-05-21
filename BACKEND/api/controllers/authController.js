@@ -3,8 +3,6 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { User } from "../../models";
 import { jwtConfig } from "../../config/jwtConfig";
-//TODO JWT kacke funktioniert nicht ahhhhhhh was ist dieser Errorrrrr
-// okay problem liegt by expires in
 const createToken = (userId) => {
     return jwt.sign({ id: userId }, // Payload: Hier ist das Objekt, das in das Token eingebaut wird
     jwtConfig.secret, // Geheimer Schlüssel aus jwtConfig

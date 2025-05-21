@@ -97,58 +97,24 @@ export const setProfilePic = async (req, res) => {
         return;
     }
 };
-/*export const loginUser = async (req: Request, res: Response) => {
-    const {email, password} = req.body;
-
+export const getUser = async (req, res) => {
+    const userId = req.user?.id;
+    if (!userId) {
+        res.status(StatusCodes.UNAUTHORIZED).json({ message: "Not authenticated" });
+        return;
+    }
     try {
-        // 1. user anhand der mail finden
-        const user = await User.findByEmail(email);
+        const user = await User.findById(+userId);
         if (!user) {
-            res.status(StatusCodes.UNAUTHORIZED).json({message: 'Wrong email or password'});
+            res.status(StatusCodes.NOT_FOUND).json({ message: "User not found" });
             return;
         }
-
-        // 2. password überprüfen
-        const isPasswordCorrect = await User.verifyPassword(user.password, password);
-        if (!isPasswordCorrect) {
-            res.status(StatusCodes.UNAUTHORIZED).json({message: 'Wrong email or password'});
-            return;
-        }
-
-        // TODO
-        // 3. JWT-Token erstellen
-
-        // 4. Erfolgreiches login: token zurückgeben
-
-    } catch (error) {
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: "Server error", error});
+        // toJSON() entfernt das Passwort und alle sensiblen Daten
+        res.status(StatusCodes.OK).json({ user: user.toJSON() });
+    }
+    catch (err) {
+        console.error("getUser error", err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server error", error: err });
         return;
     }
-}
-
-export const signInUser = async (req: Request, res: Response) => {
-    const {firstname, lastname, password, email, telNr, profile_pic} = req.body;
-
-    try {
-        var createUser = User.create(firstname, lastname, password, email, telNr, profile_pic);
-
-// das mit dem profilbild muss noch gefixt werden!!!
-    } catch (error) {
-        res.status(StatusCodes.BAD_REQUEST).json({message: "Error", error});
-        return;
-    }
-}*/
-// TODO account settings, user will seine daten ändern oder so
-/*GET/PUT /user/profile – für Name, E-Mail, Bild
-
-POST /user/change-password
-
-DELETE /user/account
-
-
-POST /user/upload-avatar*/
-// backend/controllers/userController.js
-// 1. Imports: User-Modell, eventuell JWT-Verifikation
-// 2. getUserProfile(req, res)
-// 3. updateUserProfile(req, res)
-// 4. exportiere alle Funktionen
+};

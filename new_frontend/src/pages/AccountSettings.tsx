@@ -1,60 +1,4 @@
-/*import React, { useState } from 'react';
-import {
-    Avatar,
-    AvatarFallback,
-    AvatarImage,
-} from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
-
-
-
-/**
- * AccountSettingsPage
- *
- * Frontend für die Account-Einstellungen mit allen Standardfunktionen:
- * - Profilbild ändern
- * - Name, E-Mail, Telefonnummer
- * - Passwort ändern
- * - Logout
- * - Account löschen
-
-export default function AccountSettingsPage() {
-    const [form, setForm] = useState({
-        name: 'John Doe',
-        email: 'john@example.com',
-        phone: '+49 123 456789',
-        currentPassword: '',
-        newPassword: '',
-    });
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { id, value } = e.target;
-        setForm((prev) => ({ ...prev, [id]: value }));
-    };
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        // TODO: API-Call zum Speichern
-        console.log('Speichern', form);
-    };
-
-    const handleLogout = () => {
-        // TODO: Logout-Logic
-        console.log('Logout');
-    };
-
-    const handleDeleteAccount = () => {
-        // TODO: Account-Lösch-Logic mit Bestätigung
-        if (confirm('Möchtest du wirklich deinen Account löschen?')) {
-            console.log('Account gelöscht');
-        }
-    };*/
-
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {
     Tabs,
     TabsList,
@@ -70,33 +14,73 @@ import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
 import {useToast} from "@/hooks/use-toast";
-import {User, Settings, Bell, Shield, Palette} from "lucide-react";
+import {User,  Bell, Shield, } from "lucide-react";
 import {Layout} from "@/components/Layout.tsx";
+import {apiFetch} from "@/utils/api.ts";
 
 export function AccountSettings() {
-    const getUserFromStorage = () => {
-        const userJson = localStorage.getItem("user");
-        if (userJson) return JSON.parse(userJson);
-        return {name: "Benutzer", email: "benutzer@beispiel.de"};
-    };
+    const {toast} = useToast();
 
-    const [user, setUser] = useState(getUserFromStorage());
+    const [user, setUser] = useState(null);
     const [formData, setFormData] = useState({
-        name: user.name || "Benutzer",
-        email: user.email || "benutzer@beispiel.de",
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
         currentPassword: "",
         newPassword: "",
         confirmPassword: ""
     });
+    const [loading, setLoading] = useState(true);
 
-    const {toast} = useToast();
+    const token= localStorage.getItem("jwt");
+
+    // Beim Mount: User-Daten vom Server holen
+    useEffect(() => {
+        if (!token) {
+            toast({ title: "Nicht authentifiziert", description: "Bitte einloggen.", variant: "destructive" });
+            setLoading(false);
+            return;
+        }
+
+        const fetchUser = async () => {
+            try {
+                const data:any = await apiFetch('/user/profile', 'GET', undefined, {
+                    Authorization: `Bearer ${token}`
+                });
+                setUser(data);
+                setFormData({
+                    firstName: data.firstname || '',
+                    lastName: data.user.lastname || '',
+                    email: data.user.mail || '',
+                    phone: data.user.telNr || '',
+                    currentPassword: '',
+                    newPassword: '',
+                    confirmPassword: ''
+                });
+            } catch (err) {
+                console.error('Fehler beim Laden des Profils', err);
+                toast({ title: "Fehler", description: "Profil konnte nicht geladen werden", variant: "destructive" });
+            } finally {
+                setLoading(false);
+            }
+        };
+
+     fetchUser();
+    }, [token, toast]);
+
+
 
     const handleInputChange = (e) => {
-        const {id, value} = e.target;
-        setFormData({...formData, [id]: value});
+        /*const {id, value} = e.target;
+        setFormData({...formData, [id]: value});*/
+        const { id, value } = e.target;
+        setFormData(prev => ({ ...prev, [id]: value }));
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
+        if (!token) return;
+
         if (formData.newPassword && formData.newPassword !== formData.confirmPassword) {
             toast({
                 title: "Fehler",
@@ -106,14 +90,75 @@ export function AccountSettings() {
             return;
         }
 
-        const updatedUser = {
+        try {
+            await apiFetch(
+                '/user/profile',
+                'PUT',
+                {
+                    firstname: formData.firstName,
+                    lastname: formData.lastName,
+                    mail: formData.email,
+                    telNr: formData.phone
+                },
+                {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            );
+
+            if(formData.newPassword){
+                await apiFetch(
+                    '/user/change-password',
+                    'POST',
+                    {
+                        currentPassword: formData.currentPassword,
+                        newPassword: formData.newPassword
+                    },
+                    {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                );
+            }
+            toast({ title: "Gespeichert", description: "Deine Änderungen wurden gespeichert" });
+            const updated = await apiFetch('/user/profile', 'GET', undefined, { Authorization: `Bearer ${token}` });
+            setUser(updated);
+
+        } catch (error) {
+            console.error('Fehler beim Speichern', error);
+            toast({ title: "Fehler", description: "Speichern fehlgeschlagen", variant: "destructive" });
+        }
+        const handleLogout = () => {
+            localStorage.removeItem('jwtToken');
+            window.location.reload();
+        };
+
+        const handleDeleteAccount = async () => {
+            if (!token) return;
+            if (!confirm('Möchtest du wirklich deinen Account löschen?')) return;
+
+            try {
+                await apiFetch('/user/account', 'DELETE', undefined, { Authorization: `Bearer ${token}` });
+                toast({ title: 'Account gelöscht', description: 'Bis bald!' });
+                handleLogout();
+            } catch (err) {
+                console.error('Fehler beim Löschen', err);
+                toast({ title: 'Fehler', description: 'Account konnte nicht gelöscht werden', variant: 'destructive' });
+            }
+        };
+
+        if (loading) {
+            return <Layout><p>Lade Profil …</p></Layout>;
+        }
+
+     /*   const updatedUser = {
             ...user,
             name: formData.name,
             email: formData.email
-        };
+        };*/
 
-        localStorage.setItem("user", JSON.stringify(updatedUser));
-        setUser(updatedUser);
+      /*  localStorage.setItem("user", JSON.stringify(updatedUser));
+        setUser(updatedUser);*/
 
         toast({
             title: "Gespeichert",
@@ -151,10 +196,9 @@ export function AccountSettings() {
                         <TabsContent value="profile" className="space-y-6">
                             <div className="flex items-center gap-4">
                                 <Avatar className="w-20 h-20 border">
-                                    <AvatarImage src=""/>
-                                    <AvatarFallback
-                                        className="text-xl bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300">
-                                        {formData.name.charAt(0).toUpperCase()}
+                                    <AvatarImage src="" />
+                                    <AvatarFallback className="text-xl bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300">
+                                        {formData.firstName ? formData.firstName.charAt(0).toUpperCase() : "U"}
                                     </AvatarFallback>
                                 </Avatar>
                                 <div className="space-y-1">
@@ -167,34 +211,45 @@ export function AccountSettings() {
                                 </div>
                             </div>
 
+                            {/* Vorname / Nachname */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="name">Name</Label>
-                                    <Input id="name" value={formData.name} onChange={handleInputChange}/>
+                                    <Label htmlFor="firstName">Vorname</Label>
+                                    <Input id="firstName" value={formData.firstName} onChange={handleInputChange} />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="email">E-Mail</Label>
-                                    <Input id="email" type="email" value={formData.email} onChange={handleInputChange}/>
+                                    <Label htmlFor="lastName">Nachname</Label>
+                                    <Input id="lastName" value={formData.lastName} onChange={handleInputChange} />
                                 </div>
                             </div>
 
+                            {/* E-Mail / Telefonnummer */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="email">E-Mail</Label>
+                                    <Input id="email" type="email" value={formData.email} onChange={handleInputChange} />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="phone">Telefonnummer</Label>
+                                    <Input id="phone" type="tel" value={formData.phone} onChange={handleInputChange} />
+                                </div>
+                            </div>
+
+                            {/* Passwort ändern */}
                             <div className="pt-4 border-t">
                                 <h3 className="font-medium mb-4">Passwort ändern</h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="space-y-2">
                                         <Label htmlFor="currentPassword">Aktuelles Passwort</Label>
-                                        <Input id="currentPassword" type="password" value={formData.currentPassword}
-                                               onChange={handleInputChange}/>
+                                        <Input id="currentPassword" type="password" value={formData.currentPassword} onChange={handleInputChange} />
                                     </div>
                                     <div className="space-y-2">
                                         <Label htmlFor="newPassword">Neues Passwort</Label>
-                                        <Input id="newPassword" type="password" value={formData.newPassword}
-                                               onChange={handleInputChange}/>
+                                        <Input id="newPassword" type="password" value={formData.newPassword} onChange={handleInputChange} />
                                     </div>
                                     <div className="space-y-2 md:col-span-2">
                                         <Label htmlFor="confirmPassword">Passwort bestätigen</Label>
-                                        <Input id="confirmPassword" type="password" value={formData.confirmPassword}
-                                               onChange={handleInputChange}/>
+                                        <Input id="confirmPassword" type="password" value={formData.confirmPassword} onChange={handleInputChange} />
                                     </div>
                                 </div>
                             </div>

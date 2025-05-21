@@ -26,9 +26,12 @@ import AccountSettings from "@/pages/AccountSettings.tsx";
 
 export function Navbar() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const [isLoggedIn, setIsLoggedIn] = useState(false); // Zustand für Login-Status
+  //  const [isLoggedIn, setIsLoggedIn] = useState(false); // Zustand für Login-Status
     const location = useLocation();
     const navigate = useNavigate();
+
+    const token = localStorage.getItem('jwt');
+const isLoggedIn= Boolean(token);
 
     const user = {
         name: 'Benutzer',
@@ -37,12 +40,10 @@ export function Navbar() {
 
     const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
 
-    // Diese Funktion simuliert den Login/Logout
-    const toggleLogin = () => {
-        setIsLoggedIn(!isLoggedIn);
-    };
+
     const handleLogout = () => {
-        setIsLoggedIn(false);
+     //   setIsLoggedIn(false);
+        localStorage.removeItem('jwt')
         navigate("/");
     };
 
@@ -135,19 +136,21 @@ export function Navbar() {
                         <Menu className="h-5 w-5"/>
                     </Button>
 
-
                     <ThemeSwitcher/>
 
-                    <Button
-                        variant="outline"
-                        className="border border-purple-300 text-black hover:bg-purple-50 dark:hover:bg-purple-900/20"
-                        asChild
-                    >
-                        <Link to="/accountSettings">
-                            <User className="h-4 w-4 mr-2 text-purple-600 dark:text-purple-400" />
-                            Account-Einstellungen
-                        </Link>
-                    </Button>
+                    {/*Account-Einstellungen nur anzeigen, wenn JWT vorhanden === */}
+                    {isLoggedIn && (
+                        <Button
+                            variant="outline"
+                            className="border border-purple-300 text-black hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                            asChild
+                        >
+                            <Link to="/accountSettings">
+                                <User className="h-4 w-4 mr-2 text-purple-600 dark:text-purple-400" />
+                                Account-Einstellungen
+                            </Link>
+                        </Button>
+                    )}
 
                     {/* Bedingte Anzeige von Login oder Benutzer-Avatar */}
                     {isLoggedIn ? (

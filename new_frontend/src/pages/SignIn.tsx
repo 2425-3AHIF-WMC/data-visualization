@@ -46,7 +46,7 @@ export default function SignIn() {
             }) as RegisterResponse;
 
             // Beispiel: Token speichern
-            localStorage.setItem('token', res.token);
+            localStorage.setItem('jwt', res.token);
 
             toast({
                 title: "Registrierung erfolgreich",

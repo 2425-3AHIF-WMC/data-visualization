@@ -25,7 +25,7 @@ export default function Login() {
         try {
             const token = await apiFetch('auth/login', 'POST', {email, password});
 
-            localStorage.setItem('token',token as string);
+            localStorage.setItem('jwt',token as string);
 
             toast({
                 title: "Login erfolgreich",
