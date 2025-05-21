@@ -29,7 +29,7 @@ const App = () => (
             <Route path="/import" element={<DataImport />} />
             <Route path="/visualizations" element={<Visualizations />} />
             <Route path="/settings" element={<AppSettings />} />
-            <Route path="/settings/account" element={<AccountSettingsPage/>}/>
+            <Route path="/accountSettings" element={<AccountSettingsPage/>}/>
             <Route path="/datasets" element={<Datasets/>}/>
             <Route path="/dashboards" element={<Dashboards/>}/>
             <Route path="/login" element={<Login />} />
