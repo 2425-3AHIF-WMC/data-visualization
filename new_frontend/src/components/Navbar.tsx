@@ -20,7 +20,8 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from './ui/dropdown-menu';
-import { useNavigate } from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
+import AccountSettings from "@/pages/AccountSettings.tsx";
 
 
 export function Navbar() {
@@ -51,8 +52,9 @@ export function Navbar() {
                 {/* Logo links */}
                 <div className="flex-1">
                     <Link to="/" className="flex items-center">
-                        <BarChart3 className="h-6 w-6 text-purple-600 dark:text-purple-400" />
-                        <span className="ml-2 text-xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">Data-Visualisation</span>
+                        <BarChart3 className="h-6 w-6 text-purple-600 dark:text-purple-400"/>
+                        <span
+                            className="ml-2 text-xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">Data-Visualisation</span>
                     </Link>
                 </div>
 
@@ -60,69 +62,61 @@ export function Navbar() {
                 <NavigationMenu className="hidden md:flex mx-auto">
                     <NavigationMenuList className="flex space-x-2">
                         <NavigationMenuItem>
-                            <NavigationMenuTrigger className={cn(
-                                "font-medium",
-                                location.pathname === "/" && "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300"
-                            )}>
-                                Dashboard
-                            </NavigationMenuTrigger>
-                            <NavigationMenuContent>
-                                <div className="grid gap-3 p-4 md:w-[500px] lg:w-[600px]">
-                                    <Link to="/" className="block">
-                                        <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/40 transition-colors">
-                                            <div className="flex items-center mb-2">
-                                                <Home className="h-5 w-5 mr-2 text-purple-600 dark:text-purple-400" />
-                                                <h3 className="text-base font-medium">Übersicht</h3>
-                                            </div>
-                                            <p className="text-sm text-muted-foreground">Alle Ihre Daten und Visualisierungen auf einen Blick</p>
-                                        </div>
-                                    </Link>
-
-                                    <Link to="/dashboards" className="block p-4 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg transition-colors">
-                                        <div className="flex items-center mb-1">
-                                            <BarChart3 className="h-5 w-5 mr-2 text-purple-600 dark:text-purple-400" />
-                                            <h3 className="text-base font-medium">Meine Dashboards</h3>
-                                        </div>
-                                        <p className="text-sm text-muted-foreground">Gespeicherte Dashboards anzeigen und bearbeiten</p>
-                                    </Link>
-
-                                    <Link to="/datasets" className="block p-4 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg transition-colors">
-                                        <div className="flex items-center mb-1">
-                                            <Database className="h-5 w-5 mr-2 text-purple-600 dark:text-purple-400" />
-                                            <h3 className="text-base font-medium">Meine Datensätze</h3>
-                                        </div>
-                                        <p className="text-sm text-muted-foreground">Alle hochgeladenen Datensätze verwalten</p>
-                                    </Link>
-                                </div>
-                            </NavigationMenuContent>
+                            <Link
+                                to="/"
+                                className={cn(
+                                    "font-medium px-4 py-2 rounded-md transition-colors hover:bg-purple-50 dark:hover:bg-purple-900/20",
+                                    location.pathname === "/" && "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300"
+                                )}
+                            >
+                                Home
+                            </Link>
                         </NavigationMenuItem>
 
                         <NavigationMenuItem>
-                            <NavigationMenuTrigger className={cn(
-                                "font-medium",
-                                location.pathname === "/visualizations" && "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300"
-                            )}>
-                                Visualisierungen
-                            </NavigationMenuTrigger>
-                            <NavigationMenuContent>
-                                <div className="p-4 md:w-[400px]">
-                                    <ul className="grid gap-3">
-                                        <li className="p-2 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-md transition-colors">
-                                            <Link to="/visualizations/charts" className="block">Diagramme</Link>
-                                        </li>
-                                        <li className="p-2 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-md transition-colors">
-                                            <Link to="/visualizations/maps" className="block">Karten</Link>
-                                        </li>
-                                        <li className="p-2 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-md transition-colors">
-                                            <Link to="/visualizations/tables" className="block">Tabellen</Link>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </NavigationMenuContent>
+                            <Link
+                                to="/dashboards"
+                                className={cn(
+                                    "font-medium px-4 py-2 rounded-md transition-colors hover:bg-purple-50 dark:hover:bg-purple-900/20",
+                                    location.pathname === "/dashboards" && "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300"
+                                )}
+                            >
+                               Dashboards
+                            </Link>
                         </NavigationMenuItem>
 
                         <NavigationMenuItem>
-                            <Link to="/import" className="inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-purple-50 dark:hover:bg-purple-900/20">
+                            <Link
+                                to="/datasets"
+                                className={cn(
+                                    "font-medium px-4 py-2 rounded-md transition-colors hover:bg-purple-50 dark:hover:bg-purple-900/20",
+                                    location.pathname === "/datasets" && "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300"
+                                )}
+                            >
+                              Datensätze
+                            </Link>
+                        </NavigationMenuItem>
+
+                        <NavigationMenuItem>
+                            <Link
+                                to="/visualizations/tables"
+                                className={cn(
+                                    "font-medium px-4 py-2 rounded-md transition-colors hover:bg-purple-50 dark:hover:bg-purple-900/20",
+                                    location.pathname === "/visualizations/tables" && "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300"
+                                )}
+                            >
+                                Tabellen
+                            </Link>
+                        </NavigationMenuItem>
+
+                        <NavigationMenuItem>
+                            <Link
+                                to="/import"
+                                className={cn(
+                                    "font-medium px-4 py-2 rounded-md transition-colors hover:bg-purple-50 dark:hover:bg-purple-900/20",
+                                    location.pathname === "/import" && "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300"
+                                )}
+                            >
                                 Import
                             </Link>
                         </NavigationMenuItem>
@@ -131,23 +125,37 @@ export function Navbar() {
 
                 {/* Rechte Seite */}
                 <div className="flex flex-1 items-center justify-end gap-2">
+
                     <Button
                         variant="ghost"
                         size="icon"
                         className="md:hidden"
                         onClick={toggleMobileMenu}
                     >
-                        <Menu className="h-5 w-5" />
+                        <Menu className="h-5 w-5"/>
                     </Button>
 
-                    <ThemeSwitcher />
+
+                    <ThemeSwitcher/>
+
+                    <Button
+                        variant="outline"
+                        className="border border-purple-300 text-black hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                        asChild
+                    >
+                        <Link to="/accountSettings">
+                            <User className="h-4 w-4 mr-2 text-purple-600 dark:text-purple-400" />
+                            Account-Einstellungen
+                        </Link>
+                    </Button>
 
                     {/* Bedingte Anzeige von Login oder Benutzer-Avatar */}
                     {isLoggedIn ? (
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" size="icon" className="rounded-full">
-                                    <Avatar className="h-8 w-8 border border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-900/30">
+                                    <Avatar
+                                        className="h-8 w-8 border border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-900/30">
                                         <AvatarFallback className="text-purple-700 dark:text-purple-300">
                                             {user?.name?.charAt(0).toUpperCase() || 'B'}
                                         </AvatarFallback>
@@ -161,7 +169,7 @@ export function Navbar() {
                                         <p className="text-sm text-muted-foreground">{user?.email || 'benutzer@beispiel.de'}</p>
                                     </div>
                                 </div>
-                                <DropdownMenuSeparator />
+                                <DropdownMenuSeparator/>
                                 <DropdownMenuItem>
                                     <Link to="/accountSettings" className="cursor-pointer flex items-center">
                                         <User className="mr-2 h-4 w-4"/>
@@ -171,14 +179,14 @@ export function Navbar() {
                                 </DropdownMenuItem>
                                 <DropdownMenuItem asChild>
                                     <Link to="/settings" className="cursor-pointer flex items-center">
-                                        <Settings className="mr-2 h-4 w-4" />
+                                        <Settings className="mr-2 h-4 w-4"/>
                                         <span>Einstellungen</span>
                                     </Link>
                                 </DropdownMenuItem>
-                                <DropdownMenuSeparator />
+                                <DropdownMenuSeparator/>
                                 <DropdownMenuItem onClick={handleLogout}
                                                   className="cursor-pointer text-red-500 hover:text-red-500 focus:text-red-500">
-                                    <LogOut className="mr-2 h-4 w-4" />
+                                    <LogOut className="mr-2 h-4 w-4"/>
                                     <span>Abmelden</span>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
@@ -189,7 +197,7 @@ export function Navbar() {
                                 asChild
                         >
                             <Link to="/login">
-                                <LogIn className="h-4 w-4 mr-2 text-purple-600 dark:text-purple-400" />
+                                <LogIn className="h-4 w-4 mr-2 text-purple-600 dark:text-purple-400"/>
                                 Anmelden
                             </Link>
                         </Button>
@@ -200,13 +208,15 @@ export function Navbar() {
             {/* Mobile Menu */}
             {isMobileMenuOpen && (
                 <div className="fixed inset-0 z-50 md:hidden">
-                    <div className="fixed inset-0 bg-background/80 backdrop-blur-sm" onClick={toggleMobileMenu} />
-                    <div className="fixed top-0 right-0 h-full w-3/4 max-w-xs bg-background p-6 shadow-lg animate-in slide-in-from-right">
+                    <div className="fixed inset-0 bg-background/80 backdrop-blur-sm" onClick={toggleMobileMenu}/>
+                    <div
+                        className="fixed top-0 right-0 h-full w-3/4 max-w-xs bg-background p-6 shadow-lg animate-in slide-in-from-right">
                         {/* Mobile menu content */}
                         <div className="flex items-center justify-between mb-8">
                             <div className="flex items-center gap-2">
-                                <BarChart3 className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-                                <span className="font-bold text-xl bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">DataViz</span>
+                                <BarChart3 className="h-5 w-5 text-purple-600 dark:text-purple-400"/>
+                                <span
+                                    className="font-bold text-xl bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">DataViz</span>
                             </div>
                             <Button variant="ghost" size="icon" onClick={toggleMobileMenu}>
                                 <span className="sr-only">Close</span>
@@ -222,8 +232,8 @@ export function Navbar() {
                                     strokeLinejoin="round"
                                     className="h-5 w-5"
                                 >
-                                    <path d="M18 6 6 18" />
-                                    <path d="m6 6 12 12" />
+                                    <path d="M18 6 6 18"/>
+                                    <path d="m6 6 12 12"/>
                                 </svg>
                             </Button>
                         </div>
@@ -284,7 +294,7 @@ export function Navbar() {
                                     onClick={toggleMobileMenu}
                                 >
                                     <Link to="/login">
-                                        <LogIn className="h-4 w-4 mr-2 text-purple-600 dark:text-purple-400" />
+                                        <LogIn className="h-4 w-4 mr-2 text-purple-600 dark:text-purple-400"/>
                                         Anmelden
                                     </Link>
                                 </Button>
