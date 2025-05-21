@@ -4,9 +4,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartBarBig, ChartLine, ChartPie, Map, Table, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import SampleChart from "@/components/SampleChart";
+//import SampleChart from "@/components/SampleChart";
 import SampleBarChart from "@/components/SampleBarChart";
-import SamplePieChart from "@/components/SamplePieChart";
+// import SamplePieChart from "@/components/SamplePieChart";
 import { Table as UITable, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 const VisualizationCreator = () => {
@@ -48,7 +48,7 @@ const VisualizationCreator = () => {
                             icon={<ChartLine className="h-5 w-5 text-blue-600" />}
                         >
                             <div className="h-[180px] bg-gray-50 dark:bg-gray-800/30 rounded border flex items-center justify-center">
-                                <SampleChart />
+                                {/* <SampleChart />*/}
                             </div>
                             <p className="text-sm mt-4">Ideal für: Zeitreihen, Trends, kontinuierliche Daten</p>
                             <Button className="mt-4 w-full">Erstellen</Button>
@@ -72,7 +72,7 @@ const VisualizationCreator = () => {
                             icon={<ChartPie className="h-5 w-5 text-blue-600" />}
                         >
                             <div className="h-[180px] bg-gray-50 dark:bg-gray-800/30 rounded border flex items-center justify-center">
-                                <SamplePieChart />
+                                { /*<SamplePieChart />*/}
                             </div>
                             <p className="text-sm mt-4">Ideal für: Anteilsverteilung, Zusammensetzung von Daten</p>
                             <Button className="mt-4 w-full">Erstellen</Button>
