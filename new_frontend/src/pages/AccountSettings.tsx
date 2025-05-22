@@ -25,6 +25,7 @@ export function AccountSettings() {
     const [formData, setFormData] = useState({
         firstName: "",
         lastName: "",
+        profile_pic:"",
         email: "",
         phone: "",
         currentPassword: "",
@@ -35,6 +36,7 @@ export function AccountSettings() {
 
     const token= localStorage.getItem("jwt");
 
+
     // Beim Mount: User-Daten vom Server holen
     useEffect(() => {
         if (!token) {
@@ -44,16 +46,21 @@ export function AccountSettings() {
         }
 
         const fetchUser = async () => {
+
             try {
-                const data:any = await apiFetch('/user/profile', 'GET', undefined, {
+                console.log("Token-Typ:", typeof token);
+                console.log("Token-Inhalt:", token);
+
+                const data:any = await apiFetch('user/profile', 'GET', undefined, {
                     Authorization: `Bearer ${token}`
                 });
-                setUser(data);
+                setUser(data.user);
                 setFormData({
-                    firstName: data.firstname || '',
+                    firstName: data.user.firstname || '',
                     lastName: data.user.lastname || '',
                     email: data.user.mail || '',
                     phone: data.user.telNr || '',
+                    profile_pic: data.user.profile_pic,
                     currentPassword: '',
                     newPassword: '',
                     confirmPassword: ''
@@ -129,7 +136,7 @@ export function AccountSettings() {
             toast({ title: "Fehler", description: "Speichern fehlgeschlagen", variant: "destructive" });
         }
         const handleLogout = () => {
-            localStorage.removeItem('jwtToken');
+            localStorage.removeItem('jwt');
             window.location.reload();
         };
 
@@ -196,9 +203,10 @@ export function AccountSettings() {
                         <TabsContent value="profile" className="space-y-6">
                             <div className="flex items-center gap-4">
                                 <Avatar className="w-20 h-20 border">
-                                    <AvatarImage src="" />
+                                    <AvatarImage src={formData.profile_pic} />
                                     <AvatarFallback className="text-xl bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300">
-                                        {formData.firstName ? formData.firstName.charAt(0).toUpperCase() : "U"}
+                                        {(formData.firstName?.charAt(0) ?? "U").toUpperCase()}
+                                        {(formData.lastName?.charAt(0) ?? "").toUpperCase()}
                                     </AvatarFallback>
                                 </Avatar>
                                 <div className="space-y-1">

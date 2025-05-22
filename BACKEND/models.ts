@@ -74,9 +74,15 @@ export class User implements IUserProps {
     }
 
     static async findById(id: number) {
-        const [rows]: any = await pool.query('SELECT * FROM user_profiles WHERE id = ?', [id]);
-        if (rows.length === 0) return null;
-        return new User(rows[0]);
+        console.log(id);
+        try {
+            const { rows } = await pool.query('SELECT * FROM user_profiles WHERE id = $1', [id]);
+            if (rows.length === 0) return null;
+            return new User(rows[0]);
+        } catch (error) {
+            console.error('getUser error', error);
+            throw error;
+        }
     }
 
     static async findByEmail(email: string) {
