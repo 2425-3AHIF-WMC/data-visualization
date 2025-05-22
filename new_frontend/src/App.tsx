@@ -14,7 +14,7 @@ import SignIn from "@/pages/SignIn.tsx";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import Datasets from "@/pages/Datasets.tsx";
-import Dashboards from "@/pages/Dashboards.tsx";
+import DatasetEdit from "@/pages/DatasetEdit.tsx";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -31,7 +31,7 @@ const App = () => (
             <Route path="/settings" element={<AppSettings />} />
             <Route path="/accountSettings" element={<AccountSettingsPage/>}/>
             <Route path="/datasets" element={<Datasets/>}/>
-            <Route path="/dashboards" element={<Dashboards/>}/>
+            <Route path="datasets/:id" element={<DatasetEdit />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signin" element={<SignIn/>}/>
             <Route path="*" element={<NotFound />} />
