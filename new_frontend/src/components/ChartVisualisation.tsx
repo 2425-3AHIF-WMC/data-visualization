@@ -27,8 +27,6 @@ import {
 } from 'recharts';
 import { ChartBarBig, ChartLine, ChartPie, Save, ArrowLeft } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import barChart from "@/lib/D3/barChart/barChart.tsx";
-import lineChart from '@/lib/D3/lineChart/lineChart.tsx';
 import PieChart from '@/lib/D3/pieChart/pieChart.tsx';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d', '#ffc658'];
