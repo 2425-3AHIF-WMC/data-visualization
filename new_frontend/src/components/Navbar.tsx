@@ -76,18 +76,6 @@ const isLoggedIn= Boolean(token);
 
                         <NavigationMenuItem>
                             <Link
-                                to="/dashboards"
-                                className={cn(
-                                    "font-medium px-4 py-2 rounded-md transition-colors hover:bg-purple-50 dark:hover:bg-purple-900/20",
-                                    location.pathname === "/dashboards" && "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300"
-                                )}
-                            >
-                               Dashboards
-                            </Link>
-                        </NavigationMenuItem>
-
-                        <NavigationMenuItem>
-                            <Link
                                 to="/datasets"
                                 className={cn(
                                     "font-medium px-4 py-2 rounded-md transition-colors hover:bg-purple-50 dark:hover:bg-purple-900/20",
@@ -242,7 +230,7 @@ const isLoggedIn= Boolean(token);
                         </div>
                         <nav className="grid gap-2">
                             <div>
-                                <h3 className="font-medium text-lg mb-2 text-purple-700 dark:text-purple-300">Dashboard</h3>
+                                <h3 className="font-medium text-lg mb-2 text-purple-700 dark:text-purple-300">Übersicht</h3>
                                 <ul className="grid gap-1 pl-2">
                                     <li>
                                         <Link
@@ -250,17 +238,11 @@ const isLoggedIn= Boolean(token);
                                             className="block py-2 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
                                             onClick={toggleMobileMenu}
                                         >
-                                            Übersicht
+                                            Home
                                         </Link>
                                     </li>
                                     <li>
-                                        <Link
-                                            to="/dashboards"
-                                            className="block py-2 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
-                                            onClick={toggleMobileMenu}
-                                        >
-                                            Meine Dashboards
-                                        </Link>
+
                                     </li>
                                     <li>
                                         <Link
@@ -268,26 +250,32 @@ const isLoggedIn= Boolean(token);
                                             className="block py-2 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
                                             onClick={toggleMobileMenu}
                                         >
-                                            Meine Datensätze
+                                          Datensätze
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link
+                                            to="/tables"
+                                            className="block py-2 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+                                            onClick={toggleMobileMenu}
+                                        >
+                                            Tabellen
+                                        </Link>
+                                    </li>
+
+                                    <li>
+                                        <Link
+                                            to="/import"
+                                            className="block py-2 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+                                            onClick={toggleMobileMenu}
+                                        >
+                                            Daten importieren
                                         </Link>
                                     </li>
                                 </ul>
                             </div>
 
-                            <div>
-                                <h3 className="font-medium text-lg mb-2 text-purple-700 dark:text-purple-300">Visualisierungen</h3>
-                                <ul className="grid gap-1 pl-2">
-                                    <li>
-                                        <Link
-                                            to="/visualizations"
-                                            className="block py-2 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
-                                            onClick={toggleMobileMenu}
-                                        >
-                                            Alle Visualisierungen
-                                        </Link>
-                                    </li>
-                                </ul>
-                            </div>
+
 
                             {!isLoggedIn && (
                                 <Button

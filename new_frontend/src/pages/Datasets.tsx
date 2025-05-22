@@ -81,7 +81,7 @@ const Datasets = () => {
                         />
                     </div>
                     <Button asChild>
-                        <Link to="/upload">
+                        <Link to="/import">
                             <Plus className="h-4 w-4 mr-2"/>
                             Datensatz importieren
                         </Link>

@@ -19,7 +19,7 @@ export function HomeHero({ hasData = false }: HomeHeroProps) {
       </p>
       
       {!hasData && (
-        <Button asChild size="lg" className="animate-pulse">
+        <Button asChild size="lg">
           <Link to="/import">
             <Database className="mr-2 h-4 w-4" />
             Daten importieren
