@@ -1,3 +1,14 @@
+/*Verantwortlich für benutzerspezifische Aktionen, nachdem der User eingeloggt ist.
+
+Typische Funktionen:
+
+    getUserProfile(req, res) → gibt Daten zum eingeloggten User zurück
+
+    updateUserProfile(req, res) → erlaubt das Ändern von z. B. Name, E-Mail
+
+    getAllUsers(req, res) → nur für Admins
+
+    deleteUser(req, res) → User löschen*/
 import { StatusCodes } from 'http-status-codes';
 import { User } from "../../models";
 import bcrypt from 'bcrypt';
@@ -56,30 +67,25 @@ export const changePassword = async (req, res) => {
 export const updateProfile = async (req, res) => {
     const userId = req.user?.id;
     if (!userId) {
-        return res
-            .status(StatusCodes.UNAUTHORIZED)
-            .json({ message: 'Not authenticated' });
+        res.status(StatusCodes.UNAUTHORIZED).json({ message: 'Not authenticated' });
+        return;
     }
     const { firstname, lastname, mail, telNr, profile_pic } = req.body;
     try {
         const user = await User.findById(+userId);
         if (!user) {
-            return res
-                .status(StatusCodes.NOT_FOUND)
-                .json({ message: 'User not found' });
+            res.status(StatusCodes.NOT_FOUND).json({ message: 'User not found' });
+            return;
         }
         // Nur die übergebenen Felder updaten
-        await user.updateProfile({ firstname, lastname, mail, telNr, profile_pic });
+        await user.updateProfile({ firstname, lastname, email: mail, telNr, profile_pic });
         // Frisch serialisiertes Profil zurückgeben (ohne Passwort)
-        return res
-            .status(StatusCodes.OK)
-            .json({ user: user.toJSON() });
+        res.status(StatusCodes.OK).json({ user: user.toJSON() });
     }
     catch (err) {
         console.error('updateProfile error', err);
-        return res
-            .status(StatusCodes.INTERNAL_SERVER_ERROR)
-            .json({ message: 'Server error', error: err });
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Server error', error: err });
+        return;
     }
 };
 export const setProfilePic = async (req, res) => {
@@ -94,6 +100,22 @@ export const setProfilePic = async (req, res) => {
     }
     catch (error) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Error updating profile picture.' });
+        return;
+    }
+};
+export const getProfilePic = async (req, res) => {
+    const userId = req.user?.id;
+    try {
+        const existingUser = await User.findById(+userId);
+        if (!existingUser) {
+            res.status(StatusCodes.NOT_FOUND).json({ message: 'User not found.' });
+            return;
+        }
+        res.status(StatusCodes.OK).json({ profile_pic: existingUser.profile_pic });
+    }
+    catch (error) {
+        console.error('Error getting profile picture:', error);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Error retrieving profile picture.' });
         return;
     }
 };

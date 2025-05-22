@@ -37,7 +37,7 @@ export const loginUser = async (req, res) => {
 export const registerUser = async (req, res) => {
     const { firstname, lastname, password, email, telNr, profile_pic } = req.body;
     try {
-        const user = new User({ firstname, lastname, mail: email, telNr, profile_pic, password });
+        const user = new User({ firstname, lastname, email: email, telNr, profile_pic, password });
         await user.save();
         const token = createToken(user.id);
         res.status(StatusCodes.CREATED).json({ token, user: user.toJSON() });
