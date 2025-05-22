@@ -1,6 +1,25 @@
 
 import React from 'react';
-import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, AreaChart, Area, ScatterChart, Scatter } from 'recharts';
+import {
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  ScatterChart,
+  Scatter,
+  ComposedChart
+} from 'recharts';
 import { VisualizationCard } from './VisualizationCard';
 import { ChartWrapper, ChartConfig } from './ChartWrapper';
 import { Card, CardContent } from '../ui/card';
@@ -311,6 +330,90 @@ export function Dashboard({ data = sampleData, chartConfigs = [] }: DashboardPro
             </PieChart>
           </ChartWrapper>
         </VisualizationCard>
+        <VisualizationCard
+            title="Streudiagramm"
+            description="Beziehung zwischen zwei Variablen"
+        >
+          <ChartWrapper>
+            <ScatterChart>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="value" name="Wert A" />
+              <YAxis dataKey="value2" name="Wert B" />
+              <Tooltip cursor={{ strokeDasharray: '3 3' }} />
+              <Legend />
+              <Scatter
+                  name="Beziehung A-B"
+                  data={data}
+                  fill="hsl(var(--chart-orange))"
+              />
+            </ScatterChart>
+          </ChartWrapper>
+        </VisualizationCard>
+
+        <VisualizationCard
+            title="Flächendiagramm"
+            description="Entwicklung über die Zeit"
+        >
+          <ChartWrapper>
+            <AreaChart data={data}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Area
+                  type="monotone"
+                  dataKey="value"
+                  stroke="hsl(var(--chart-blue))"
+                  fill="hsl(var(--chart-blue))"
+                  name="Wert A"
+              />
+              <Area
+                  type="monotone"
+                  dataKey="value2"
+                  stroke="hsl(var(--chart-green))"
+                  fill="hsl(var(--chart-green))"
+                  name="Wert B"
+              />
+            </AreaChart>
+          </ChartWrapper>
+        </VisualizationCard>
+
+        <VisualizationCard
+            title="Kombiniertes Diagramm"
+            description="Mehrere Datenreihen in einem Diagramm"
+        >
+          <ChartWrapper>
+            <ComposedChart data={data}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Area
+                  type="monotone"
+                  dataKey="value"
+                  fill="hsl(var(--chart-purple))"
+                  stroke="hsl(var(--chart-purple))"
+                  name="Wert A (Fläche)"
+              />
+              <Bar
+                  dataKey="value2"
+                  barSize={20}
+                  fill="hsl(var(--chart-orange))"
+                  name="Wert B (Balken)"
+              />
+              <Line
+                  type="monotone"
+                  dataKey="value"
+                  stroke="hsl(var(--chart-blue))"
+                  strokeWidth={2}
+                  name="Wert A (Linie)"
+              />
+            </ComposedChart>
+          </ChartWrapper>
+        </VisualizationCard>
+
       </div>
     </>
   );
