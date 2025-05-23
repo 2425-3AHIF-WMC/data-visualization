@@ -28,7 +28,7 @@ import {
 import { ChartBarBig, ChartLine, ChartPie, Save, ArrowLeft } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {Layout} from '../components/Layout';
-import datasets from "@/pages/Datasets.tsx";
+import {sampleDatasets} from "@/pages/Datasets.tsx";
 
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d', '#ffc658'];
@@ -165,7 +165,11 @@ const ChartVisualization = () => {
                                         <SelectValue placeholder="Datensatz auswählen" />
                                     </SelectTrigger>
                                     <SelectContent>
-
+                                        {sampleDatasets.map((dataset) => (
+                                            <SelectItem key={dataset.id} value={dataset.id.toString()}>
+                                                {dataset.name}
+                                            </SelectItem>
+                                        ))}
                                     </SelectContent>
                                 </Select>
                             </div>

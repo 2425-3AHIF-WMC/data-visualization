@@ -10,7 +10,7 @@ import {Link} from "react-router-dom";
 import {Layout} from '../components/Layout';
 
 
-const sampleDatasets = [
+export const sampleDatasets = [
     {
         id: 1,
         name: "Verkaufsdaten 2023",
