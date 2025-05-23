@@ -27,6 +27,8 @@ import {
 } from 'recharts';
 import { ChartBarBig, ChartLine, ChartPie, Save, ArrowLeft } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import {Layout} from '../components/Layout';
+
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d', '#ffc658'];
 
@@ -69,7 +71,7 @@ const ChartVisualization = () => {
                 description: "Bitte laden Sie zuerst Daten hoch",
                 variant: "destructive"
             });
-            navigate('/upload');
+            navigate('/diagrams');
         }
     }, [location, navigate, toast]);
 
@@ -121,6 +123,7 @@ const ChartVisualization = () => {
     };
 
     return (
+        <Layout>
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div>
@@ -128,7 +131,7 @@ const ChartVisualization = () => {
                     <p className="text-gray-600">Wählen Sie einen Datensatz für Ihre Datenvisualisierung</p>
                 </div>
                 <Button variant="outline" asChild>
-                    <Link to="/upload" className="flex items-center gap-2">
+                    <Link to="/diagrams" className="flex items-center gap-2">
                         <ArrowLeft className="h-4 w-4" /> Zurück
                     </Link>
                 </Button>
@@ -266,6 +269,7 @@ const ChartVisualization = () => {
                 </div>
             </div>
         </div>
+        </Layout>
     );
 };
 

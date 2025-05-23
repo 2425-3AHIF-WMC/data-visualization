@@ -15,7 +15,7 @@ import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import Datasets from "@/pages/Datasets.tsx";
 import DatasetEdit from "@/pages/DatasetEdit.tsx";
-import ChartVisualization from "@/components/ChartVisualisation.tsx";
+import ChartVisualization from "@/pages/ChartVisualisation.tsx";
 const queryClient = new QueryClient();
 
 const App = () => (
