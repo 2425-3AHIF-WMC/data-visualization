@@ -23,9 +23,26 @@ import {
     Legend,
     ResponsiveContainer,
     AreaChart,
-    Area, BarChart, LineChart, PieChart, Label
+    Area,
+    BarChart,
+    LineChart,
+    PieChart,
+    ScatterChart,
+    Scatter,
+    ComposedChart,
+    Label
 } from 'recharts';
-import { ChartBarBig, ChartLine, ChartPie, Save, ArrowLeft } from 'lucide-react';
+import {
+    ChartBarBig,
+    ChartLine,
+    ChartPie,
+    Save,
+    ArrowLeft,
+    LineChart as LineIcon,
+    AreaChart as AreaIcon,
+    ScatterChart as ScatterIcon,
+    AreaChartIcon, ScatterChartIcon
+} from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Layout } from '../components/Layout';
 import { sampleDatasets } from "@/pages/Datasets.tsx";
@@ -37,7 +54,7 @@ const ChartVisualization = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const { toast } = useToast();
-    const [chartType, setChartType] = useState<'bar' | 'line' | 'pie'>('bar');
+    const [chartType, setChartType] = useState<'bar' | 'line' | 'pie' | 'area' | 'scatter' | 'composed'>('bar');
     const [xAxis, setXAxis] = useState<string>('');
     const [yAxis, setYAxis] = useState<string>('');
     const [chartData, setChartData] = useState<any[]>([]);
@@ -45,8 +62,6 @@ const ChartVisualization = () => {
     const [availableFields, setAvailableFields] = useState<string[]>([]);
     const [processedData, setProcessedData] = useState<any>(null);
     const [selectedDatasetId, setSelectedDatasetId] = useState<string>('');
-
-
 
     useEffect(() => {
         if (location.state && location.state.processedData) {
@@ -64,7 +79,6 @@ const ChartVisualization = () => {
         }
     }, [location, navigate, toast]);
 
-    // 🆕 Datensatz aus Dropdown laden
     useEffect(() => {
         if (selectedDatasetId) {
             const selected = sampleDatasets.find(ds => ds.id.toString() === selectedDatasetId);
@@ -84,6 +98,8 @@ const ChartVisualization = () => {
         if (processedData && xAxis && yAxis) {
             const prepared = processedData.data.map((item: any) => ({
                 name: item[xAxis]?.toString() || '',
+                x: typeof item[xAxis] === 'number' ? item[xAxis] : undefined,
+                y: typeof item[yAxis] === 'number' ? item[yAxis] : 0,
                 value: typeof item[yAxis] === 'number' ? item[yAxis] : 0
             }));
             setChartData(prepared);
@@ -161,6 +177,47 @@ const ChartVisualization = () => {
                         </PieChart>
                     </ResponsiveContainer>
                 );
+            case 'area':
+                return (
+                    <ResponsiveContainer width="100%" height={300}>
+                        <AreaChart data={chartData}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="name" />
+                            <YAxis />
+                            <Tooltip />
+                            <Legend />
+                            <Area type="monotone" dataKey="value" stroke={COLORS[2]} fill={COLORS[2]} />
+                        </AreaChart>
+                    </ResponsiveContainer>
+                );
+            case 'scatter':
+                return (
+                    <ResponsiveContainer width="100%" height={300}>
+                        <ScatterChart>
+                            <CartesianGrid />
+                            <XAxis dataKey="x" name="X" />
+                            <YAxis dataKey="y" name="Y" />
+                            <Tooltip cursor={{ strokeDasharray: '3 3' }} />
+                            <Legend />
+                            <Scatter name="Datenpunkte" data={chartData} fill={COLORS[3]} />
+                        </ScatterChart>
+                    </ResponsiveContainer>
+                );
+            case 'composed':
+                return (
+                    <ResponsiveContainer width="100%" height={300}>
+                        <ComposedChart data={chartData}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="name" />
+                            <YAxis />
+                            <Tooltip />
+                            <Legend />
+                            <Area type="monotone" dataKey="value" fill={COLORS[4]} stroke={COLORS[4]} />
+                            <Bar dataKey="value" barSize={20} fill={COLORS[5]} />
+                            <Line type="monotone" dataKey="value" stroke={COLORS[6]} />
+                        </ComposedChart>
+                    </ResponsiveContainer>
+                );
             default:
                 return null;
         }
@@ -190,7 +247,7 @@ const ChartVisualization = () => {
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
                                         Diagrammtyp
                                     </label>
                                     <Tabs value={chartType} onValueChange={(value) => setChartType(value as any)} className="w-full">
@@ -203,6 +260,15 @@ const ChartVisualization = () => {
                                             </TabsTrigger>
                                             <TabsTrigger value="pie" className="flex items-center gap-2">
                                                 <ChartPie className="h-4 w-4" /> Kreis
+                                            </TabsTrigger>
+                                            <TabsTrigger value="area" className="flex items-center gap-2">
+                                                <AreaChartIcon className="h-4 w-4" /> Fläche
+                                            </TabsTrigger>
+                                            <TabsTrigger value="scatter" className="flex items-center gap-2">
+                                                <ScatterChartIcon className="h-4 w-4" /> Punkt
+                                            </TabsTrigger>
+                                            <TabsTrigger value="composed" className="flex items-center gap-2">
+                                                <ComposedChart className="h-4 w-4" /> Kombiniert
                                             </TabsTrigger>
                                         </TabsList>
                                     </Tabs>
