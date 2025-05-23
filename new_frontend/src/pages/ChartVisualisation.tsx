@@ -29,6 +29,7 @@ import { ChartBarBig, ChartLine, ChartPie, Save, ArrowLeft } from 'lucide-react'
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Layout } from '../components/Layout';
 import { sampleDatasets } from "@/pages/Datasets.tsx";
+import SavedVisualization from "@/pages/SavedVisualization.tsx";
 
 const COLORS = ['#003366', '#DA70D6', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d', '#ffc658'];
 
@@ -44,6 +45,24 @@ const ChartVisualization = () => {
     const [availableFields, setAvailableFields] = useState<string[]>([]);
     const [processedData, setProcessedData] = useState<any>(null);
     const [selectedDatasetId, setSelectedDatasetId] = useState<string>('');
+
+    const saveVisualization = () => {
+        const newViz = {
+            id: crypto.randomUUID(),
+            title: chartTitle,
+            type: chartType,
+            data: chartData,
+            xAxis,
+            yAxis,
+        };
+
+        const existing = JSON.parse(localStorage.getItem('savedVisualizations') || '[]');
+        localStorage.setItem('savedVisualizations', JSON.stringify([...existing, newViz]));
+
+        toast({ title: 'Gespeichert', description: 'Visualisierung wurde gespeichert.' });
+        navigate('/visualizations');
+    };
+
 
     useEffect(() => {
         if (location.state && location.state.processedData) {
@@ -263,7 +282,7 @@ const ChartVisualization = () => {
                                 </div>
                             </CardContent>
                             <CardFooter>
-                                <Button onClick={saveVisualization} className="w-full" disabled={!chartData.length}>
+                                <Button onClick={SavedVisualization} className="w-full" disabled={!chartData.length}>
                                     <Save className="h-4 w-4 mr-2" /> Visualisierung speichern
                                 </Button>
                             </CardFooter>

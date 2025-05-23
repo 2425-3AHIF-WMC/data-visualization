@@ -16,6 +16,7 @@ import NotFound from "./pages/NotFound";
 import Datasets from "@/pages/Datasets.tsx";
 import DatasetEdit from "@/pages/DatasetEdit.tsx";
 import ChartVisualization from "@/pages/ChartVisualisation.tsx";
+import SavedVisualization from "@/pages/SavedVisualization.tsx";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -37,6 +38,7 @@ const App = () => (
             <Route path="/signin" element={<SignIn/>}/>
             <Route path="*" element={<NotFound />} />
             <Route path="/diagrams" element={<ChartVisualization />} />
+            <Route path="/saved" element={<SavedVisualization />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
