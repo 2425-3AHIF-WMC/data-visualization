@@ -175,7 +175,7 @@ const ChartVisualization = () => {
                         <p className="text-gray-600">Wählen Sie einen Datensatz für Ihre Datenvisualisierung</p>
                     </div>
                     <Button variant="outline" asChild>
-                        <Link to="/diagrams" className="flex items-center gap-2">
+                        <Link to="/" className="flex items-center gap-2">
                             <ArrowLeft className="h-4 w-4" /> Zurück
                         </Link>
                     </Button>

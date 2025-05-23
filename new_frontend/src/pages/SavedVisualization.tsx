@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card.tsx';
-import {Bar, BarChart, Line, LineChart, Pie, PieChart, XAxis, YAxis} from 'recharts';
-import { Link } from 'react-router-dom';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card.tsx';
+import { BarChart, LineChart, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, Line, Bar } from 'recharts';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button.tsx';
 import { Layout } from '../components/Layout';
+import { Trash2, Pencil } from 'lucide-react';
 
 export interface SavedVisualization {
     id: string;
@@ -22,6 +23,7 @@ const renderChartPreview = (type: 'bar' | 'line' | 'pie', data: any[]) => {
                 <BarChart width={250} height={150} data={sample}>
                     <XAxis dataKey="name" />
                     <YAxis />
+                    <Tooltip />
                     <Bar dataKey="value" fill="#8884d8" />
                 </BarChart>
             );
@@ -30,13 +32,19 @@ const renderChartPreview = (type: 'bar' | 'line' | 'pie', data: any[]) => {
                 <LineChart width={250} height={150} data={sample}>
                     <XAxis dataKey="name" />
                     <YAxis />
+                    <Tooltip />
                     <Line type="monotone" dataKey="value" stroke="#82ca9d" />
                 </LineChart>
             );
         case 'pie':
             return (
                 <PieChart width={250} height={150}>
-                    <Pie data={sample} dataKey="value" nameKey="name" outerRadius={60} fill="#ffc658" />
+                    <Tooltip />
+                    <Pie data={sample} dataKey="value" nameKey="name" outerRadius={60} fill="#ffc658">
+                        {sample.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={['#8884d8', '#82ca9d', '#ffc658'][index % 3]} />
+                        ))}
+                    </Pie>
                 </PieChart>
             );
         default:
@@ -46,13 +54,41 @@ const renderChartPreview = (type: 'bar' | 'line' | 'pie', data: any[]) => {
 
 export const SavedVisualizations = () => {
     const [visualizations, setVisualizations] = useState<SavedVisualization[]>([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
+        loadVisualizations();
+    }, []);
+
+    const loadVisualizations = () => {
         const stored = localStorage.getItem('savedVisualizations');
         if (stored) {
             setVisualizations(JSON.parse(stored));
         }
-    }, []);
+    };
+
+    const deleteVisualization = (id: string) => {
+        const updated = visualizations.filter(v => v.id !== id);
+        localStorage.setItem('savedVisualizations', JSON.stringify(updated));
+        setVisualizations(updated);
+    };
+
+    const editVisualization = (viz: SavedVisualization) => {
+        navigate('/visualization/new', {
+            state: {
+                processedData: {
+                    fields: [viz.xAxis, viz.yAxis],
+                    data: viz.data.map(d => ({ [viz.xAxis]: d.name, [viz.yAxis]: d.value }))
+                },
+                initialSettings: {
+                    chartTitle: viz.title,
+                    chartType: viz.type,
+                    xAxis: viz.xAxis,
+                    yAxis: viz.yAxis
+                }
+            }
+        });
+    };
 
     return (
         <Layout>
@@ -76,6 +112,18 @@ export const SavedVisualizations = () => {
                                 <CardDescription>Typ: {viz.type.toUpperCase()}</CardDescription>
                             </CardHeader>
                             <CardContent>{renderChartPreview(viz.type, viz.data)}</CardContent>
+                            <CardFooter className="flex justify-between">
+                                <CardFooter className="justify-end">
+                                    <button
+                                        onClick={() => deleteVisualization(viz.id)}
+                                        className="flex items-center text-sm font-medium"
+                                    >
+                                        <Trash2 className="w-4 h-4 mr-1" strokeWidth={1.5} />
+                                        Löschen
+                                    </button>
+                                </CardFooter>
+
+                            </CardFooter>
                         </Card>
                     ))}
                 </div>
