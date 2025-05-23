@@ -23,11 +23,10 @@ import {
     Legend,
     ResponsiveContainer,
     AreaChart,
-    Area, BarChart, LineChart
+    Area, BarChart, LineChart, PieChart
 } from 'recharts';
 import { ChartBarBig, ChartLine, ChartPie, Save, ArrowLeft } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import PieChart from '@/lib/D3/pieChart/pieChart.tsx';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d', '#ffc658'];
 
@@ -126,7 +125,7 @@ const ChartVisualization = () => {
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-3xl font-bold text-gray-800">Visualisierung erstellen</h1>
-                    <p className="text-gray-600">Wählen Sie die Parameter für Ihre Datenvisualisierung</p>
+                    <p className="text-gray-600">Wählen Sie einen Datensatz für Ihre Datenvisualisierung</p>
                 </div>
                 <Button variant="outline" asChild>
                     <Link to="/upload" className="flex items-center gap-2">

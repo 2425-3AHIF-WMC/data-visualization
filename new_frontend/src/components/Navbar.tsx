@@ -88,13 +88,13 @@ const isLoggedIn= Boolean(token);
 
                         <NavigationMenuItem>
                             <Link
-                                to="/visualizations/tables"
+                                to="/diagrams"
                                 className={cn(
                                     "font-medium px-4 py-2 rounded-md transition-colors hover:bg-purple-50 dark:hover:bg-purple-900/20",
-                                    location.pathname === "/visualizations/tables" && "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300"
+                                    location.pathname === "/diagrams" && "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300"
                                 )}
                             >
-                                Tabellen
+                                Diagramme
                             </Link>
                         </NavigationMenuItem>
 
@@ -255,11 +255,11 @@ const isLoggedIn= Boolean(token);
                                     </li>
                                     <li>
                                         <Link
-                                            to="/tables"
+                                            to="/diagrams"
                                             className="block py-2 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
                                             onClick={toggleMobileMenu}
                                         >
-                                            Tabellen
+                                            Diagramme
                                         </Link>
                                     </li>
 
