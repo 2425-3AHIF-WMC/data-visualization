@@ -45,7 +45,7 @@ const pieData = [
   { name: 'Gruppe D', value: 200 },
 ];
 
-const COLORS = ['hsl(var(--chart-blue))', 'hsl(var(--chart-green))', 'hsl(var(--chart-purple))', 'hsl(var(--chart-orange))'];
+const COLORS = ['hsl(var(--chart-blue))', 'hsl(var(--chart-pink))', 'hsl(var(--chart-purple))', 'hsl(var(--chart-darkblue))'];
 
 interface DashboardProps {
   data?: any[];
@@ -132,7 +132,7 @@ export function Dashboard({ data = sampleData, chartConfigs = [] }: DashboardPro
               <Tooltip />
               <Legend />
               <Bar dataKey="value" fill="hsl(var(--chart-blue))" name="Wert A" />
-              <Bar dataKey="value2" fill="hsl(var(--chart-green))" name="Wert B" />
+              <Bar dataKey="value2" fill="hsl(var(--chart-purple))" name="Wert B" />
             </BarChart>
           </ChartWrapper>
         </VisualizationCard>
@@ -209,7 +209,7 @@ export function Dashboard({ data = sampleData, chartConfigs = [] }: DashboardPro
               <Scatter
                   name="Beziehung A-B"
                   data={data}
-                  fill="hsl(var(--chart-orange))"
+                  fill="hsl(var(--chart-purple))"
               />
             </ScatterChart>
           </ChartWrapper>
@@ -236,8 +236,8 @@ export function Dashboard({ data = sampleData, chartConfigs = [] }: DashboardPro
               <Area
                   type="monotone"
                   dataKey="value2"
-                  stroke="hsl(var(--chart-green))"
-                  fill="hsl(var(--chart-green))"
+                  stroke="hsl(var(--chart-purlpe))"
+                  fill="hsl(var(--chart-purple))"
                   name="Wert B"
               />
             </AreaChart>
@@ -265,7 +265,7 @@ export function Dashboard({ data = sampleData, chartConfigs = [] }: DashboardPro
               <Bar
                   dataKey="value2"
                   barSize={20}
-                  fill="hsl(var(--chart-orange))"
+                  fill="hsl(var(--chart-darkblue))"
                   name="Wert B (Balken)"
               />
               <Line

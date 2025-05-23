@@ -44,6 +44,8 @@ const ChartVisualization = () => {
     const [chartTitle, setChartTitle] = useState<string>('Neue Visualisierung');
     const [availableFields, setAvailableFields] = useState<string[]>([]);
     const [processedData, setProcessedData] = useState<any>(null);
+    const [selectedDatasetId, setSelectedDatasetId] = useState<string>('');
+
 
 
     useEffect(() => {
@@ -86,7 +88,6 @@ const ChartVisualization = () => {
         navigate('/visualizations');
     };
 
-    const [selectedDatasetId, setSelectedDatasetId] = useState<string | null>(null);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setChartTitle(e.target.value);
