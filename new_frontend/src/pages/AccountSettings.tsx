@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {
     Tabs,
     TabsList,
@@ -14,17 +14,22 @@ import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
 import {useToast} from "@/hooks/use-toast";
-import {User,  Bell, Shield, } from "lucide-react";
+import {User, Bell, Shield,} from "lucide-react";
 import {Layout} from "@/components/Layout.tsx";
 import {apiFetch} from "@/utils/api.ts";
 
 export function AccountSettings() {
     const {toast} = useToast();
-
+    const fileInputRef = useRef<HTMLInputElement>(null);
+const [preview, setPreview]= useState<string>("");
     const [user, setUser] = useState(null);
+    // ganz am Anfang deiner Function Component:
+    const [file, setFile] = useState<File | null>(null);
+
     const [formData, setFormData] = useState({
         firstName: "",
         lastName: "",
+        profile_pic: "",
         email: "",
         phone: "",
         currentPassword: "",
@@ -33,49 +38,120 @@ export function AccountSettings() {
     });
     const [loading, setLoading] = useState(true);
 
-    const token= localStorage.getItem("jwt");
+    const token = localStorage.getItem("jwt");
+
 
     // Beim Mount: User-Daten vom Server holen
     useEffect(() => {
         if (!token) {
-            toast({ title: "Nicht authentifiziert", description: "Bitte einloggen.", variant: "destructive" });
+            toast({title: "Nicht authentifiziert", description: "Bitte einloggen.", variant: "destructive"});
             setLoading(false);
             return;
         }
 
         const fetchUser = async () => {
+
             try {
-                const data:any = await apiFetch('/user/profile', 'GET', undefined, {
+                //     console.log("Token-Typ:", typeof token);
+                //     console.log("Token-Inhalt:", token);
+
+                const data: any = await apiFetch('user/profile', 'GET', undefined, {
                     Authorization: `Bearer ${token}`
                 });
-                setUser(data);
+
+                let profilePicUrl = "";
+                if (data.user.profile_pic) {
+                    const blob = data.user.profile_pic;
+                    profilePicUrl = URL.createObjectURL(blob);
+                }
+
+                setUser(data.user);
                 setFormData({
-                    firstName: data.firstname || '',
+                    firstName: data.user.firstname || '',
                     lastName: data.user.lastname || '',
-                    email: data.user.mail || '',
+                    email: data.user.email || 'empty mail',
                     phone: data.user.telNr || '',
+                    profile_pic: profilePicUrl,
                     currentPassword: '',
                     newPassword: '',
                     confirmPassword: ''
                 });
+                setPreview(data.user.profile_pic_url||'');
             } catch (err) {
                 console.error('Fehler beim Laden des Profils', err);
-                toast({ title: "Fehler", description: "Profil konnte nicht geladen werden", variant: "destructive" });
+                toast({title: "Fehler", description: "Profil konnte nicht geladen werden", variant: "destructive"});
             } finally {
                 setLoading(false);
             }
         };
 
-     fetchUser();
+        fetchUser();
     }, [token, toast]);
-
 
 
     const handleInputChange = (e) => {
         /*const {id, value} = e.target;
         setFormData({...formData, [id]: value});*/
-        const { id, value } = e.target;
-        setFormData(prev => ({ ...prev, [id]: value }));
+        const {id, value} = e.target;
+        setFormData(prev => ({...prev, [id]: value}));
+    };
+
+    const handleDeleteAccount = async () => {
+        if (!token) return;
+        if (!confirm('Möchtest du wirklich deinen Account löschen?')) return;
+
+        try {
+            await apiFetch('user/account', 'DELETE', undefined, {Authorization: `Bearer ${token}`});
+            toast({title: 'Account gelöscht', description: 'Bis bald!'});
+            handleLogout();
+        } catch (err) {
+            console.error('Fehler beim Löschen', err);
+            toast({title: 'Fehler', description: 'Account konnte nicht gelöscht werden', variant: 'destructive'});
+        }
+    };
+
+    const handlePicUploadClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handlePicChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const selected = e.target.files?.[0];
+        if (!selected) return;
+        if (selected.size > 2 * 1024 * 1024) {
+            toast({title: "Datei zu groß", description: "Maximal 2MB", variant: "destructive"});
+            return;
+        }
+        setFile(selected); // 🔄 Speichere Datei fürs spätere Hochladen
+        setPreview(URL.createObjectURL(selected)); // 🔄 Lokale Vorschau erstellen
+    };
+
+    const handlePicUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        // TODO: Das Bild einfach von selbst verkleinenern eigentlich aber das kommt noch
+        if (file.size > 2 * 1024 * 1024) {
+            toast({title: "Datei zu groß", description: "Maximal 2MB", variant: "destructive"});
+            return;
+        }
+        const formDataUpload = new FormData();
+        formDataUpload.append("profile_pic", file);
+
+        try {
+            await apiFetch('user/profile-picture/set', 'POST', formDataUpload, {
+                Authorization: `Bearer ${token}`
+            });
+            toast({title: "Profilbild aktualisiert"});
+            // TODO: IDK was jetzt wichtig ist
+            window.location.reload(); // oder: fetchUser();
+        } catch (error) {
+            console.error('Upload fehlgeschlagen', error);
+            toast({title: "Fehler beim Upload", variant: "destructive"});
+        }
+    }
+
+    const handleLogout = () => {
+        localStorage.removeItem('jwt');
+        window.location.reload();
     };
 
     const handleSave = async () => {
@@ -92,7 +168,7 @@ export function AccountSettings() {
 
         try {
             await apiFetch(
-                '/user/profile',
+                'user/profile',
                 'PUT',
                 {
                     firstname: formData.firstName,
@@ -105,10 +181,19 @@ export function AccountSettings() {
                     'Content-Type': 'application/json'
                 }
             );
-
-            if(formData.newPassword){
+            if (file) {
+                const uploadData = new FormData();
+                uploadData.append('profile_pic', file);
                 await apiFetch(
-                    '/user/change-password',
+                    'user/profile-picture/set',
+                    'POST',
+                    uploadData,
+                    { Authorization: `Bearer ${token}` }
+                );
+            }
+            if (formData.newPassword) {
+                await apiFetch(
+                    'user/change-password',
                     'POST',
                     {
                         currentPassword: formData.currentPassword,
@@ -120,51 +205,23 @@ export function AccountSettings() {
                     }
                 );
             }
-            toast({ title: "Gespeichert", description: "Deine Änderungen wurden gespeichert" });
-            const updated = await apiFetch('/user/profile', 'GET', undefined, { Authorization: `Bearer ${token}` });
+            toast({title: "Gespeichert", description: "Deine Änderungen wurden gespeichert"});
+            const updated = await apiFetch('user/profile', 'GET', undefined, {Authorization: `Bearer ${token}`});
             setUser(updated);
+            setFile(null);
 
         } catch (error) {
             console.error('Fehler beim Speichern', error);
-            toast({ title: "Fehler", description: "Speichern fehlgeschlagen", variant: "destructive" });
-        }
-        const handleLogout = () => {
-            localStorage.removeItem('jwtToken');
-            window.location.reload();
-        };
-
-        const handleDeleteAccount = async () => {
-            if (!token) return;
-            if (!confirm('Möchtest du wirklich deinen Account löschen?')) return;
-
-            try {
-                await apiFetch('/user/account', 'DELETE', undefined, { Authorization: `Bearer ${token}` });
-                toast({ title: 'Account gelöscht', description: 'Bis bald!' });
-                handleLogout();
-            } catch (err) {
-                console.error('Fehler beim Löschen', err);
-                toast({ title: 'Fehler', description: 'Account konnte nicht gelöscht werden', variant: 'destructive' });
-            }
-        };
-
-        if (loading) {
-            return <Layout><p>Lade Profil …</p></Layout>;
+            toast({title: "Fehler", description: "Speichern fehlgeschlagen", variant: "destructive"});
+        } finally {
+            setLoading(false);
         }
 
-     /*   const updatedUser = {
-            ...user,
-            name: formData.name,
-            email: formData.email
-        };*/
-
-      /*  localStorage.setItem("user", JSON.stringify(updatedUser));
-        setUser(updatedUser);*/
-
-        toast({
-            title: "Gespeichert",
-            description: "Deine Änderungen wurden erfolgreich gespeichert"
-        });
     };
+
+    if (loading) {
+        return <Layout><p>Lade Profil …</p></Layout>;
+    }
 
     return (
         <Layout>
@@ -196,16 +253,44 @@ export function AccountSettings() {
                         <TabsContent value="profile" className="space-y-6">
                             <div className="flex items-center gap-4">
                                 <Avatar className="w-20 h-20 border">
-                                    <AvatarImage src="" />
-                                    <AvatarFallback className="text-xl bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300">
-                                        {formData.firstName ? formData.firstName.charAt(0).toUpperCase() : "U"}
-                                    </AvatarFallback>
+                                    {preview ? (
+                                        // 1) Zeige lokale Vorschau, wenn ein neues Bild ausgewählt wurde
+                                        <AvatarImage src={preview} />
+                                    ) : formData.profile_pic ? (
+                                        // 2) Ansonsten das gespeicherte Profilbild
+                                        <AvatarImage src={formData.profile_pic} />
+                                    ) : (
+                                        // 3) Wenn kein Bild vorhanden ist, zeige Initialen
+                                        <AvatarFallback className="text-xl bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300">
+                                            {(formData.firstName?.[0] ?? "U").toUpperCase()}
+                                            {(formData.lastName?.[0] ?? "").toUpperCase()}
+                                        </AvatarFallback>
+                                    )}
                                 </Avatar>
+
                                 <div className="space-y-1">
                                     <h3 className="font-medium">Profilbild</h3>
                                     <p className="text-sm text-muted-foreground">JPG, GIF oder PNG. Maximal 2MB.</p>
                                     <div className="flex gap-2 mt-2">
-                                        <Button size="sm" variant="outline">Hochladen</Button>
+                                        {/* verstecktes native File-Input */}
+                                        <input
+                                            ref={fileInputRef}
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={handlePicChange}
+                                            style={{ display: "none" }}
+                                        />
+
+                                        {/* Button öffnet per Ref den File-Dialog */}
+                                        <Button
+                                            size="sm"
+                                            variant="outline"
+                                            onClick={handlePicUploadClick}
+                                        >
+                                            Hochladen
+                                        </Button>
+
+
                                         <Button size="sm" variant="ghost">Entfernen</Button>
                                     </div>
                                 </div>
@@ -215,11 +300,11 @@ export function AccountSettings() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="firstName">Vorname</Label>
-                                    <Input id="firstName" value={formData.firstName} onChange={handleInputChange} />
+                                    <Input id="firstName" value={formData.firstName} onChange={handleInputChange}/>
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="lastName">Nachname</Label>
-                                    <Input id="lastName" value={formData.lastName} onChange={handleInputChange} />
+                                    <Input id="lastName" value={formData.lastName} onChange={handleInputChange}/>
                                 </div>
                             </div>
 
@@ -227,11 +312,11 @@ export function AccountSettings() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="email">E-Mail</Label>
-                                    <Input id="email" type="email" value={formData.email} onChange={handleInputChange} />
+                                    <Input id="email" name="email" type="email" autoComplete="off" value={formData.email} onChange={handleInputChange}/>
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="phone">Telefonnummer</Label>
-                                    <Input id="phone" type="tel" value={formData.phone} onChange={handleInputChange} />
+                                    <Input id="phone" type="tel" value={formData.phone} onChange={handleInputChange}/>
                                 </div>
                             </div>
 
@@ -241,15 +326,18 @@ export function AccountSettings() {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="space-y-2">
                                         <Label htmlFor="currentPassword">Aktuelles Passwort</Label>
-                                        <Input id="currentPassword" type="password" value={formData.currentPassword} onChange={handleInputChange} />
+                                        <Input id="currentPassword"  type="password"  value={formData.currentPassword}
+                                               onChange={handleInputChange}/>
                                     </div>
                                     <div className="space-y-2">
                                         <Label htmlFor="newPassword">Neues Passwort</Label>
-                                        <Input id="newPassword" type="password" value={formData.newPassword} onChange={handleInputChange} />
+                                        <Input id="newPassword" type="password" value={formData.newPassword}
+                                               onChange={handleInputChange}/>
                                     </div>
                                     <div className="space-y-2 md:col-span-2">
                                         <Label htmlFor="confirmPassword">Passwort bestätigen</Label>
-                                        <Input id="confirmPassword" type="password" value={formData.confirmPassword} onChange={handleInputChange} />
+                                        <Input id="confirmPassword" type="password" value={formData.confirmPassword}
+                                               onChange={handleInputChange}/>
                                     </div>
                                 </div>
                             </div>

@@ -9,6 +9,7 @@ Typische Funktionen:
     getAllUsers(req, res) → nur für Admins
 
     deleteUser(req, res) → User löschen*/
+
 import {RequestWithUser} from "./middlewares/verifyToken";
 import {Response} from 'express';
 import {StatusCodes} from 'http-status-codes';
@@ -78,9 +79,7 @@ export const updateProfile = async (req: RequestWithUser, res: Response) => {
     const userId = req.user?.id;
 
     if (!userId) {
-        return res
-            .status(StatusCodes.UNAUTHORIZED)
-            .json({message: 'Not authenticated'});
+         res .status(StatusCodes.UNAUTHORIZED) .json({message: 'Not authenticated'}); return ;
     }
 
     const { firstname, lastname, mail, telNr, profile_pic } = req.body;
@@ -88,23 +87,17 @@ export const updateProfile = async (req: RequestWithUser, res: Response) => {
     try {
         const user = await User.findById(+userId);
         if (!user) {
-            return res
-                .status(StatusCodes.NOT_FOUND)
-                .json({ message: 'User not found' });
+            res.status(StatusCodes.NOT_FOUND).json({ message: 'User not found' }); return ;
         }
 
         // Nur die übergebenen Felder updaten
-        await user.updateProfile({ firstname, lastname, mail, telNr, profile_pic });
+        await user.updateProfile({ firstname, lastname, email: mail, telNr, profile_pic });
 
         // Frisch serialisiertes Profil zurückgeben (ohne Passwort)
-        return res
-            .status(StatusCodes.OK)
-            .json({ user: user.toJSON() });
+        res .status(StatusCodes.OK).json({ user: user.toJSON() });
     } catch (err) {
         console.error('updateProfile error', err);
-        return res
-            .status(StatusCodes.INTERNAL_SERVER_ERROR)
-            .json({ message: 'Server error', error: err });
+        res .status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Server error', error: err }); return;
     }
 }
 
@@ -126,6 +119,22 @@ export const setProfilePic= async (req:RequestWithUser,res:Response)=>{
     }
 }
 
+export const getProfilePic = async (req: RequestWithUser, res: Response) => {
+    const userId = req.user?.id;
+
+    try {
+        const existingUser = await User.findById(+userId);
+        if (!existingUser) {
+            res.status(StatusCodes.NOT_FOUND).json({ message: 'User not found.' }); return
+        }
+
+        res.status(StatusCodes.OK).json({ profile_pic: existingUser.profile_pic });
+    } catch (error) {
+        console.error('Error getting profile picture:', error);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Error retrieving profile picture.' }); return
+    }
+};
+
 export const getUser = async (req: RequestWithUser, res: Response) => {
     const userId = req.user?.id;
     if (!userId) {
@@ -134,6 +143,7 @@ export const getUser = async (req: RequestWithUser, res: Response) => {
 
     try {
         const user = await User.findById(+userId);
+
         if (!user) {
              res .status(StatusCodes.NOT_FOUND).json({ message: "User not found" }); return
         }

@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import {apiFetch} from "@/utils/api.ts";
+import {useNavigate} from "react-router-dom";
 
 
 export interface RegisterResponse {
@@ -31,6 +32,8 @@ export default function SignIn() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [telNr, setTelNr]= useState('');
+    const navigate = useNavigate();
+
     //Todo Profilbild fehlt halt noch
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -55,6 +58,7 @@ export default function SignIn() {
 
             // TODO: Weiterleitung nach erfolgreicher Registrierung zu profilbild-frage
             // await router.push('/'); dashboard
+            navigate('/')
 
         } catch (err: any) {
             toast({ title: "Error", description: err.message });

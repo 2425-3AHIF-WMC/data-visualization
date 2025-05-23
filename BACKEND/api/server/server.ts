@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 //import dataRoutes from '../routes/dataRoutes';
-import userRoutes from '../routes/userRoutes';
+import userRouter from '../routes/userRoutes';
 //import analysisRoutes from '../routes/analysisRoutes';
 //import systemRoutes from '../routes/systemRoutes';
 import authRoutes from "../routes/authRoutes";
@@ -20,7 +20,7 @@ app.use(express.json());
 
 // Routen
 //app.use('/api/data', dataRoutes);
-app.use('/api/user', userRoutes);
+app.use('/api/user', userRouter);
 //app.use('/api/analysis', analysisRoutes);
 //app.use('/api/system', systemRoutes);
 app.use('/api/auth',authRoutes);
