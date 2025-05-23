@@ -46,22 +46,6 @@ const ChartVisualization = () => {
     const [processedData, setProcessedData] = useState<any>(null);
     const [selectedDatasetId, setSelectedDatasetId] = useState<string>('');
 
-    const saveVisualization = () => {
-        const newViz = {
-            id: crypto.randomUUID(),
-            title: chartTitle,
-            type: chartType,
-            data: chartData,
-            xAxis,
-            yAxis,
-        };
-
-        const existing = JSON.parse(localStorage.getItem('savedVisualizations') || '[]');
-        localStorage.setItem('savedVisualizations', JSON.stringify([...existing, newViz]));
-
-        toast({ title: 'Gespeichert', description: 'Visualisierung wurde gespeichert.' });
-        navigate('/visualizations');
-    };
 
 
     useEffect(() => {
@@ -107,10 +91,19 @@ const ChartVisualization = () => {
     }, [processedData, xAxis, yAxis]);
 
     const saveVisualization = () => {
-        toast({
-            title: "Visualisierung gespeichert",
-            description: `${chartTitle} wurde erfolgreich gespeichert.`
-        });
+        const newViz = {
+            id: crypto.randomUUID(),
+            title: chartTitle,
+            type: chartType,
+            data: chartData,
+            xAxis,
+            yAxis,
+        };
+
+        const existing = JSON.parse(localStorage.getItem('savedVisualizations') || '[]');
+        localStorage.setItem('savedVisualizations', JSON.stringify([...existing, newViz]));
+
+        toast({ title: 'Gespeichert', description: 'Visualisierung wurde gespeichert.' });
         navigate('/visualizations');
     };
 
@@ -282,7 +275,7 @@ const ChartVisualization = () => {
                                 </div>
                             </CardContent>
                             <CardFooter>
-                                <Button onClick={SavedVisualization} className="w-full" disabled={!chartData.length}>
+                                <Button onClick={saveVisualization} className="w-full" disabled={!chartData.length}>
                                     <Save className="h-4 w-4 mr-2" /> Visualisierung speichern
                                 </Button>
                             </CardFooter>

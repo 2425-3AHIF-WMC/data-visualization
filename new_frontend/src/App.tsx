@@ -7,7 +7,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "./utils/themeContext";
 import Index from "./pages/Index";
 import DataImport from "./pages/DataImport";
-import Visualizations from "./pages/Visualizations";
 import AppSettings from "./pages/AppSettings.tsx";
 import AccountSettingsPage from "@/pages/AccountSettings.tsx";
 import SignIn from "@/pages/SignIn.tsx";
@@ -29,7 +28,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/import" element={<DataImport />} />
-            <Route path="/visualizations" element={<Visualizations />} />
+            <Route path="/visualizations" element={<SavedVisualization />} />
             <Route path="/settings" element={<AppSettings />} />
             <Route path="/accountSettings" element={<AccountSettingsPage/>}/>
             <Route path="/datasets" element={<Datasets/>}/>
