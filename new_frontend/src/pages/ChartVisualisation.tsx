@@ -23,11 +23,12 @@ import {
     Legend,
     ResponsiveContainer,
     AreaChart,
-    Area, BarChart, LineChart, PieChart
+    Area, BarChart, LineChart, PieChart, Label
 } from 'recharts';
 import { ChartBarBig, ChartLine, ChartPie, Save, ArrowLeft } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {Layout} from '../components/Layout';
+import datasets from "@/pages/Datasets.tsx";
 
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d', '#ffc658'];
@@ -45,11 +46,6 @@ const ChartVisualization = () => {
     const [processedData, setProcessedData] = useState<any>(null);
 
 
-    interface PieChartProps {
-        data: number[];
-        width: number;
-        height: number;
-    }
     useEffect(() => {
         // Check if data was passed via location state
         if (location.state && location.state.processedData) {
@@ -65,13 +61,6 @@ const ChartVisualization = () => {
                 );
                 setYAxis(numericField || data.fields[1] || data.fields[0]);
             }
-        } else {
-            toast({
-                title: "Keine Daten gefunden",
-                description: "Bitte laden Sie zuerst Daten hoch",
-                variant: "destructive"
-            });
-            navigate('/diagrams');
         }
     }, [location, navigate, toast]);
 
@@ -96,6 +85,8 @@ const ChartVisualization = () => {
         // Navigate to visualizations page
         navigate('/visualizations');
     };
+
+    const [selectedDatasetId, setSelectedDatasetId] = useState<string | null>(null);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setChartTitle(e.target.value);
@@ -162,7 +153,22 @@ const ChartVisualization = () => {
                                         </TabsTrigger>
                                     </TabsList>
                                 </Tabs>
+
                             </div>
+                            <div className="space-y-2">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Datensätze
+                                </label>
+                                <Select value={selectedDatasetId} onValueChange={setSelectedDatasetId}>
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Datensatz auswählen" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
 
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
