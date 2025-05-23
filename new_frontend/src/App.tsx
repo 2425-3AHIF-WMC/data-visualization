@@ -15,6 +15,7 @@ import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import Datasets from "@/pages/Datasets.tsx";
 import DatasetEdit from "@/pages/DatasetEdit.tsx";
+import ChartVisualization from "@/pages/ChartVisualisation.tsx";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -35,6 +36,7 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/signin" element={<SignIn/>}/>
             <Route path="*" element={<NotFound />} />
+            <Route path="/diagrams" element={<ChartVisualization />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
