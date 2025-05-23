@@ -3,8 +3,15 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { User } from "../../models";
 import { jwtConfig } from "../../config/jwtConfig";
-const createToken = (userId) => {
-    return jwt.sign({ id: userId }, // Payload: Hier ist das Objekt, das in das Token eingebaut wird
+// TODO: email und vorname ins jwt zu speicher wäre auch voll die leinwand
+//TODO: Was ist wenn der Token abgelaufen ist???????????
+const createToken = (userId, email, firstname, lastname) => {
+    return jwt.sign({
+        id: userId,
+        email,
+        firstname,
+        nachname: lastname
+    }, // Payload: Hier ist das Objekt, das in das Token eingebaut wird
     jwtConfig.secret, // Geheimer Schlüssel aus jwtConfig
     { expiresIn: '1h' } // Ablaufzeit aus jwtConfig
     );
@@ -24,7 +31,7 @@ export const loginUser = async (req, res) => {
             res.status(StatusCodes.UNAUTHORIZED).json({ message: 'Wrong email or password' });
             return;
         }
-        const token = createToken(user.id);
+        const token = createToken(user.id, user.email, user.firstname, user.lastname);
         res.status(StatusCodes.OK).json({ token });
         return;
     }
@@ -39,7 +46,7 @@ export const registerUser = async (req, res) => {
     try {
         const user = new User({ firstname, lastname, email: email, telNr, profile_pic, password });
         await user.save();
-        const token = createToken(user.id);
+        const token = createToken(user.id, user.email, user.firstname, user.lastname);
         res.status(StatusCodes.CREATED).json({ token, user: user.toJSON() });
         return;
     }

@@ -33,6 +33,8 @@ export function Navbar() {
     const token = localStorage.getItem('jwt');
 const isLoggedIn= Boolean(token);
 
+
+// TODO: echter user
     const user = {
         name: 'Benutzer',
         email: 'benutzer@beispiel.de',
