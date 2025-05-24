@@ -234,8 +234,8 @@ const ChartVisualization = () => {
             <div className="space-y-6">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-800">Visualisierung erstellen</h1>
-                        <p className="text-gray-600">Wählen Sie einen Datensatz für Ihre Datenvisualisierung</p>
+                        <h1 className="text-3xl font-bold ">Visualisierung erstellen</h1>
+                        <p>Wählen Sie einen Datensatz für Ihre Datenvisualisierung</p>
                     </div>
                     <Button>
                         <Link to="/" className="flex items-center gap-2">
@@ -282,7 +282,7 @@ const ChartVisualization = () => {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium  mb-1">
                                         Datensätze
                                     </label>
                                     <Select value={selectedDatasetId} onValueChange={setSelectedDatasetId}>
@@ -300,19 +300,19 @@ const ChartVisualization = () => {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium  mb-1">
                                         Titel
                                     </label>
                                     <input
                                         type="text"
                                         value={chartTitle}
                                         onChange={handleInputChange}
-                                        className="w-full rounded-md border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-primary"
+                                        className="w-full text-sm rounded-md border p-2 bg-white text-black dark:bg-[#020817] dark:border-[#1E293B] dark:text-white dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary"
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium  mb-1">
                                         X-Achse / Kategorien
                                     </label>
                                     <Select value={xAxis} onValueChange={setXAxis}>
@@ -330,7 +330,7 @@ const ChartVisualization = () => {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium  mb-1">
                                         Y-Achse / Werte
                                     </label>
                                     <Select value={yAxis} onValueChange={setYAxis}>

@@ -102,7 +102,7 @@ const Datasets = () => {
             <div className="space-y-6">
                 <div>
                     <h1 className="text-3xl font-bold">Meine Datensätze</h1>
-                    <p className="text-gray-600">Verwalten Sie Ihre importierten Datensätze</p>
+                    <p>Verwalten Sie Ihre importierten Datensätze</p>
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">
