@@ -247,32 +247,9 @@ const ChartVisualization = () => {
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-sm font-medium text-gray-700u mb-2">
                                         Diagrammtyp
                                     </label>
-                                    <Select value={selectedDatasetId} onValueChange={setSelectedDatasetId}>
-                                        <SelectTrigger className="w-full">
-                                            <SelectValue placeholder="Diagrammtyp auswählen" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="bar" className="flex items-center gap-2">
-                                                <ChartBarBig className="h-4 w-4" /> Balken
-                                            </SelectItem>
-                                            <SelectItem value="line">
-                                                <ChartLine className="h-4 w-4" /> Linie
-                                            </SelectItem>
-                                            <SelectItem value="pie">
-                                                <ChartPie className="h-4 w-4" /> Kreis
-                                            </SelectItem>
-                                            <SelectItem value='area'>
-                                                <AreaChartIcon className={'h-4 w-4'} /> Fläche
-                                            </SelectItem>
-                                            <SelectItem value="scatter">
-                                                <ScatterChartIcon className="h-4 w-4" /> Punkt
-                                            </SelectItem>
-
-                                        </SelectContent>
-                                    </Select>
                                     <Tabs value={chartType} onValueChange={(value) => setChartType(value as any)} className="w-full">
                                         <TabsList className="grid grid-cols-3 w-full">
                                             <TabsTrigger value="bar" className="flex items-center gap-2">
