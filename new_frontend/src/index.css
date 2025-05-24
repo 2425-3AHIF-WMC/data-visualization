@@ -36,11 +36,6 @@
 
     --radius: 0.75rem;
 
-    /* Chart Colors */
-    --chart-blue: 221.2 83% 53.3%;
-    --chart-purple: 262.1 83.3% 57.8%;
-    --chart-darkblue: 240 60% 30%;
-    --chart-pink: 300 60% 75%;
   }
 
   .dark {
@@ -72,13 +67,6 @@
     --input: 217.2 32.6% 17.5%;
     --ring: 258 90% 66%;
 
-    /* Chart Colors */
-    --chart-blue: 217.2 91.2% 59.8%;
-    --chart-green: 142.1 70.6% 45.3%;
-    --chart-orange: 24.6 95% 53.1%;
-    --chart-purple: 269.2 79.9% 70.8%;
-    --chart-red: 0 65.2% 60.2%;
-    --chart-yellow: 41 96% 53%;
   }
 
   @layer utilities {
@@ -202,19 +190,19 @@
 
   /* Blue Theme (default) */
   .theme-blue {
-    --primary: 258 90% 66%;
+    --primary: 220 90% 60%;
     --primary-foreground: 0 0% 100%;
-    --ring: 258 90% 66%;
-    --chart-colour1: 258 100% 50%;
-    --chart-colour2: 238 100% 80%;
-    --chart-colour3: 228 100% 65%;
-    --chart-colour4: 218 100% 55%;
-    --chart-colour5: 208 100% 50%;
-    --chart-colour6: 198 100% 40%;
-    --logo-color: 238, 100%, 50%;
-    --navbar-bg: 238 95% 95%;
-    --navbar-text: 238 80% 35%;
-    --navbar-bg-hover: 238 100% 50%;
+    --ring: 220 90% 60%;
+    --chart-colour1: 220 100% 50%;
+    --chart-colour2: 200 100% 80%;
+    --chart-colour3: 190 100% 65%;
+    --chart-colour4: 180 100% 55%;
+    --chart-colour5: 170 100% 50%;
+    --chart-colour6: 230 100% 50%;
+    --logo-color: 220 100% 50%;
+    --navbar-bg: 200 95% 95%;
+    --navbar-text: 200 80% 35%;
+    --navbar-bg-hover: 200 100% 50%;
   }
 }
 
