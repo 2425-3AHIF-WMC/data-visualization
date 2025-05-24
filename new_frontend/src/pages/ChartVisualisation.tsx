@@ -48,7 +48,7 @@ import { Layout } from '../components/Layout';
 import { sampleDatasets } from "@/pages/Datasets.tsx";
 import SavedVisualization from "@/pages/SavedVisualization.tsx";
 
-const COLORS = ['#003366', '#DA70D6', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d', '#ffc658'];
+const COLORS = ['#003366', '#ba47b6', '#572c9a', '#701dd6', '#572C9AFF', '#CA1280FF'];
 
 const ChartVisualization = () => {
     const location = useLocation();
@@ -250,28 +250,32 @@ const ChartVisualization = () => {
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
                                         Diagrammtyp
                                     </label>
-                                    <Tabs value={chartType} onValueChange={(value) => setChartType(value as any)} className="w-full">
-                                        <TabsList className="grid grid-cols-3 w-full">
-                                            <TabsTrigger value="bar" className="flex items-center gap-2">
+                                    <Select >
+                                        <SelectTrigger className="w-full">
+                                            <SelectValue placeholder="Diagrammtyp auswählen" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="bar" className="flex items-center gap-2">
                                                 <ChartBarBig className="h-4 w-4" /> Balken
-                                            </TabsTrigger>
-                                            <TabsTrigger value="line" className="flex items-center gap-2">
+                                            </SelectItem>
+                                            <SelectItem value="line" className="flex items-center gap-2">
                                                 <ChartLine className="h-4 w-4" /> Linie
-                                            </TabsTrigger>
-                                            <TabsTrigger value="pie" className="flex items-center gap-2">
+                                            </SelectItem>
+                                            <SelectItem value="pie" className="flex items-center gap-2">
                                                 <ChartPie className="h-4 w-4" /> Kreis
-                                            </TabsTrigger>
-                                            <TabsTrigger value="area" className="flex items-center gap-2">
-                                                <AreaChartIcon className="h-4 w-4" /> Fläche
-                                            </TabsTrigger>
-                                            <TabsTrigger value="scatter" className="flex items-center gap-2">
+                                            </SelectItem>
+                                            <SelectItem value='area' className="flex items-center gap-2">
+                                                <AreaChartIcon className={'h-4 w-4'} /> Fläche
+                                            </SelectItem>
+                                            <SelectItem value="scatter" className="flex items-center gap-2">
                                                 <ScatterChartIcon className="h-4 w-4" /> Punkt
-                                            </TabsTrigger>
-                                            <TabsTrigger value="composed" className="flex items-center gap-2">
+                                            </SelectItem>
+                                            <SelectItem value="composed" className="flex items-center gap-2">
                                                 <ComposedChart className="h-4 w-4" /> Kombiniert
-                                            </TabsTrigger>
-                                        </TabsList>
-                                    </Tabs>
+                                            </SelectItem>
+
+                                        </SelectContent>
+                                    </Select>
                                 </div>
 
                                 <div className="space-y-2">

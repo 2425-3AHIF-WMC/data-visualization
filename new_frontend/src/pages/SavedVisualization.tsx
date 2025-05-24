@@ -1,6 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card.tsx';
-import { BarChart, LineChart, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, Line, Bar } from 'recharts';
+import {
+    BarChart,
+    LineChart,
+    PieChart,
+    Pie,
+    Cell,
+    XAxis,
+    YAxis,
+    Tooltip,
+    Line,
+    Bar,
+    AreaChart,
+    ScatterChart, Scatter, ComposedChart, Legend, CartesianGrid, Area
+} from 'recharts';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button.tsx';
 import { Layout } from '../components/Layout';
@@ -14,9 +27,14 @@ export interface SavedVisualization {
     xAxis: string;
     yAxis: string;
 }
+const COLORS = ['#8b5cf6', '#7c3aed', '#3b82f6']; // Lila, Violett, Blau
 
-const renderChartPreview = (type: 'bar' | 'line' | 'pie', data: any[]) => {
+const renderChartPreview = (
+    type: 'bar' | 'line' | 'pie' | 'area' | 'scatter' | 'composed',
+    data: any[]
+) => {
     const sample = data.slice(0, 5);
+
     switch (type) {
         case 'bar':
             return (
@@ -24,35 +42,83 @@ const renderChartPreview = (type: 'bar' | 'line' | 'pie', data: any[]) => {
                     <XAxis dataKey="name" />
                     <YAxis />
                     <Tooltip />
-                    <Bar dataKey="value" fill="#8884d8" />
+                    <Bar dataKey="value" fill={COLORS[0]} />
                 </BarChart>
             );
+
         case 'line':
             return (
                 <LineChart width={250} height={150} data={sample}>
                     <XAxis dataKey="name" />
                     <YAxis />
                     <Tooltip />
-                    <Line type="monotone" dataKey="value" stroke="#82ca9d" />
+                    <Line type="monotone" dataKey="value" stroke={COLORS[1]} strokeWidth={2} />
                 </LineChart>
             );
+
         case 'pie':
             return (
                 <PieChart width={250} height={150}>
                     <Tooltip />
-                    <Pie data={sample} dataKey="value" nameKey="name" outerRadius={60} fill="#ffc658">
+                    <Pie
+                        data={sample}
+                        dataKey="value"
+                        nameKey="name"
+                        outerRadius={60}
+                    >
                         {sample.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={['#8884d8', '#82ca9d', '#ffc658'][index % 3]} />
+                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                     </Pie>
                 </PieChart>
             );
+
+        case 'area':
+            return (
+                <AreaChart width={250} height={150} data={sample}>
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Area
+                        type="monotone"
+                        dataKey="value"
+                        stroke={COLORS[0]}
+                        fill={COLORS[0]}
+                    />
+                </AreaChart>
+            );
+
+        case 'scatter':
+            return (
+                <ScatterChart width={250} height={150}>
+                    <XAxis dataKey="name" />
+                    <YAxis dataKey="value" />
+                    <Tooltip />
+                    <Scatter name="Werte" data={sample} fill={COLORS[2]} />
+                </ScatterChart>
+            );
+
+        case 'composed':
+            return (
+                <ComposedChart width={250} height={150} data={sample}>
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <CartesianGrid stroke="#eee" strokeDasharray="3 3" />
+                    <Area type="monotone" dataKey="value" fill={COLORS[0]} stroke={COLORS[0]} />
+                    <Bar dataKey="value" barSize={20} fill={COLORS[1]} />
+                    <Line type="monotone" dataKey="value" stroke={COLORS[2]} />
+                </ComposedChart>
+            );
+
         default:
             return null;
     }
 };
 
-export const SavedVisualizations = () => {
+
+    export const SavedVisualizations = () => {
     const [visualizations, setVisualizations] = useState<SavedVisualization[]>([]);
     const navigate = useNavigate();
 
