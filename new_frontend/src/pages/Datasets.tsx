@@ -10,14 +10,22 @@ import {Link} from "react-router-dom";
 import {Layout} from '../components/Layout';
 
 
-const sampleDatasets = [
+export const sampleDatasets = [
     {
         id: 1,
         name: "Verkaufsdaten 2023",
         recordCount: 1250,
         createdAt: new Date(2023, 10, 15),
         lastModified: new Date(2024, 2, 10),
-        fileType: "CSV"
+        fileType: "CSV",
+        data: [
+            { Monat: "Januar", Umsatz: 12000 },
+            { Monat: "Februar", Umsatz: 13000 },
+            { Monat: "Juni", Umsatz: 13511 },
+            { Monat: "Juli", Umsatz: 20024 },
+            { Monat: "Dezember", Umsatz: 15000 }
+        ],
+        fields: ["Monat", "Umsatz"]
     },
     {
         id: 2,
@@ -25,7 +33,15 @@ const sampleDatasets = [
         recordCount: 856,
         createdAt: new Date(2023, 8, 22),
         lastModified: new Date(2024, 1, 28),
-        fileType: "JSON"
+        fileType: "JSON",
+        data: [
+            { Region: "Nord", Kundenanzahl: 150 },
+            { Region: "Süd", Kundenanzahl: 200 },
+            { Region: "Ost", Kundenanzahl: 180 },
+            { Region: "West", Kundenanzahl: 170 },
+            { Region: "Mitte", Kundenanzahl: 190 },
+        ],
+        fields: ["Region", "Kundenanzahl"],
     },
     {
         id: 3,
@@ -33,7 +49,15 @@ const sampleDatasets = [
         recordCount: 426,
         createdAt: new Date(2024, 1, 5),
         lastModified: new Date(2024, 3, 15),
-        fileType: "CSV"
+        fileType: "CSV",
+        data: [
+            { Artikel: "Tisch", Lagerbestand: 45 },
+            { Artikel: "Stuhl", Lagerbestand: 120 },
+            { Artikel: "Lampe", Lagerbestand: 70 },
+            { Artikel: "Sofa", Lagerbestand: 25 },
+            { Artikel: "Regal", Lagerbestand: 60 },
+        ],
+        fields: ["Artikel", "Lagerbestand"],
     },
     {
         id: 4,
@@ -41,9 +65,20 @@ const sampleDatasets = [
         recordCount: 324,
         createdAt: new Date(2024, 2, 1),
         lastModified: new Date(2024, 2, 1),
-        fileType: "Excel"
+        fileType: "Excel",
+        data: [
+            { Quartal: "Q1", Gewinn: 30000 },
+            { Quartal: "Q2", Gewinn: 25000 },
+            { Quartal: "Q3", Gewinn: 40000 },
+            { Quartal: "Q4", Gewinn: 35000 },
+            { Quartal: "Q5", Gewinn: 37000 },
+            { Quartal: "Q6", Gewinn: 39000 },
+        ],
+        fields: ["Quartal", "Gewinn"],
     }
 ];
+
+
 
 const Datasets = () => {
     const {toast} = useToast();
