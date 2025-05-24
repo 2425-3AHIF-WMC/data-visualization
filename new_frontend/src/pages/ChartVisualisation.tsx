@@ -250,7 +250,7 @@ const ChartVisualization = () => {
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
                                         Diagrammtyp
                                     </label>
-                                    <Select >
+                                    <Select value={selectedDatasetId} onValueChange={setSelectedDatasetId}>
                                         <SelectTrigger className="w-full">
                                             <SelectValue placeholder="Diagrammtyp auswählen" />
                                         </SelectTrigger>
@@ -258,24 +258,43 @@ const ChartVisualization = () => {
                                             <SelectItem value="bar" className="flex items-center gap-2">
                                                 <ChartBarBig className="h-4 w-4" /> Balken
                                             </SelectItem>
-                                            <SelectItem value="line" className="flex items-center gap-2">
+                                            <SelectItem value="line">
                                                 <ChartLine className="h-4 w-4" /> Linie
                                             </SelectItem>
-                                            <SelectItem value="pie" className="flex items-center gap-2">
+                                            <SelectItem value="pie">
                                                 <ChartPie className="h-4 w-4" /> Kreis
                                             </SelectItem>
-                                            <SelectItem value='area' className="flex items-center gap-2">
+                                            <SelectItem value='area'>
                                                 <AreaChartIcon className={'h-4 w-4'} /> Fläche
                                             </SelectItem>
-                                            <SelectItem value="scatter" className="flex items-center gap-2">
+                                            <SelectItem value="scatter">
                                                 <ScatterChartIcon className="h-4 w-4" /> Punkt
-                                            </SelectItem>
-                                            <SelectItem value="composed" className="flex items-center gap-2">
-                                                <ComposedChart className="h-4 w-4" /> Kombiniert
                                             </SelectItem>
 
                                         </SelectContent>
                                     </Select>
+                                    <Tabs value={chartType} onValueChange={(value) => setChartType(value as any)} className="w-full">
+                                        <TabsList className="grid grid-cols-3 w-full">
+                                            <TabsTrigger value="bar" className="flex items-center gap-2">
+                                                <ChartBarBig className="h-4 w-4" /> Balken
+                                            </TabsTrigger>
+                                            <TabsTrigger value="line" className="flex items-center gap-2">
+                                                <ChartLine className="h-4 w-4" /> Linie
+                                            </TabsTrigger>
+                                            <TabsTrigger value="pie" className="flex items-center gap-2">
+                                                <ChartPie className="h-4 w-4" /> Kreis
+                                            </TabsTrigger>
+                                            <TabsTrigger value="area" className="flex items-center gap-2">
+                                                <AreaChartIcon className="h-4 w-4" /> Fläche
+                                            </TabsTrigger>
+                                            <TabsTrigger value="scatter" className="flex items-center gap-2">
+                                                <ScatterChartIcon className="h-4 w-4" /> Punkt
+                                            </TabsTrigger>
+                                            <TabsTrigger value="composed" className="flex items-center gap-2">
+                                                <ComposedChart className="h-4 w-4" /> Kombiniert
+                                            </TabsTrigger>
+                                        </TabsList>
+                                    </Tabs>
                                 </div>
 
                                 <div className="space-y-2">
