@@ -237,12 +237,13 @@ const ChartVisualization = () => {
                         <h1 className="text-3xl font-bold text-gray-800">Visualisierung erstellen</h1>
                         <p className="text-gray-600">Wählen Sie einen Datensatz für Ihre Datenvisualisierung</p>
                     </div>
-                    <Button variant="outline" asChild>
+                    <Button>
                         <Link to="/" className="flex items-center gap-2">
                             <ArrowLeft className="h-4 w-4" /> Zurück
                         </Link>
                     </Button>
                 </div>
+                
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div className="lg:col-span-1 space-y-6">
