@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { useTheme } from '../utils/themeContext';
+import { ColorScheme, ThemeType, useTheme } from '../utils/themeContext';
 import { Check, Moon, Palette, Sun } from 'lucide-react';
 import { Button } from './ui/button';
 import {
@@ -13,8 +12,6 @@ import {
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
 } from './ui/dropdown-menu';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 
@@ -26,36 +23,41 @@ export function ThemeSwitcher() {
     toggleMode,
     currentMode,
     currentColorScheme,
-    setColorScheme
+    setColorScheme,
   } = useTheme();
 
-  // Group themes by mode
+  // Gruppiere Themes nach Modus
   const lightThemes = themes.filter(t => t.mode === 'light');
   const darkThemes = themes.filter(t => t.mode === 'dark');
 
-  // Get color schemes
+  // Alle Farbschemata einmalig extrahieren
   const colorSchemes = [...new Set(themes.map(t => t.colorScheme))];
 
-  // Color scheme display names in German
+  // Farbschema Namen auf Deutsch
   const colorSchemeNames: Record<string, string> = {
-    'blue': 'Blau',
-    'green': 'Grün',
-    'purple': 'Lila',
-    'pink': 'Rosa',
-    'orange': 'Orange',
-    'red': 'Rot',
-    'teal': 'Türkis',
+    blue: 'Blau',
+    green: 'Grün',
+    purple: 'Lila',
+    pink: 'Rosa',
+    orange: 'Orange',
+    red: 'Rot',
+    teal: 'Türkis',
   };
 
-  // Theme mode names in German
+  // Modus Namen auf Deutsch
   const modeNames: Record<string, string> = {
-    'light': 'Helles Design',
-    'dark': 'Dunkles Design',
+    light: 'Helles Design',
+    dark: 'Dunkles Design',
+  };
+
+  // Farbschema ändern und gleichzeitig Theme setzen (modus + farbe)
+  const onColorSchemeChange = (newScheme: string) => {
+    setColorScheme(newScheme as ColorScheme);
+    setTheme(`${currentMode}-${newScheme}` as any);
   };
 
   return (
       <div className="flex gap-2">
-
         <DropdownMenu>
           <TooltipProvider>
             <Tooltip>
@@ -67,9 +69,7 @@ export function ThemeSwitcher() {
                   </Button>
                 </DropdownMenuTrigger>
               </TooltipTrigger>
-              <TooltipContent>
-                Farbschema anpassen
-              </TooltipContent>
+              <TooltipContent>Farbschema anpassen</TooltipContent>
             </Tooltip>
           </TooltipProvider>
 
@@ -83,13 +83,10 @@ export function ThemeSwitcher() {
               {['light', 'dark'].map((mode) => (
                   <Button
                       key={mode}
-                      variant={currentMode === mode ? "default" : "outline"}
+                      variant={currentMode === mode ? 'default' : 'outline'}
                       size="sm"
                       className="w-full justify-start"
-                      onClick={() => {
-                        const newTheme = `${mode}-${currentColorScheme}` as any;
-                        setTheme(newTheme);
-                      }}
+                      onClick={() => setTheme(`${mode}-${currentColorScheme}` as any)}
                   >
                     {mode === 'light' ? (
                         <Sun className="mr-2 h-4 w-4" />
@@ -109,15 +106,15 @@ export function ThemeSwitcher() {
               {colorSchemes.map((scheme) => (
                   <Button
                       key={scheme}
-                      variant={currentColorScheme === scheme ? "default" : "outline"}
+                      variant={currentColorScheme === scheme ? 'default' : 'outline'}
                       size="sm"
                       className="justify-start"
-                      onClick={() => setColorScheme(scheme as any)}
+                      onClick={() => onColorSchemeChange(scheme)}
                   >
                     <div
                         className="mr-2 h-4 w-4 rounded-full"
                         style={{
-                          backgroundColor: `hsl(var(--${scheme === 'blue' ? 'primary' : scheme}))`
+                          backgroundColor: `hsl(var(--${scheme === 'blue' ? 'primary' : scheme}))`,
                         }}
                     />
                     {colorSchemeNames[scheme]}
@@ -145,7 +142,7 @@ export function ThemeSwitcher() {
                         <div
                             className="mr-2 h-3 w-3 rounded-full"
                             style={{
-                              backgroundColor: `hsl(var(--${t.colorScheme === 'blue' ? 'primary' : t.colorScheme}))`
+                              backgroundColor: `hsl(var(--${t.colorScheme === 'blue' ? 'primary' : t.colorScheme}))`,
                             }}
                         />
                         {t.label}
@@ -167,7 +164,7 @@ export function ThemeSwitcher() {
                         <div
                             className="mr-2 h-3 w-3 rounded-full"
                             style={{
-                              backgroundColor: `hsl(var(--${t.colorScheme === 'blue' ? 'primary' : t.colorScheme}))`
+                              backgroundColor: `hsl(var(--${t.colorScheme === 'blue' ? 'primary' : t.colorScheme}))`,
                             }}
                         />
                         {t.label}

@@ -1,122 +1,106 @@
+import React, { createContext, useContext, useEffect, useState } from "react";
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { toast } from '../components/ui/use-toast';
+export type Mode = "light" | "dark";
+export type ColorScheme = "blue" | "green" | "purple" | "pink" | "orange" | "red" | "teal";
+export type ThemeType = `${Mode}-${ColorScheme}`;
 
-type ColorScheme = 'blue' | 'green' | 'purple' | 'pink' | 'orange' | 'red' | 'teal';
-type Mode = 'light' | 'dark';
-type Theme = `${Mode}-${ColorScheme}`;
-
-type ThemeContextType = {
-  theme: Theme;
-  setTheme: (theme: Theme) => void;
-  themes: { value: Theme; label: string; mode: Mode; colorScheme: ColorScheme }[];
+interface ThemeContextValue {
+  theme: ThemeType;
+  setTheme: (theme: ThemeType) => void;
   toggleMode: () => void;
   currentMode: Mode;
   currentColorScheme: ColorScheme;
-  setColorScheme: (colorScheme: ColorScheme) => void;
-};
+  setColorScheme: (scheme: ColorScheme) => void;
+  themes: { value: ThemeType; mode: Mode; colorScheme: ColorScheme; label: string }[];
+}
 
-const themes: { value: Theme; label: string; mode: Mode; colorScheme: ColorScheme }[] = [
-  { value: 'light-blue', label: 'Licht Blau', mode: 'light', colorScheme: 'blue' },
-  { value: 'light-green', label: 'Licht Grün', mode: 'light', colorScheme: 'green' },
-  { value: 'light-purple', label: 'Licht Lila', mode: 'light', colorScheme: 'purple' },
-  { value: 'light-pink', label: 'Licht Rosa', mode: 'light', colorScheme: 'pink' },
-  { value: 'light-orange', label: 'Licht Orange', mode: 'light', colorScheme: 'orange' },
-  { value: 'light-red', label: 'Licht Rot', mode: 'light', colorScheme: 'red' },
-  { value: 'light-teal', label: 'Licht Türkis', mode: 'light', colorScheme: 'teal' },
-  { value: 'dark-blue', label: 'Dunkel Blau', mode: 'dark', colorScheme: 'blue' },
-  { value: 'dark-green', label: 'Dunkel Grün', mode: 'dark', colorScheme: 'green' },
-  { value: 'dark-purple', label: 'Dunkel Lila', mode: 'dark', colorScheme: 'purple' },
-  { value: 'dark-pink', label: 'Dunkel Rosa', mode: 'dark', colorScheme: 'pink' },
-  { value: 'dark-orange', label: 'Dunkel Orange', mode: 'dark', colorScheme: 'orange' },
-  { value: 'dark-red', label: 'Dunkel Rot', mode: 'dark', colorScheme: 'red' },
-  { value: 'dark-teal', label: 'Dunkel Türkis', mode: 'dark', colorScheme: 'teal' },
+const themes: ThemeContextValue["themes"] = [
+  { value: "light-blue", mode: "light", colorScheme: "blue", label: "Blau (Hell)" },
+  { value: "dark-blue", mode: "dark", colorScheme: "blue", label: "Blau (Dunkel)" },
+  { value: "light-green", mode: "light", colorScheme: "green", label: "Grün (Hell)" },
+  { value: "dark-green", mode: "dark", colorScheme: "green", label: "Grün (Dunkel)" },
+  { value: "light-purple", mode: "light", colorScheme: "purple", label: "Lila (Hell)" },
+  { value: "dark-purple", mode: "dark", colorScheme: "purple", label: "Lila (Dunkel)" },
+  { value: "light-pink", mode: "light", colorScheme: "pink", label: "Rosa (Hell)" },
+  { value: "dark-pink", mode: "dark", colorScheme: "pink", label: "Rosa (Dunkel)" },
+  { value: "light-orange", mode: "light", colorScheme: "orange", label: "Orange (Hell)" },
+  { value: "dark-orange", mode: "dark", colorScheme: "orange", label: "Orange (Dunkel)" },
+  { value: "light-red", mode: "light", colorScheme: "red", label: "Rot (Hell)" },
+  { value: "dark-red", mode: "dark", colorScheme: "red", label: "Rot (Dunkel)" },
+  { value: "light-teal", mode: "light", colorScheme: "teal", label: "Türkis (Hell)" },
+  { value: "dark-teal", mode: "dark", colorScheme: "teal", label: "Türkis (Dunkel)" },
 ];
 
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [theme, setThemeState] = useState<Theme>('light-blue');
-  const [currentMode, setCurrentMode] = useState<Mode>('light');
-  const [currentColorScheme, setCurrentColorScheme] = useState<ColorScheme>('blue');
+  // Startwert - default Theme
+  const [theme, setThemeState] = useState<ThemeType>("light-blue");
 
-  // Load saved theme on initialization
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('data-canvas-theme') as Theme;
-    if (savedTheme && themes.find(t => t.value === savedTheme)) {
-      setThemeState(savedTheme);
-      const foundTheme = themes.find(t => t.value === savedTheme);
-      if (foundTheme) {
-        setCurrentMode(foundTheme.mode);
-        setCurrentColorScheme(foundTheme.colorScheme);
-      }
-    }
-  }, []);
+  const currentMode = theme.split("-")[0] as Mode;
+  const currentColorScheme = theme.split("-")[1] as ColorScheme;
 
-  // Apply theme
-  useEffect(() => {
-    const root = document.documentElement;
-    
-    // Remove all theme classes
-    root.classList.remove('light', 'dark');
-    themes.forEach(t => {
-      root.classList.remove(`theme-${t.colorScheme}`);
-    });
-    
-    // Add new theme classes
-    root.classList.add(currentMode);
-    root.classList.add(`theme-${currentColorScheme}`);
-    
-    // Save theme to localStorage
-    localStorage.setItem('data-canvas-theme', theme);
-  }, [theme, currentMode, currentColorScheme]);
-
-  const setTheme = (newTheme: Theme) => {
+  const setTheme = (newTheme: ThemeType) => {
     setThemeState(newTheme);
-    const foundTheme = themes.find(t => t.value === newTheme);
-    if (foundTheme) {
-      setCurrentMode(foundTheme.mode);
-      setCurrentColorScheme(foundTheme.colorScheme);
+
+    if (typeof window !== "undefined") {
+      const root = document.documentElement;
+
+      // Vorherige Klassen entfernen
+      root.classList.remove("dark");
+      root.classList.remove(
+          "theme-blue", "theme-green", "theme-purple",
+          "theme-pink", "theme-orange", "theme-red", "theme-teal"
+      );
+
+      const [mode, color] = newTheme.split("-") as [Mode, ColorScheme];
+
+      // Dark Mode Klasse setzen
+      if (mode === "dark") {
+        root.classList.add("dark");
+      }
+
+      // Farbschema Klasse setzen
+      root.classList.add(`theme-${color}`);
     }
-    
-    toast({
-      title: 'Theme geändert',
-      description: `Design wurde zu "${themes.find(t => t.value === newTheme)?.label}" geändert.`,
-    });
   };
+
 
   const toggleMode = () => {
-    const newMode = currentMode === 'light' ? 'dark' : 'light';
-    setCurrentMode(newMode);
-    setTheme(`${newMode}-${currentColorScheme}` as Theme);
+    const newMode: Mode = currentMode === "light" ? "dark" : "light";
+    setTheme(`${newMode}-${currentColorScheme}`);
   };
 
-  const setColorScheme = (colorScheme: ColorScheme) => {
-    setCurrentColorScheme(colorScheme);
-    setTheme(`${currentMode}-${colorScheme}` as Theme);
+  const setColorScheme = (scheme: ColorScheme) => {
+    setTheme(`${currentMode}-${scheme}`);
   };
+
+  // Beim initialen Laden einmal Klasse setzen
+  useEffect(() => {
+    setTheme(theme);
+  }, []);
 
   return (
-    <ThemeContext.Provider 
-      value={{ 
-        theme, 
-        setTheme, 
-        themes, 
-        toggleMode, 
-        currentMode, 
-        currentColorScheme,
-        setColorScheme
-      }}
-    >
-      {children}
-    </ThemeContext.Provider>
+      <ThemeContext.Provider
+          value={{
+            theme,
+            setTheme,
+            toggleMode,
+            currentMode,
+            currentColorScheme,
+            setColorScheme,
+            themes,
+          }}
+      >
+        {children}
+      </ThemeContext.Provider>
   );
 };
 
-export const useTheme = () => {
+export const useTheme = (): ThemeContextValue => {
   const context = useContext(ThemeContext);
-  if (context === undefined) {
-    throw new Error('useTheme muss innerhalb eines ThemeProviders verwendet werden');
+  if (!context) {
+    throw new Error("useTheme must be used within ThemeProvider");
   }
   return context;
 };
