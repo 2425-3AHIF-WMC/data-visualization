@@ -22,7 +22,16 @@ import {
 } from './ui/dropdown-menu';
 import {useNavigate} from 'react-router-dom';
 import AccountSettings from "@/pages/AccountSettings.tsx";
+import {jwtDecode} from "jwt-decode";
 
+interface DecodedToken {
+    id: number;
+    email: string;
+    firstname: string;
+    lastname: string;
+    exp: number;
+    iat: number;
+}
 
 export function Navbar() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -31,14 +40,34 @@ export function Navbar() {
     const navigate = useNavigate();
 
     const token = localStorage.getItem('jwt');
+   // let userDatasFromJwt:undefined|DecodedToken;
+    let user;
+
+    if(token){
+        try {
+          const  userDatasFromJwt=jwtDecode<DecodedToken>(token);
+             user = {
+               /* name: 'Benutzer',
+                email: 'benutzer@beispiel.de',*/
+                 name: userDatasFromJwt?.firstname + ' ' + userDatasFromJwt.lastname,
+                 email: userDatasFromJwt?.email
+            };
+
+        }catch (error){
+            console.error('Ungültiges Token:', error);
+        }
+    }
+
 const isLoggedIn= Boolean(token);
 
 
 // TODO: echter user
-    const user = {
-        name: 'Benutzer',
+ /*   const userExpampleNotReal = {
+       name: 'Benutzer',
         email: 'benutzer@beispiel.de',
-    };
+       /* name: userDatasFromJwt?.firstname + ' ' + userDatasFromJwt.lastname,
+        email: userDatasFromJwt?.email
+    };  */
 
     const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
 

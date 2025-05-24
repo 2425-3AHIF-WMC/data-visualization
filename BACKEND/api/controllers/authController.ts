@@ -19,7 +19,7 @@ const createToken = (
             id: userId,
             email,
             firstname,
-            nachname: lastname
+            lastname
         },           // Payload: Hier ist das Objekt, das in das Token eingebaut wird
         jwtConfig.secret,         // Geheimer Schlüssel aus jwtConfig
         {expiresIn: '1h'}  // Ablaufzeit aus jwtConfig
