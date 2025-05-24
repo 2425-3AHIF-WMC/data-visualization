@@ -98,9 +98,10 @@ const isLoggedIn= Boolean(token);
                             <Link
                                 to="/"
                                 className={cn(
-                                    "font-medium px-4 py-2 rounded-md transition-colors hover:bg-purple-50 dark:hover:bg-purple-900/20",
-                                    location.pathname === "/" && "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300"
+                                    "font-medium px-4 py-2 font-bold rounded-md transition-colors hover:bg-muted",
+                                    location.pathname === "/" && "navbar-active"
                                 )}
+
                             >
                                 Home
                             </Link>
@@ -110,8 +111,8 @@ const isLoggedIn= Boolean(token);
                             <Link
                                 to="/datasets"
                                 className={cn(
-                                    "font-medium px-4 py-2 rounded-md transition-colors hover:bg-purple-50 dark:hover:bg-purple-900/20",
-                                    location.pathname === "/datasets" && "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300"
+                                    "font-medium px-4 py-2 font-bold rounded-md transition-colors hover:bg-muted",
+                                    location.pathname === "/datasets" && "navbar-active"
                                 )}
                             >
                               Datensätze
@@ -122,8 +123,8 @@ const isLoggedIn= Boolean(token);
                             <Link
                                 to="/diagrams"
                                 className={cn(
-                                    "font-medium px-4 py-2 rounded-md transition-colors hover:bg-purple-50 dark:hover:bg-purple-900/20",
-                                    location.pathname === "/diagrams" && "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300"
+                                    "font-medium px-4 py-2 font-bold rounded-md transition-colors hover:bg-muted",
+                                    location.pathname === "/diagrams" && "navbar-active"
                                 )}
                             >
                                 Erstellen
@@ -134,8 +135,8 @@ const isLoggedIn= Boolean(token);
                             <Link
                                 to="/saved"
                                 className={cn(
-                                    "font-medium px-4 py-2 rounded-md transition-colors hover:bg-purple-50 dark:hover:bg-purple-900/20",
-                                    location.pathname === "/saved" && "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300"
+                                    "font-medium px-4 py-2 font-bold rounded-md transition-colors hover:bg-muted",
+                                    location.pathname === "/saved" && "navbar-active"
                                 )}
                             >
                                 Diagramme
@@ -146,8 +147,8 @@ const isLoggedIn= Boolean(token);
                             <Link
                                 to="/import"
                                 className={cn(
-                                    "font-medium px-4 py-2 rounded-md transition-colors hover:bg-purple-50 dark:hover:bg-purple-900/20",
-                                    location.pathname === "/import" && "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300"
+                                    "font-medium px-4 py-2 font-bold rounded-md transition-colors hover:bg-muted",
+                                    location.pathname === "/import" && "navbar-active"
                                 )}
                             >
                                 Import

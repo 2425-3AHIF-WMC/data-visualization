@@ -81,6 +81,18 @@
     --chart-yellow: 41 96% 53%;
   }
 
+  @layer utilities {
+    .navbar-active {
+      background-color: hsl(var(--navbar-bg));
+      color: hsl(var(--navbar-text));
+    }
+
+    .navbar-active:hover {
+      background-color: hsl(var(--navbar-bg-hover, var(--navbar-bg)));
+    }
+  }
+
+
   /* Green Theme */
   .theme-green {
     --primary: 142.1 76.2% 36.3%;
@@ -94,6 +106,9 @@
     --chart-colour6: 82.1 100% 40%;
     --icon-colour: 142.1 100% 50%;
     --logo-color: 142.1 100% 30%;
+    --navbar-bg: 142.1 95% 95%;
+    --navbar-text: 142.1 80% 35%;
+    --navbar-bg-hover: 142.1 100% 50%;
   }
 
   /* Purple Theme */
@@ -109,6 +124,9 @@
     --chart-colour6: 202.1 100% 40%;
     --icon-colour: 262.1 100% 50%;
     --logo-color: 262.1 100% 50%;
+    --navbar-bg: 270 100% 95%;
+    --navbar-text: 262 80% 35%;
+    --navbar-bg-hover: 270 100% 50%;
   }
 
   /* Pink Theme */
@@ -124,6 +142,9 @@
     --chart-colour6: 265 100% 40%;
     --icon-colour: 325 100% 50%;
     --logo-color: 325 100% 50%;
+    --navbar-bg: 325 100% 95%;
+    --navbar-text: 325 80% 35%;
+    --navbar-bg-hover: 325 100% 50%;
   }
 
   /* Orange Theme */
@@ -139,6 +160,9 @@
     --chart-colour6: 47 100% 40%;
     --icon-colour: 24.6 100% 50%;
     --logo-color: 42 100% 50%;
+    --navbar-bg: 42 100% 95%;
+    --navbar-text: 24.6 80% 35%;
+    --navbar-bg-hover: 42 100% 50%;
   }
 
 
@@ -154,6 +178,9 @@
     --chart-colour5: 30 100% 50%;
     --chart-colour6: 20 100% 40%;
     --logo-color: 0 100% 50%;
+    --navbar-bg: 0 95% 95%;
+    --navbar-text: 0 80% 35%;
+    --navbar-bg-hover: 0 100% 50%;
   }
 
   /* Teal Theme */
@@ -168,6 +195,9 @@
     --chart-colour5: 130 100% 50%;
     --chart-colour6: 120 100% 40%;
     --logo-color: 180 100% 30%;
+    --navbar-bg: 180 95% 95%;
+    --navbar-text: 180 80% 35%;
+    --navbar-bg-hover: 180 100% 50%;
   }
 
   /* Blue Theme (default) */
@@ -182,6 +212,9 @@
     --chart-colour5: 208 100% 50%;
     --chart-colour6: 198 100% 40%;
     --logo-color: 238, 100%, 50%;
+    --navbar-bg: 238 95% 95%;
+    --navbar-text: 238 80% 35%;
+    --navbar-bg-hover: 238 100% 50%;
   }
 }
 
