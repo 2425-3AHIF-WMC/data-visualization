@@ -48,8 +48,14 @@ import { Layout } from '../components/Layout';
 import { sampleDatasets } from "@/pages/Datasets.tsx";
 import SavedVisualization from "@/pages/SavedVisualization.tsx";
 
-const COLORS = ['#003366', '#ba47b6', '#572c9a', '#701dd6', '#572C9AFF', '#CA1280FF'];
-
+const chartColors = [
+    'hsl(var(--primary))',
+    'hsl(var(--chart-colour1))',
+    'hsl(var(--chart-colour2))',
+    'hsl(var(--chart-colour3))',
+    'hsl(var(--chart-colour4))',
+    'hsl(var(--chart-colour5))',
+];
 const ChartVisualization = () => {
     const location = useLocation();
     const navigate = useNavigate();
@@ -146,7 +152,7 @@ const ChartVisualization = () => {
                             <YAxis />
                             <Tooltip />
                             <Legend />
-                            <Bar dataKey="value" fill={COLORS[0]} />
+                            <Bar dataKey="value" fill={chartColors[0]} />
                         </BarChart>
                     </ResponsiveContainer>
                 );
@@ -159,7 +165,7 @@ const ChartVisualization = () => {
                             <YAxis />
                             <Tooltip />
                             <Legend />
-                            <Line type="monotone" dataKey="value" stroke={COLORS[1]} />
+                            <Line type="monotone" dataKey="value" stroke={chartColors[1]} />
                         </LineChart>
                     </ResponsiveContainer>
                 );
@@ -171,7 +177,7 @@ const ChartVisualization = () => {
                             <Legend />
                             <Pie data={chartData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100}>
                                 {chartData.map((_, index) => (
-                                    <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                                    <Cell key={index} fill={chartColors[index % chartColors.length]} />
                                 ))}
                             </Pie>
                         </PieChart>
@@ -186,7 +192,7 @@ const ChartVisualization = () => {
                             <YAxis />
                             <Tooltip />
                             <Legend />
-                            <Area type="monotone" dataKey="value" stroke={COLORS[2]} fill={COLORS[2]} />
+                            <Area type="monotone" dataKey="value" stroke={chartColors[2]} fill={chartColors[2]} />
                         </AreaChart>
                     </ResponsiveContainer>
                 );
@@ -199,7 +205,7 @@ const ChartVisualization = () => {
                             <YAxis dataKey="y" name="Y" />
                             <Tooltip cursor={{ strokeDasharray: '3 3' }} />
                             <Legend />
-                            <Scatter name="Datenpunkte" data={chartData} fill={COLORS[3]} />
+                            <Scatter name="Datenpunkte" data={chartData} fill={chartColors[3]} />
                         </ScatterChart>
                     </ResponsiveContainer>
                 );
@@ -212,9 +218,9 @@ const ChartVisualization = () => {
                             <YAxis />
                             <Tooltip />
                             <Legend />
-                            <Area type="monotone" dataKey="value" fill={COLORS[4]} stroke={COLORS[4]} />
-                            <Bar dataKey="value" barSize={20} fill={COLORS[5]} />
-                            <Line type="monotone" dataKey="value" stroke={COLORS[6]} />
+                            <Area type="monotone" dataKey="value" fill={chartColors[4]} stroke={chartColors[4]} />
+                            <Bar dataKey="value" barSize={20} fill={chartColors[5]} />
+                            <Line type="monotone" dataKey="value" stroke={chartColors[6]} />
                         </ComposedChart>
                     </ResponsiveContainer>
                 );

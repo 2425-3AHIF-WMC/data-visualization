@@ -45,7 +45,7 @@ const pieData = [
   { name: 'Gruppe D', value: 200 },
 ];
 
-const COLORS = ['hsl(var(--chart-blue))', 'hsl(var(--chart-pink))', 'hsl(var(--chart-purple))', 'hsl(var(--chart-darkblue))'];
+const COLORS = ['hsl(var(--chart-colour1))', 'hsl(var(--chart-colour2))', 'hsl(var(--chart-colour3))', 'hsl(var(--chart-colour4)), hsl(var(--chart-colour5)), hsl(var(--chart-colour6))'];
 
 interface DashboardProps {
   data?: any[];
@@ -131,8 +131,8 @@ export function Dashboard({ data = sampleData, chartConfigs = [] }: DashboardPro
               <YAxis />
               <Tooltip />
               <Legend />
-              <Bar dataKey="value" fill="hsl(var(--chart-blue))" name="Wert A" />
-              <Bar dataKey="value2" fill="hsl(var(--chart-purple))" name="Wert B" />
+              <Bar dataKey="value" fill="hsl(var(--chart-colour1))" name="Wert A" />
+              <Bar dataKey="value2" fill="hsl(var(--chart-colour2))" name="Wert B" />
             </BarChart>
           </ChartWrapper>
         </VisualizationCard>
@@ -151,7 +151,7 @@ export function Dashboard({ data = sampleData, chartConfigs = [] }: DashboardPro
               <Line 
                 type="monotone" 
                 dataKey="value" 
-                stroke="hsl(var(--chart-blue))" 
+                stroke="hsl(var(--chart-colour1))"
                 name="Wert A"
                 strokeWidth={2}
                 dot={{ r: 4 }}
@@ -160,7 +160,7 @@ export function Dashboard({ data = sampleData, chartConfigs = [] }: DashboardPro
               <Line 
                 type="monotone" 
                 dataKey="value2" 
-                stroke="hsl(var(--chart-purple))" 
+                stroke="hsl(var(--chart-colour2))"
                 name="Wert B" 
                 strokeWidth={2}
                 dot={{ r: 4 }}
@@ -187,7 +187,7 @@ export function Dashboard({ data = sampleData, chartConfigs = [] }: DashboardPro
                 label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
               >
                 {pieData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    <Cell key={index} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
               <Tooltip />
@@ -209,7 +209,7 @@ export function Dashboard({ data = sampleData, chartConfigs = [] }: DashboardPro
               <Scatter
                   name="Beziehung A-B"
                   data={data}
-                  fill="hsl(var(--chart-purple))"
+                  fill="hsl(var(--chart-colour3))"
               />
             </ScatterChart>
           </ChartWrapper>
@@ -229,15 +229,15 @@ export function Dashboard({ data = sampleData, chartConfigs = [] }: DashboardPro
               <Area
                   type="monotone"
                   dataKey="value"
-                  stroke="hsl(var(--chart-blue))"
-                  fill="hsl(var(--chart-blue))"
+                  stroke="hsl(var(--chart-colour1))"
+                  fill="hsl(var(--chart-colour1))"
                   name="Wert A"
               />
               <Area
                   type="monotone"
                   dataKey="value2"
-                  stroke="hsl(var(--chart-purlpe))"
-                  fill="hsl(var(--chart-purple))"
+                  stroke="hsl(var(--chart-colour2))"
+                  fill="hsl(var(--chart-colour2))"
                   name="Wert B"
               />
             </AreaChart>
@@ -258,20 +258,20 @@ export function Dashboard({ data = sampleData, chartConfigs = [] }: DashboardPro
               <Area
                   type="monotone"
                   dataKey="value"
-                  fill="hsl(var(--chart-purple))"
-                  stroke="hsl(var(--chart-purple))"
+                  fill="hsl(var(--chart-colour1))"
+                  stroke="hsl(var(--chart-colour1))"
                   name="Wert A (Fläche)"
               />
               <Bar
                   dataKey="value2"
                   barSize={20}
-                  fill="hsl(var(--chart-darkblue))"
+                  fill="hsl(var(--chart-colour6))"
                   name="Wert B (Balken)"
               />
               <Line
                   type="monotone"
                   dataKey="value"
-                  stroke="hsl(var(--chart-blue))"
+                  stroke="hsl(var(--chart-colour4))"
                   strokeWidth={2}
                   name="Wert A (Linie)"
               />

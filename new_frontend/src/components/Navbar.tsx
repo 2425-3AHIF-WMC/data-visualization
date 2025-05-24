@@ -77,6 +77,7 @@ const isLoggedIn= Boolean(token);
         localStorage.removeItem('jwt')
         navigate("/");
     };
+    const COLORS = ['hsl(var(--chart-colour1))', 'hsl(var(--logo-color))'];
 
     return (
         <header className="w-full bg-background border-b border-border/30 sticky top-0 z-30">
@@ -84,9 +85,9 @@ const isLoggedIn= Boolean(token);
                 {/* Logo links */}
                 <div className="flex-1">
                     <Link to="/" className="flex items-center">
-                        <BarChart3 className="h-6 w-6 text-purple-600 dark:text-purple-400"/>
+                        <BarChart3 className="h-6 w-6" style={{ color: "hsl(var(--chart-colour1))"}}/>
                         <span
-                            className="ml-2 text-xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">Data-Visualisation</span>
+                            className="ml-2 text-xl font-bold bg-gradient-to-r bg-clip-text text-transparent"style={{ color: "hsl(var(--logo-color))"}} >Data-Visualisation</span>
                     </Link>
                 </div>
 

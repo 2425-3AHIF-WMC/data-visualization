@@ -27,7 +27,15 @@ export interface SavedVisualization {
     xAxis: string;
     yAxis: string;
 }
-const COLORS = ['#8b5cf6', '#7c3aed', '#3b82f6']; // Lila, Violett, Blau
+
+const chartColors = [
+    'hsl(var(--primary))',
+    'hsl(var(--chart-colour1))',
+    'hsl(var(--chart-colour2))',
+    'hsl(var(--chart-colour3))',
+    'hsl(var(--chart-colour4))',
+    'hsl(var(--chart-colour5))',
+];
 
 const renderChartPreview = (
     type: 'bar' | 'line' | 'pie' | 'area' | 'scatter' | 'composed',
@@ -42,20 +50,18 @@ const renderChartPreview = (
                     <XAxis dataKey="name" />
                     <YAxis />
                     <Tooltip />
-                    <Bar dataKey="value" fill={COLORS[0]} />
+                    <Bar dataKey="value" fill="hsl(var(--primary))" />
                 </BarChart>
             );
-
         case 'line':
             return (
                 <LineChart width={250} height={150} data={sample}>
                     <XAxis dataKey="name" />
                     <YAxis />
                     <Tooltip />
-                    <Line type="monotone" dataKey="value" stroke={COLORS[1]} strokeWidth={2} />
+                    <Line type="monotone" dataKey="value" stroke="hsl(var(--primary))" />
                 </LineChart>
             );
-
         case 'pie':
             return (
                 <PieChart width={250} height={150}>
@@ -65,14 +71,14 @@ const renderChartPreview = (
                         dataKey="value"
                         nameKey="name"
                         outerRadius={60}
+                        fill="hsl(var(--primary))"
                     >
                         {sample.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                            <Cell key={`cell-${index}`} fill={chartColors[index % chartColors.length]} />
                         ))}
                     </Pie>
                 </PieChart>
             );
-
         case 'area':
             return (
                 <AreaChart width={250} height={150} data={sample}>
@@ -82,40 +88,35 @@ const renderChartPreview = (
                     <Area
                         type="monotone"
                         dataKey="value"
-                        stroke={COLORS[0]}
-                        fill={COLORS[0]}
+                        stroke="hsl(var(--primary))"
+                        fill="hsl(var(--primary) / 0.4)"
                     />
                 </AreaChart>
             );
-
         case 'scatter':
             return (
                 <ScatterChart width={250} height={150}>
                     <XAxis dataKey="name" />
                     <YAxis dataKey="value" />
                     <Tooltip />
-                    <Scatter name="Werte" data={sample} fill={COLORS[2]} />
+                    <Scatter name="A" data={sample} fill="hsl(var(--primary))" />
                 </ScatterChart>
             );
-
         case 'composed':
             return (
                 <ComposedChart width={250} height={150} data={sample}>
                     <XAxis dataKey="name" />
                     <YAxis />
                     <Tooltip />
-                    <Legend />
-                    <CartesianGrid stroke="#eee" strokeDasharray="3 3" />
-                    <Area type="monotone" dataKey="value" fill={COLORS[0]} stroke={COLORS[0]} />
-                    <Bar dataKey="value" barSize={20} fill={COLORS[1]} />
-                    <Line type="monotone" dataKey="value" stroke={COLORS[2]} />
+                    <Bar dataKey="value" barSize={20} fill="hsl(var(--primary))" />
+                    <Line type="monotone" dataKey="value" stroke="hsl(var(--chart-colour1))" />
                 </ComposedChart>
             );
-
         default:
             return null;
     }
 };
+
 
 
     export const SavedVisualizations = () => {
