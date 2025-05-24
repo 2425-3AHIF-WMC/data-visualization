@@ -111,12 +111,7 @@ export function ThemeSwitcher() {
                       className="justify-start"
                       onClick={() => onColorSchemeChange(scheme)}
                   >
-                    <div
-                        className="mr-2 h-4 w-4 rounded-full"
-                        style={{
-                          backgroundColor: `hsl(var(--${scheme === 'blue' ? 'primary' : scheme}))`,
-                        }}
-                    />
+                    
                     {colorSchemeNames[scheme]}
                     {currentColorScheme === scheme && <Check className="ml-auto h-3 w-3" />}
                   </Button>
