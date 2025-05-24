@@ -251,7 +251,7 @@ const ChartVisualization = () => {
                                         Diagrammtyp
                                     </label>
                                     <Tabs value={chartType} onValueChange={(value) => setChartType(value as any)} className="w-full">
-                                        <TabsList className="grid grid-cols-3 w-full">
+                                        <TabsList className="grid grid-cols-3 grid-rows-2 gap-1 w-full h-full">
                                             <TabsTrigger value="bar" className="flex items-center gap-2">
                                                 <ChartBarBig className="h-4 w-4" /> Balken
                                             </TabsTrigger>
