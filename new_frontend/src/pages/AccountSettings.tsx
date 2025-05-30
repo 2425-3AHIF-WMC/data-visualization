@@ -17,8 +17,11 @@ import {useToast} from "@/hooks/use-toast";
 import {User, Bell, Shield,} from "lucide-react";
 import {Layout} from "@/components/Layout.tsx";
 import {apiFetch} from "@/utils/api.ts";
+import {useNavigate} from 'react-router-dom';
+
 
 export function AccountSettings() {
+    const navigate= useNavigate()
     const {toast} = useToast();
     const fileInputRef = useRef<HTMLInputElement>(null);
 const [preview, setPreview]= useState<string>("");
@@ -70,7 +73,7 @@ const [preview, setPreview]= useState<string>("");
                     firstName: data.user.firstname || '',
                     lastName: data.user.lastname || '',
                     email: data.user.email || 'empty mail',
-                    phone: data.user.telNr || '',
+                    phone: data.user.telNr || 'no telNr',
                     profile_pic: profilePicUrl,
                     currentPassword: '',
                     newPassword: '',
@@ -101,13 +104,15 @@ const [preview, setPreview]= useState<string>("");
         if (!confirm('Möchtest du wirklich deinen Account löschen?')) return;
 
         try {
-            await apiFetch('user/account', 'DELETE', undefined, {Authorization: `Bearer ${token}`});
+            await apiFetch('user/account/delete', 'DELETE', undefined, {Authorization: `Bearer ${token}`});
             toast({title: 'Account gelöscht', description: 'Bis bald!'});
             handleLogout();
+
         } catch (err) {
             console.error('Fehler beim Löschen', err);
             toast({title: 'Fehler', description: 'Account konnte nicht gelöscht werden', variant: 'destructive'});
         }
+
     };
 
     const handlePicUploadClick = () => {
@@ -152,6 +157,7 @@ const [preview, setPreview]= useState<string>("");
     const handleLogout = () => {
         localStorage.removeItem('jwt');
         window.location.reload();
+        navigate('/');
     };
 
     const handleSave = async () => {
@@ -404,7 +410,7 @@ const [preview, setPreview]= useState<string>("");
                                         Das Löschen deines Kontos entfernt alle deine Daten und kann nicht rückgängig
                                         gemacht werden.
                                     </p>
-                                    <Button variant="destructive" size="sm">Account löschen</Button>
+                                    <Button variant="destructive" onClick={handleDeleteAccount} size="sm">Account löschen</Button>
                                 </div>
                             </div>
                         </TabsContent>

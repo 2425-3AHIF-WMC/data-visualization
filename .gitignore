@@ -2,3 +2,4 @@ BACKEND/api/.env
 new_frontend/node_modules
 .gitmodules
 BACKEND/node_modules
+user_data

@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-//import dataRoutes from '../routes/dataRoutes';
+import dataRouter from "../routes/dataRoutes";
 import userRouter from '../routes/userRoutes';
 //import analysisRoutes from '../routes/analysisRoutes';
 //import systemRoutes from '../routes/systemRoutes';
@@ -15,13 +15,13 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 // Routen
-//app.use('/api/data', dataRoutes);
+app.use('/api/datasets', dataRouter);
 app.use('/api/user', userRouter);
 //app.use('/api/analysis', analysisRoutes);
 //app.use('/api/system', systemRoutes);
 app.use('/api/auth', authRoutes);
 // app use authroutes
-app.use((req, res) => {
+app.use((_, res) => {
     res.status(StatusCodes.NOT_FOUND).json({ message: "Route nicht gefunden!" });
     return;
 });

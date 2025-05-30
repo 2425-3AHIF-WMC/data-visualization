@@ -1,85 +1,128 @@
 import { StatusCodes } from 'http-status-codes';
-import axios from "axios";
 import csv from "csvtojson";
-// todo
-// url -> done
-// json + csv -> done
-// maybe sql -> in Progress
-// idk
-const importFromUrl = async (req, res) => {
-    const { url } = req.body;
-    if (!url) {
-        res.status(StatusCodes.BAD_REQUEST).json({ error: "No URL provided." });
+import { User } from "../../models";
+import path, { dirname } from "path";
+import { promisify } from "node:util";
+import * as fs from "node:fs";
+import { fileURLToPath } from "node:url";
+const writeFileAsync = promisify(fs.writeFile);
+const readdirAsync = promisify(fs.readdir);
+export const saveUserImport = async (userId, data, format, sourceUrl) => {
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = dirname(__filename);
+    const baseDir = path.join(__dirname, '..', '..', '..', 'user_data');
+    // Finde den passenden Ordnernamen, z.B. "1_Doe_J"
+    const userDirs = await readdirAsync(baseDir);
+    const userFolder = userDirs.find(dir => dir.startsWith(`${userId}_`));
+    if (!userFolder) {
+        throw new Error(`Kein Verzeichnis für User-ID ${userId} gefunden.`);
     }
+    const userDir = path.join(baseDir, userFolder);
+    // Dateiname mit Zeitstempel
+    const now = new Date();
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const filename = `import_${timestamp}.${format}`;
+    const filePath = path.join(userDir, filename);
+    const formattedDate = now.toLocaleDateString('de-DE');
+    // Dateiinhalt vorbereiten – mit Meta-Angabe
+    const payload = JSON.stringify({
+        meta: {
+            url: sourceUrl,
+            created: formattedDate,
+            lastModified: formattedDate
+        },
+        data
+    }, null, 2);
+    try {
+        // Datei speichern
+        await writeFileAsync(filePath, payload, 'utf-8');
+        return filePath;
+    }
+    catch (err) {
+        console.error('Fehler beim Speichern in saveUserImport:', err);
+        throw err;
+    }
+};
+export const importData = async (req, res) => {
+    const { source, content, datasetName } = req.body;
+    const userId = req.user?.id;
+    if (!userId) {
+        res.status(StatusCodes.UNAUTHORIZED).json({ message: "Not authenticated" });
+        return;
+    }
+    if (!source || !['json', 'csv'].includes(source)) {
+        res.status(StatusCodes.BAD_REQUEST).json({ error: 'Invalid or missing source.' });
+        return;
+    }
+    if (!datasetName || typeof datasetName !== 'string' || datasetName.trim() === '') {
+        res.status(StatusCodes.BAD_REQUEST).json({ error: 'Dataset name is required.' });
+        return;
+    }
+    let data = [];
+    try {
+        const user = await User.findById(+userId);
+        if (!user) {
+            res.status(StatusCodes.NOT_FOUND).json({ message: "User not found" });
+            return;
+        }
+        if (source === 'json') {
+            if (!content) {
+                res.status(StatusCodes.BAD_REQUEST).json({ error: 'No JSON content provided.' });
+                return;
+            }
+            data = typeof content === 'string' ? JSON.parse(content) : content;
+            if (!Array.isArray(data)) {
+                res.status(StatusCodes.BAD_REQUEST).json({ error: 'Expected JSON array of objects.' });
+                return;
+            }
+        }
+        else if (source === 'csv') {
+            if (!content) {
+                res.status(StatusCodes.BAD_REQUEST).json({ error: 'No CSV content provided.' });
+                return;
+            }
+            data = await csv().fromString(content);
+        }
+        await saveUserImport(userId, data, 'json', null);
+        res.status(StatusCodes.OK).json({ data });
+    }
+    catch (err) {
+        console.error('Import error:', err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            error: 'Failed to process import.',
+            details: err.message
+        });
+        return;
+    }
+};
+/*export const fetchFromUrl = async (req: Request, res: Response) => {
+    const {url} = req.body;
+
+    if (!url) {
+        res.status(StatusCodes.BAD_REQUEST).json({error: "No URL provided."});
+        return ;
+    }
+
     try {
         const response = await axios.get(url);
+
         const contentType = response.headers["content-type"];
         let data;
+
         if (contentType.includes("application/json")) {
             data = response.data;
-        }
-        else if (contentType.includes("text/csv") || url.endsWith(".csv")) {
+        } else if (contentType.includes("text/csv") || url.endsWith(".csv")) {
             data = await csv().fromString(response.data);
+        } else {
+            res.status(400).json({error: "Unsupported file format."}); return;
         }
-        else {
-            return res.status(400).json({ error: "Unsupported file format." });
-        }
-        res.json({ data });
+
+        res.status(StatusCodes.OK).json({data});
+    } catch (err) {
+        res.status(500).json({error: "Failed to fetch or parse the URL."}); return;
     }
-    catch (err) {
-        res.status(500).json({ error: "Failed to fetch or parse the URL." });
-    }
-};
-const importJson = async (req, res) => {
-    const { jsonContent } = req.body;
-    if (jsonContent === undefined) {
-        return res
-            .status(StatusCodes.BAD_REQUEST)
-            .json({ error: 'No JSON content provided.' });
-    }
-    try {
-        // Falls es ein String ist, parsen
-        let data;
-        if (typeof jsonContent === 'string') {
-            data = JSON.parse(jsonContent);
-        }
-        else {
-            // schon ein Objekt/Array
-            data = jsonContent;
-        }
-        if (!Array.isArray(data)) {
-            return res
-                .status(StatusCodes.BAD_REQUEST)
-                .json({ error: 'Expected JSON array of objects.' });
-        }
-        return res.status(StatusCodes.OK).json({ data });
-    }
-    catch (err) {
-        return res
-            .status(StatusCodes.BAD_REQUEST)
-            .json({ error: 'Invalid JSON format.', details: err.message });
-    }
-};
-const importCSV = async (req, res) => {
-    // Wir erwarten im JSON-Body ein Feld csvContent mit dem reinen CSV-Text
-    const { csvContent } = req.body;
-    if (!csvContent) {
-        return res
-            .status(StatusCodes.BAD_REQUEST)
-            .json({ error: 'Kein csvContent im Body gefunden.' });
-    }
-    try {
-        // CSV parsen
-        const data = await csv().fromString(csvContent);
-        return res.status(StatusCodes.OK).json({ data });
-    }
-    catch (err) {
-        console.error('CSV-Parsing-Fehler:', err);
-        return res
-            .status(StatusCodes.INTERNAL_SERVER_ERROR)
-            .json({ error: 'Fehler beim Parsen der CSV-Daten.', details: err.message });
-    }
-};
+
+}*/
 /*export const importFromSQL = async (req: Request, res: Response) => {
     const {dbType, host, user, password, database, port} = req.body;
 

@@ -11,7 +11,7 @@ const userRouter = Router();
 userRouter.post('/change-password',verifyToken,changePassword);
 userRouter.post('/profile-picture/set',verifyToken,setProfilePic);
 userRouter.post('/profile-picture',verifyToken,setProfilePic);
-userRouter.delete('/delete/account', verifyToken,deleteUser);
+userRouter.delete('/account/delete', verifyToken,deleteUser);
 userRouter.get("/profile", verifyToken,getUser);
 userRouter.put('/profile', verifyToken, updateProfile);
 

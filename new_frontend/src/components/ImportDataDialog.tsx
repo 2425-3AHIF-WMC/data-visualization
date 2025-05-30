@@ -35,6 +35,8 @@ export function ImportDataDialog({
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
+    const token = localStorage.getItem("jwt");
+
     const handleFileClick = () => {
         fileInputRef.current?.click();
     };
@@ -90,21 +92,24 @@ export function ImportDataDialog({
 
         try {
             let payload: any = {
-                name: datasetName,
-                type: activeTab,
+                datasetName: datasetName,
+                source: activeTab,
             };
 
-            if (activeTab === 'json' || activeTab === 'csv') {
-                payload.content = activeTab === 'json'
-                    ? JSON.parse(jsonContent)
-                    : jsonContent;
+            if (activeTab === 'json') {
+                payload.content = JSON.parse(jsonContent);
+
+            } else if (activeTab === 'csv') {
+                payload.content = jsonContent;
             }
 
-            const result = await apiFetch('/datasets/import/json', 'POST', payload);
+            const result= await apiFetch('datasets/import', 'POST', payload,{
+                Authorization: `Bearer ${token}`
+            });
 
-            if (onImport) {
+          /*  if (onImport) {
                 onImport({...payload, serverResponse: result});
-            }
+            }*/
 
             onOpenChange(false);
         } catch (err) {

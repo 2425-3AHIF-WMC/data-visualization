@@ -9,7 +9,8 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import {apiFetch} from "@/utils/api.ts";
 import {useNavigate} from "react-router-dom";
-
+import {promises as fs} from 'fs';
+import * as path from 'path';
 
 export interface RegisterResponse {
     token: string;
@@ -21,7 +22,7 @@ export interface RegisterResponse {
         telNr?: string;
     };
 }
-//import { useRouter } from 'next/router';
+
 
 export default function SignIn() {
     const {toast}= useToast();
@@ -56,8 +57,9 @@ export default function SignIn() {
                 description: "Sie können sich jetzt einloggen.",
             });
 
+
             // TODO: Weiterleitung nach erfolgreicher Registrierung zu profilbild-frage
-            // await router.push('/'); dashboard
+
             navigate('/')
 
         } catch (err: any) {
