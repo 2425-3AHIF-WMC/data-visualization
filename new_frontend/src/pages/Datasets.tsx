@@ -96,6 +96,7 @@ const Datasets = () => {
                     throw new Error("Kein Auth-Token gefunden");
                 }
 
+
                 // 2. Mit apiFetch den GET-Request absetzen und Authorization-Header mitschicken
                 const json = await apiFetch<{
                     datasets: Array<{
@@ -119,7 +120,7 @@ const Datasets = () => {
 
                 if (Array.isArray(json.datasets)) {
                     // 3. Rückgabe ins richtige Format umwandeln (Date-Strings -> Date-Objekte)
-                    const userDatasets = json.datasets.map((ds) => ({
+                  const userDatasets = json.datasets.map((ds) => ({
                         id: ds.id,
                         name: (ds as any).datasetName ?? (ds as any).name ?? "Unbenannt",
                         recordCount: ds.recordCount,
@@ -130,7 +131,7 @@ const Datasets = () => {
                         fields: ds.fields,
                           }));
 
-                    setDatasets((prev) => [...prev, ...userDatasets]);}
+                    setDatasets(  [ ...userDatasets]);}
             }catch (error){
                     console.error("Error fetching user datasets:", error);
                     toast({

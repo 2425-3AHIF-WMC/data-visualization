@@ -252,35 +252,151 @@ export const deleteDatasetsFromUser = async (req: RequestWithUser, res: Response
 
 }
 
+export const findDatasetById = async (req: RequestWithUser, res: Response) => {
+    const userId = req.user?.id;
+    const idParam = req.params.fileId;
 
-/*export const fetchFromUrl = async (req: Request, res: Response) => {
-    const {url} = req.body;
+    if (!userId) {
+        res.status(StatusCodes.UNAUTHORIZED).json({ message: "Not authenticated" });
+        return;
+    }
 
-    if (!url) {
-        res.status(StatusCodes.BAD_REQUEST).json({error: "No URL provided."});
-        return ;
+    const fileId = Number(idParam);
+    if (Number.isNaN(fileId) || !Number.isInteger(fileId) || fileId < 1) {
+        res.status(StatusCodes.BAD_REQUEST).json({ error: "Invalid dataset ID" });
+        return;
     }
 
     try {
-        const response = await axios.get(url);
+        const __filename = fileURLToPath(import.meta.url);
+        const __dirname = dirname(__filename);
+        const baseDir = path.join(__dirname, "..", "..", "..", "user_data");
 
-        const contentType = response.headers["content-type"];
-        let data;
+        const userDirs = await readdirAsync(baseDir);
+        const userFolder = userDirs.find(dir => dir.startsWith(`${userId}_`));
 
-        if (contentType.includes("application/json")) {
-            data = response.data;
-        } else if (contentType.includes("text/csv") || url.endsWith(".csv")) {
-            data = await csv().fromString(response.data);
-        } else {
-            res.status(400).json({error: "Unsupported file format."}); return;
+        if (!userFolder) {
+            res.status(StatusCodes.NOT_FOUND).json({ message: "User folder not found." });
+            return;
         }
 
-        res.status(StatusCodes.OK).json({data});
-    } catch (err) {
-        res.status(500).json({error: "Failed to fetch or parse the URL."}); return;
+        const userDir = path.join(baseDir, userFolder);
+        const files = await readdirAsync(userDir);
+
+        const matchingFile = files.find(filename => {
+            const match = filename.match(/import_.*?_(\d+)\.json$/);
+            return match && parseInt(match[1], 10) === fileId;
+        });
+
+        if (!matchingFile) {
+            res.status(StatusCodes.NOT_FOUND).json({ message: "Dataset not found." });
+            return;
+        }
+
+        const filePath = path.join(userDir, matchingFile);
+        const content = await readFileAsync(filePath, "utf-8");
+        const parsed = JSON.parse(content);
+
+        res.status(StatusCodes.OK).json({
+            id: parsed.meta.id,
+            name: parsed.meta.datasetName,
+            description: parsed.meta.description,
+            tags: parsed.meta.tags,
+            createdAt: parsed.meta.created,
+            lastModified: parsed.meta.lastModified,
+            url: parsed.meta.url,
+            data: parsed.data
+        });
+
+    } catch (err: any) {
+        console.error("Fehler beim Laden des Datasets:", err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            error: "Fehler beim Laden des Datasets.",
+            details: err.message
+        });
+    }
+};
+
+export const updateDatasetById=async (req:RequestWithUser,res:Response)=>{
+    const userId = req.user?.id;
+    const idParam = req.params.fileId;
+
+    if (!userId) {
+         res.status(StatusCodes.UNAUTHORIZED).json({ message: "Not authenticated" }); return
+    }
+    const fileId = Number(idParam);
+    if (Number.isNaN(fileId) || !Number.isInteger(fileId) || fileId < 1) {
+       res.status(StatusCodes.BAD_REQUEST).json({ error: "Invalid dataset ID" }); return
     }
 
-}*/
+    const { name, description, tags } = req.body;
+
+    if (typeof name !== "string" || name.trim() === "") {
+         res.status(StatusCodes.BAD_REQUEST).json({ error: "Name ist erforderlich." }); return
+    }
+    if (tags && !Array.isArray(tags)) {
+       res.status(StatusCodes.BAD_REQUEST).json({ error: "Tags müssen ein Array sein." }); return
+    }
+
+    try{
+        const __filename = fileURLToPath(import.meta.url);
+        const __dirname = dirname(__filename);
+        const baseDir = path.join(__dirname, "..", "..", "..", "user_data");
+
+        const userDirs = await readdirAsync(baseDir);
+        const userFolder = userDirs.find(dir => dir.startsWith(`${userId}_`));
+        if (!userFolder) {
+             res.status(StatusCodes.NOT_FOUND).json({ message: "User folder not found." }); return
+        }
+
+        const userDir = path.join(baseDir, userFolder);
+        const files = fs.readdirSync(userDir);
+
+
+        const matchingFile = files.find(filename => {
+            const match = filename.match(/import_.*?_(\d+)\.json$/);
+            return match && parseInt(match[1], 10) === fileId;});
+
+        if (!matchingFile) {
+            res.status(StatusCodes.NOT_FOUND).json({ message: "Dataset not found." }); return
+        }
+
+        const filePath = path.join(userDir, matchingFile);
+        const content = await readFileAsync(filePath, "utf-8");
+        const parsed = JSON.parse(content);
+
+        const updatedMeta = {
+            ...parsed.meta,
+            datasetName: name,
+            lastModified: new Date().toLocaleDateString('de-DE'), // jeden Patch-Request als neue Änderungszeit setzen
+            // description und tags speichern wir optional, falls sie existieren:
+            ...(description !== undefined ? { description } : {}),
+            ...(tags !== undefined ? { tags } : {}),
+        };
+
+        const updated = {
+            meta: updatedMeta,
+            data: parsed.data,
+        };
+
+        await writeFileAsync(filePath, JSON.stringify(updated, null, 2), "utf-8");
+
+         res.status(StatusCodes.OK).json({
+            message: "Datensatz erfolgreich aktualisiert.",
+            meta: updatedMeta,
+        });
+
+    }catch (error){
+        console.error("Fehler beim Aktualisieren des Datensatzes:", error);
+         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            error: "Fehler beim Aktualisieren des Datensatzes.",
+            details: error.message,
+        }); return
+    }
+
+}
+
+
 
 
 /*export const importFromSQL = async (req: Request, res: Response) => {
