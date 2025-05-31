@@ -79,7 +79,7 @@ export const sampleDatasets = [
     }
 ];
 
-
+const token = localStorage.getItem("jwt");
 
 const Datasets = () => {
     const {toast} = useToast();
@@ -91,7 +91,7 @@ const Datasets = () => {
     useEffect(() => {
         const fetchUserDatasets=async ()=>{
             try{
-                const token = localStorage.getItem("jwt");
+
                 if (!token) {
                     throw new Error("Kein Auth-Token gefunden");
                 }
@@ -143,12 +143,36 @@ const Datasets = () => {
         fetchUserDatasets();
     }, [toast]);
 
-    const handleDelete = (id: number) => {
-        setDatasets(datasets.filter(dataset => dataset.id !== id));
-        toast({
-            title: "Datensatz gelöscht",
-            description: "Der Datensatz wurde erfolgreich entfernt."
-        });
+    const handleDelete = async (id: number) => {
+       try {
+           if (!token) {
+               throw new Error("Kein Auth-Token gefunden");
+           }
+
+           await apiFetch(
+               `datasets/${id}`,
+               "DELETE",
+               undefined,
+               {
+                   Authorization: `Bearer ${token}`,
+               }
+           );
+
+           setDatasets(datasets.filter(dataset => dataset.id !== id));
+           toast({
+               title: "Datensatz gelöscht",
+               description: "Der Datensatz wurde erfolgreich entfernt."
+           });
+
+       }catch (error){
+           console.error("Fehler beim Löschen des Datensatzes:", error);
+           toast({
+               title: "Fehler",
+               description: error.message || "Der Datensatz konnte nicht gelöscht werden.",
+               variant: "destructive",
+           });
+       }
+
     };
 
     const filteredDatasets = datasets.filter(dataset =>

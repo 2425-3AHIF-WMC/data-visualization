@@ -17,7 +17,6 @@ export const saveUserImport = async (userId: string, data: any, format: string, 
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = dirname(__filename);
 
-
     const baseDir = path.join(__dirname, '..', '..', '..', 'user_data');
 
     // Finde den passenden Ordnernamen, z.B. "1_Doe_J"
@@ -30,15 +29,23 @@ export const saveUserImport = async (userId: string, data: any, format: string, 
 
     const userDir = path.join(baseDir, userFolder);
 
-    // Dateiname mit Zeitstempel
+
+    const existingImports = (await readdirAsync(userDir))
+        .filter(f => f.startsWith('import_') && f.endsWith('.json'));
+
+    const existingIds = existingImports.map(filename => {
+        const match = filename.match(/import_.*?_(\d+)\.json$/);
+        return match ? parseInt(match[1], 10) : 0;
+    }).filter(id => id > 0);
+
+    const maxId = existingIds.length > 0 ? Math.max(...existingIds) : 0;
+    const newId = maxId + 1;
+
+
+    // Dateiname mit neuem ID und Zeitstempel
     const now = new Date();
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-
-    const existingImports = (await readdirAsync(userDir)).filter(f => f.startsWith('import_') && f.endsWith('.json'));
-    const importCount = existingImports.length + 1;
-
-
-    const filename = `import_${timestamp}_${importCount}.${format}`;
+    const filename = `import_${timestamp}_${newId}.${format}`;
     const filePath = path.join(userDir, filename);
 
     const formattedDate = now.toLocaleDateString('de-DE');
@@ -46,7 +53,7 @@ export const saveUserImport = async (userId: string, data: any, format: string, 
     // Dateiinhalt vorbereiten – mit Meta-Angabe
     const payload = JSON.stringify({
         meta: {
-            id: importCount,
+            id: newId,
             datasetName: datasetName,
             url: sourceUrl,
             created: formattedDate,
@@ -55,7 +62,6 @@ export const saveUserImport = async (userId: string, data: any, format: string, 
         data
     }, null, 2);
     try {
-        // Datei speichern
         await writeFileAsync(filePath, payload, 'utf-8');
         return filePath;
     } catch (err) {
