@@ -41,7 +41,7 @@ export function Navbar() {
 
     const token = localStorage.getItem('jwt');
    // let userDatasFromJwt:undefined|DecodedToken;
-    let user;
+    let user: { firstname: string; lastname: string; email: string } | undefined;
 
     if(token){
         try {
@@ -49,7 +49,8 @@ export function Navbar() {
              user = {
                /* name: 'Benutzer',
                 email: 'benutzer@beispiel.de',*/
-                 name: userDatasFromJwt?.firstname + ' ' + userDatasFromJwt.lastname,
+                 firstname: userDatasFromJwt?.firstname,
+                 lastname:userDatasFromJwt?.lastname,
                  email: userDatasFromJwt?.email
             };
 
@@ -61,19 +62,10 @@ export function Navbar() {
 const isLoggedIn= Boolean(token);
 
 
-// TODO: echter user
- /*   const userExpampleNotReal = {
-       name: 'Benutzer',
-        email: 'benutzer@beispiel.de',
-       /* name: userDatasFromJwt?.firstname + ' ' + userDatasFromJwt.lastname,
-        email: userDatasFromJwt?.email
-    };  */
-
     const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
 
 
     const handleLogout = () => {
-     //   setIsLoggedIn(false);
         localStorage.removeItem('jwt')
         navigate("/");
     };
@@ -193,7 +185,9 @@ const isLoggedIn= Boolean(token);
                                     <Avatar
                                         className="h-8 w-8 border border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-900/30">
                                         <AvatarFallback className="text-purple-700 dark:text-purple-300">
-                                            {user?.name?.charAt(0).toUpperCase() || 'B'}
+                                            {`${user?.firstname.charAt(0).toUpperCase() ?? ''}${
+                                                user?.lastname.charAt(0).toUpperCase() ?? ''
+                                            }`}
                                         </AvatarFallback>
                                     </Avatar>
                                 </Button>
@@ -201,7 +195,7 @@ const isLoggedIn= Boolean(token);
                             <DropdownMenuContent align="end" className="w-56">
                                 <div className="flex items-center justify-start gap-2 p-2">
                                     <div className="flex flex-col space-y-1 leading-none">
-                                        <p className="font-medium">{user?.name || 'Benutzer'}</p>
+                                        <p className="font-medium"> {`${user?.firstname} ${user?.lastname}`}</p>
                                         <p className="text-sm text-muted-foreground">{user?.email || 'benutzer@beispiel.de'}</p>
                                     </div>
                                 </div>
@@ -252,7 +246,7 @@ const isLoggedIn= Boolean(token);
                             <div className="flex items-center gap-2">
                                 <BarChart3 className="h-5 w-5 text-purple-600 dark:text-purple-400"/>
                                 <span
-                                    className="font-bold text-xl bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">DataViz</span>
+                                    className="font-bold text-xl bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">Data-Visualisation</span>
                             </div>
                             <Button variant="ghost" size="icon" onClick={toggleMobileMenu}>
                                 <span className="sr-only">Close</span>

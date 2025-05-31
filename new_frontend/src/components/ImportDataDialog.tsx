@@ -72,13 +72,19 @@ export function ImportDataDialog({
         setIsLoading(true);
         try {
             const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
             const text = await response.text();
 
-            if (activeTab === 'json') {
-                const parsed = JSON.parse(text);
-                setJsonContent(JSON.stringify(parsed, null, 2));
-            } else if (activeTab === 'csv') {
-                setJsonContent(text);
+            if (activeTab === 'url') {
+                // Versuche JSON zu parsen; wenn es fehlschlägt, zeige Rohtext
+                try {
+                    const parsed = JSON.parse(text);
+                    setJsonContent(JSON.stringify(parsed, null, 2));
+                } catch {
+                    setJsonContent(text);
+                }
             }
         } catch (error) {
             alert('Konnte Datei nicht laden. Prüfe die URL und das Format.');
@@ -101,15 +107,23 @@ export function ImportDataDialog({
 
             } else if (activeTab === 'csv') {
                 payload.content = jsonContent;
+            } else if(activeTab==='url'){
+                try {
+                    // Versuche, aus jsonContent ein Objekt zu machen, falls es gültiges JSON ist
+                    payload.content = JSON.parse(jsonContent);
+                } catch {
+                    // Falls kein JSON, schicke den rohen String (z.B. CSV o.ä.)
+                    payload.content = jsonContent;
+                }
             }
 
-            const result= await apiFetch('datasets/import', 'POST', payload,{
+            const result = await apiFetch('datasets/import', 'POST', payload, {
                 Authorization: `Bearer ${token}`
             });
 
-          /*  if (onImport) {
-                onImport({...payload, serverResponse: result});
-            }*/
+            /*  if (onImport) {
+                  onImport({...payload, serverResponse: result});
+              }*/
 
             onOpenChange(false);
         } catch (err) {
@@ -246,6 +260,14 @@ export function ImportDataDialog({
                             <p className="text-xs text-muted-foreground mt-1">
                                 Enter a direct link to a file.
                             </p>
+
+                            <Label htmlFor="url-result" className="mt-2 block">Result:</Label>
+                            <Textarea
+                                id="url-result"
+                                readOnly
+                                value={jsonContent}
+                                className="mt-1 font-mono text-xs h-[150px] overflow-auto"
+                            />
                         </TabsContent>
                     </Tabs>
                 </div>

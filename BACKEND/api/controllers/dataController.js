@@ -61,7 +61,7 @@ export const importUserDatasets = async (req, res) => {
         res.status(StatusCodes.UNAUTHORIZED).json({ message: "Not authenticated" });
         return;
     }
-    if (!source || !['json', 'csv'].includes(source)) {
+    if (!source || !['json', 'csv', 'url'].includes(source)) {
         res.status(StatusCodes.BAD_REQUEST).json({ error: 'Invalid or missing source.' });
         return;
     }
@@ -93,6 +93,35 @@ export const importUserDatasets = async (req, res) => {
                 return;
             }
             data = await csv().fromString(content);
+        }
+        else if (source === 'url') {
+            if (!content) {
+                res.status(StatusCodes.BAD_REQUEST).json({ error: 'No content from URL provided.' });
+                return;
+            }
+            if (typeof content !== 'string') {
+                if (Array.isArray(content)) {
+                    data = content;
+                }
+                else {
+                    res.status(StatusCodes.BAD_REQUEST).json({ error: 'Expected JSON array or CSV text.' });
+                    return;
+                }
+            }
+            else {
+                try {
+                    const parsed = JSON.parse(content);
+                    if (!Array.isArray(parsed)) {
+                        res.status(StatusCodes.BAD_REQUEST).json({ error: 'Expected JSON array of objects.' });
+                        return;
+                    }
+                    data = parsed;
+                }
+                catch {
+                    // Wenn es kein JSON-Array war, vielleicht CSV?
+                    data = await csv().fromString(content);
+                }
+            }
         }
         await saveUserImport(userId, data, 'json', null, datasetName);
         res.status(StatusCodes.OK).json({ data });

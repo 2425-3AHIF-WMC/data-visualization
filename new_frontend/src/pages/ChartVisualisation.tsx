@@ -47,6 +47,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Layout } from '../components/Layout';
 import { sampleDatasets } from "@/pages/Datasets.tsx";
 import SavedVisualization from "@/pages/SavedVisualization.tsx";
+import {apiFetch} from "@/utils/api.ts";
 
 const chartColors = [
     'hsl(var(--primary))',
@@ -60,6 +61,9 @@ const ChartVisualization = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const { toast } = useToast();
+    const token=localStorage.getItem("jwt");
+
+    const [allDatasets, setAllDatasets] = useState<typeof sampleDatasets>(sampleDatasets);
     const [chartType, setChartType] = useState<'bar' | 'line' | 'pie' | 'area' | 'scatter' | 'composed'>('bar');
     const [xAxis, setXAxis] = useState<string>('');
     const [yAxis, setYAxis] = useState<string>('');
@@ -70,8 +74,62 @@ const ChartVisualization = () => {
     const [selectedDatasetId, setSelectedDatasetId] = useState<string>('');
 
     useEffect(() => {
-        if (location.state && location.state.processedData) {
-            const data = location.state.processedData;
+
+        const fetchUserDatasets=async () => {
+            if (!token) return;
+
+            try {
+                const response: any = await apiFetch(
+                    `datasets`,
+                    "GET",
+                    undefined,
+                    { Authorization: `Bearer ${token}` }
+                );
+
+                if (Array.isArray(response.datasets)) {
+                    const userDS = response.datasets.map((ds: any) => {
+                        // **EXTRACT FIELDS**:
+                        // Wenn 'fields' nicht existiert, verwende 'columns', sonst aus data-Objekt ableiten
+                        let fieldsArray: string[] = [];
+                        if (Array.isArray(ds.fields) && ds.fields.length > 0) {
+                            fieldsArray = ds.fields;
+                        } else if (Array.isArray(ds.columns) && ds.columns.length > 0) {
+                            fieldsArray = ds.columns.map((col: any) => col.name); // <-- CHANGE: Felder aus columns ziehen
+                        } else if (Array.isArray(ds.data) && ds.data.length > 0) {
+                            fieldsArray = Object.keys(ds.data[0]); // <-- CHANGE: Fallback aus data-Keys
+                        }
+
+                        return {
+                            id: ds.id,
+                            name: ds.name,
+                            recordCount: ds.recordCount,
+                            createdAt: new Date(ds.createdAt),
+                            lastModified: new Date(ds.lastModified),
+                            fileType: ds.fileType,
+                            data: ds.data,
+                            fields: fieldsArray, // <-- CHANGE: hier das neu gefüllte fields-Array setzen
+                            columns: ds.columns || [] // optional falls später benötigt
+                        };
+                    });
+                    setAllDatasets([...sampleDatasets, ...userDS]);
+                }
+
+            }catch (error){
+                console.error("Fehler beim Laden der Nutzerdatensätze:", error);
+                toast({
+                    title: "Fehler",
+                    description: "Konnte Nutzerdatensätze nicht laden.",
+                    variant: "destructive",
+                });
+            }
+        };
+fetchUserDatasets();
+
+    }, [toast,token]);
+    // --- 2. Wenn aus vorheriger Seite processedData mitgegeben wurde, nutzen ---
+    useEffect(() => {
+        if (location.state && (location.state as any).processedData) {
+            const data = (location.state as any).processedData;
             setProcessedData(data);
 
             if (data.fields && data.fields.length > 0) {
@@ -85,9 +143,10 @@ const ChartVisualization = () => {
         }
     }, [location, navigate, toast]);
 
+    // --- 3. Wenn der Nutzer einen Datensatz aus dem Dropdown auswählt, Daten/Fields setzen ---
     useEffect(() => {
         if (selectedDatasetId) {
-            const selected = sampleDatasets.find(ds => ds.id.toString() === selectedDatasetId);
+            const selected = allDatasets.find(ds => ds.id.toString() === selectedDatasetId);
             if (selected && selected.data && selected.fields) {
                 setProcessedData(selected);
                 setAvailableFields(selected.fields);
@@ -98,9 +157,10 @@ const ChartVisualization = () => {
                 setYAxis(numericField || selected.fields[1] || selected.fields[0]);
             }
         }
-    }, [selectedDatasetId]);
+    }, [selectedDatasetId,allDatasets]);
 
-    useEffect(() => {
+// 4) Whenever processedData/xAxis/yAxis change, prepare chartData
+useEffect(() => {
         if (processedData && xAxis && yAxis) {
             const prepared = processedData.data.map((item: any) => ({
                 name: item[xAxis]?.toString() || '',
@@ -290,7 +350,7 @@ const ChartVisualization = () => {
                                             <SelectValue placeholder="Datensatz auswählen" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {sampleDatasets.map((dataset) => (
+                                            {allDatasets.map((dataset) => (
                                                 <SelectItem key={dataset.id} value={dataset.id.toString()}>
                                                     {dataset.name}
                                                 </SelectItem>
