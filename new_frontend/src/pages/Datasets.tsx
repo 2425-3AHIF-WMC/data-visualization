@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Button} from "@/components/ui/button";
 import {Card, CardContent, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
 import {Input} from "@/components/ui/input";
@@ -8,6 +8,7 @@ import {format} from "date-fns";
 import {useToast} from "@/hooks/use-toast";
 import {Link} from "react-router-dom";
 import {Layout} from '../components/Layout';
+import {apiFetch} from "@/utils/api.ts";
 
 
 export const sampleDatasets = [
@@ -84,6 +85,63 @@ const Datasets = () => {
     const {toast} = useToast();
     const [datasets, setDatasets] = useState(sampleDatasets);
     const [searchTerm, setSearchTerm] = useState('');
+
+
+    // 1. useEffect, um User-Datasets beim Mounten zu laden
+    useEffect(() => {
+        const fetchUserDatasets=async ()=>{
+            try{
+                const token = localStorage.getItem("jwt");
+                if (!token) {
+                    throw new Error("Kein Auth-Token gefunden");
+                }
+
+                // 2. Mit apiFetch den GET-Request absetzen und Authorization-Header mitschicken
+                const json = await apiFetch<{
+                    datasets: Array<{
+                        id: number;
+                        name: string;
+                        recordCount: number;
+                        createdAt: string;
+                        lastModified: string;
+                        fileType: string;
+                        data: any[];
+                        fields: string[];
+                    }>;
+                }>(
+                    "datasets",         // -> wird zu http://localhost:3000/api/datasets
+                    "GET",
+                    undefined,
+                    {
+                        Authorization: `Bearer ${token}`,
+                    }
+                );
+
+                if (Array.isArray(json.datasets)) {
+                    // 3. Rückgabe ins richtige Format umwandeln (Date-Strings -> Date-Objekte)
+                    const userDatasets = json.datasets.map((ds) => ({
+                        id: ds.id,
+                        name: (ds as any).datasetName ?? (ds as any).name ?? "Unbenannt",
+                        recordCount: ds.recordCount,
+                        createdAt: new Date(ds.createdAt),
+                        lastModified: new Date(ds.lastModified),
+                        fileType: ds.fileType,
+                        data: ds.data,
+                        fields: ds.fields,
+                          }));
+
+                    setDatasets((prev) => [...prev, ...userDatasets]);}
+            }catch (error){
+                    console.error("Error fetching user datasets:", error);
+                    toast({
+                        title: "Fehler",
+                        description: "Konnte Nutzerdatensätze nicht laden.",
+                        variant: "destructive",
+                    });
+            }
+        };
+        fetchUserDatasets();
+    }, [toast]);
 
     const handleDelete = (id: number) => {
         setDatasets(datasets.filter(dataset => dataset.id !== id));
