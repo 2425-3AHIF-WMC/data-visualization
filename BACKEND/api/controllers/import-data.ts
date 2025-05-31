@@ -9,9 +9,10 @@ import * as fs from "node:fs";
 import {fileURLToPath} from "node:url";
 
 const writeFileAsync = promisify(fs.writeFile);
+const readFileAsync=promisify(fs.readFile);
 const readdirAsync = promisify(fs.readdir);
 
-export const saveUserImport = async (userId:string, data:any, format:string, sourceUrl: string | null) => {
+export const saveUserImport = async (userId:string, data:any, format:string, sourceUrl: string | null,datasetName:string) => {
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = dirname(__filename);
 
@@ -39,6 +40,7 @@ export const saveUserImport = async (userId:string, data:any, format:string, sou
         // Dateiinhalt vorbereiten – mit Meta-Angabe
         const payload = JSON.stringify({
             meta: {
+                datasetName:datasetName,
                 url: sourceUrl,
                 created: formattedDate,
                 lastModified: formattedDate
@@ -104,7 +106,7 @@ export const importData = async (req: RequestWithUser, res: Response) => {
             }
             data = await csv().fromString(content);
         }
-        await saveUserImport(userId, data, 'json', null);
+        await saveUserImport(userId, data, 'json', null,datasetName);
 
         res.status(StatusCodes.OK).json({data});
 
@@ -116,6 +118,72 @@ export const importData = async (req: RequestWithUser, res: Response) => {
         }); return;
     }
 };
+
+
+export const fetchDatasetsFromUser = async (req: RequestWithUser, res: Response) => {
+    const userId = req.user?.id;
+
+    if (!userId) {
+        res.status(StatusCodes.UNAUTHORIZED).json({ message: "Not authenticated" });
+        return;
+    }
+
+    try {
+        const __filename = fileURLToPath(import.meta.url);
+        const __dirname = dirname(__filename);
+        const baseDir = path.join(__dirname, '..', '..', '..', 'user_data');
+
+        const userDirs = await readdirAsync(baseDir);
+        const userFolder = userDirs.find(dir => dir.startsWith(`${userId}_`));
+
+        if (!userFolder) {
+            res.status(StatusCodes.NOT_FOUND).json({ message: "User folder not found." });
+            return;
+        }
+
+        const userDir = path.join(baseDir, userFolder);
+        const files = await readdirAsync(userDir);
+        const datasetFiles = files.filter(f => f.startsWith('import_') && f.endsWith('.json'));
+
+        const datasets = await Promise.all(datasetFiles.map(async (file, index) => {
+            const filePath = path.join(userDir, file);
+            const content = await readFileAsync(filePath, 'utf-8');
+            const parsed = JSON.parse(content);
+
+            const createdAtParts = parsed.meta.created.split('.'); // dd.mm.yyyy
+            const modifiedAtParts = parsed.meta.lastModified.split('.');
+
+            const createdAt = new Date(+createdAtParts[2], +createdAtParts[1] - 1, +createdAtParts[0]);
+            const lastModified = new Date(+modifiedAtParts[2], +modifiedAtParts[1] - 1, +modifiedAtParts[0]);
+
+            const records = Array.isArray(parsed.data) ? parsed.data : [];
+            const previewData = records.slice(0, 5); // kleine Vorschau
+
+            return {
+                id: index + 1,
+                name: parsed.meta.datasetName,
+                recordCount: records.length,
+                createdAt,
+                lastModified,
+                fileType: 'JSON',
+                data: previewData,
+                fields: previewData.length > 0 ? Object.keys(previewData[0]) : []
+            };
+        }));
+
+        res.status(StatusCodes.OK).json({ datasets });
+
+    } catch (err: any) {
+        console.error('Fehler beim Abrufen der Datasets:', err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            error: 'Fehler beim Abrufen der Datasets.',
+            details: err.message
+        });
+    }
+};
+
+
+
 
 
 /*export const fetchFromUrl = async (req: Request, res: Response) => {
