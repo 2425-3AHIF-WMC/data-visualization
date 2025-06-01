@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card.tsx';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import {
     BarChart,
     LineChart,
@@ -12,10 +12,16 @@ import {
     Line,
     Bar,
     AreaChart,
-    ScatterChart, Scatter, ComposedChart, Area
+    ScatterChart,
+    Scatter,
+    ComposedChart,
+    Area,
+    Legend,
+    ResponsiveContainer,
+    CartesianGrid
 } from 'recharts';
 import { Link, useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button.tsx';
+import { Button } from '@/components/ui/button';
 import { Layout } from '../components/Layout';
 import { Trash2, Pencil, Expand, Download } from 'lucide-react';
 import { toJpeg } from 'html-to-image';
@@ -27,7 +33,13 @@ export interface SavedVisualization {
     type: 'bar' | 'line' | 'pie' | 'area' | 'scatter' | 'composed';
     data: any[];
     xAxis: string;
-    yAxis: string;
+    yAxis?: string;
+    selectedDatasets?: {
+        id: string;
+        name: string;
+        yAxisField: string;
+        color: string;
+    }[];
 }
 
 const chartColors = [
@@ -42,32 +54,119 @@ const chartColors = [
 const renderChartPreview = (
     type: 'bar' | 'line' | 'pie' | 'area' | 'scatter' | 'composed',
     data: any[],
+    selectedDatasets?: any[],
     preview = true
 ) => {
     const displayData = preview ? data.slice(0, 5) : data;
+    const width = preview ? 250 : 800;
+    const height = preview ? 150 : 500;
 
     switch (type) {
-        case 'bar':
-            return (
-                <BarChart width={preview ? 250 : 800} height={preview ? 150 : 500} data={displayData}>
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="value" fill={chartColors[0]} />
-                </BarChart>
-            );
         case 'line':
-            return (
-                <LineChart width={preview ? 250 : 800} height={preview ? 150 : 500} data={displayData}>
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Line type="monotone" dataKey="value" stroke={chartColors[1]} />
-                </LineChart>
-            );
+            if (selectedDatasets && selectedDatasets.length > 0) {
+                // Multi-Dataset Line Chart
+                return (
+                    <ResponsiveContainer width={width} height={height}>
+                        <LineChart data={displayData}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="name" />
+                            <YAxis />
+                            <Tooltip />
+                            {!preview && <Legend />}
+                            {selectedDatasets.map((dataset, index) => (
+                                <Line
+                                    key={dataset.id}
+                                    type="monotone"
+                                    dataKey={`dataset_${index}`}
+                                    stroke={dataset.color}
+                                    strokeWidth={2}
+                                    name={dataset.name}
+                                    connectNulls={false}
+                                />
+                            ))}
+                        </LineChart>
+                    </ResponsiveContainer>
+                );
+            } else {
+                // Single Dataset Line Chart (fallback)
+                return (
+                    <LineChart width={width} height={height} data={displayData}>
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <Line type="monotone" dataKey="value" stroke={chartColors[1]} />
+                    </LineChart>
+                );
+            }
+        case 'bar':
+            if (selectedDatasets && selectedDatasets.length > 0) {
+                // Multi-Dataset Bar Chart
+                return (
+                    <ResponsiveContainer width={width} height={height}>
+                        <BarChart data={displayData}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="name" />
+                            <YAxis />
+                            <Tooltip />
+                            {!preview && <Legend />}
+                            {selectedDatasets.map((dataset, index) => (
+                                <Bar
+                                    key={dataset.id}
+                                    dataKey={`dataset_${index}`}
+                                    fill={dataset.color}
+                                    name={dataset.name}
+                                />
+                            ))}
+                        </BarChart>
+                    </ResponsiveContainer>
+                );
+            } else {
+                // Single Dataset Bar Chart (fallback)
+                return (
+                    <BarChart width={width} height={height} data={displayData}>
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <Bar dataKey="value" fill={chartColors[0]} />
+                    </BarChart>
+                );
+            }
+        case 'scatter':
+            if (selectedDatasets && selectedDatasets.length > 0 && Array.isArray(data) && data.length > 0 && data[0].datasetIndex !== undefined) {
+                // Multi-Dataset Scatter Chart
+                return (
+                    <ResponsiveContainer width={width} height={height}>
+                        <ScatterChart>
+                            <CartesianGrid />
+                            <XAxis dataKey="x" name="X" />
+                            <YAxis dataKey="y" name="Y" />
+                            <Tooltip cursor={{ strokeDasharray: '3 3' }} />
+                            {!preview && <Legend />}
+                            {data.map((datasetInfo: any) => (
+                                <Scatter
+                                    key={datasetInfo.datasetIndex}
+                                    name={datasetInfo.datasetName}
+                                    data={datasetInfo.data}
+                                    fill={selectedDatasets[datasetInfo.datasetIndex]?.color || chartColors[datasetInfo.datasetIndex]}
+                                />
+                            ))}
+                        </ScatterChart>
+                    </ResponsiveContainer>
+                );
+            } else {
+                // Single Dataset Scatter Chart (fallback)
+                return (
+                    <ScatterChart width={width} height={height}>
+                        <XAxis dataKey="name" />
+                        <YAxis dataKey="value" />
+                        <Tooltip />
+                        <Scatter name="A" data={displayData} fill={chartColors[3]} />
+                    </ScatterChart>
+                );
+            }
         case 'pie':
             return (
-                <PieChart width={preview ? 250 : 800} height={preview ? 150 : 500}>
+                <PieChart width={width} height={height}>
                     <Tooltip />
                     <Pie
                         data={displayData}
@@ -84,7 +183,7 @@ const renderChartPreview = (
             );
         case 'area':
             return (
-                <AreaChart width={preview ? 250 : 800} height={preview ? 150 : 500} data={displayData}>
+                <AreaChart width={width} height={height} data={displayData}>
                     <XAxis dataKey="name" />
                     <YAxis />
                     <Tooltip />
@@ -92,22 +191,13 @@ const renderChartPreview = (
                         type="monotone"
                         dataKey="value"
                         stroke={chartColors[2]}
-                        fill={preview ? `${chartColors[2]}80` : chartColors[2]} // Beispiel mit Transparenz bei Preview
+                        fill={preview ? `${chartColors[2]}80` : chartColors[2]}
                     />
                 </AreaChart>
             );
-        case 'scatter':
-            return (
-                <ScatterChart width={preview ? 250 : 800} height={preview ? 150 : 500}>
-                    <XAxis dataKey="name" />
-                    <YAxis dataKey="value" />
-                    <Tooltip />
-                    <Scatter name="A" data={displayData} fill={chartColors[3]} />
-                </ScatterChart>
-            );
         case 'composed':
             return (
-                <ComposedChart width={preview ? 250 : 800} height={preview ? 150 : 500} data={displayData}>
+                <ComposedChart width={width} height={height} data={displayData}>
                     <XAxis dataKey="name" />
                     <YAxis />
                     <Tooltip />
@@ -120,7 +210,6 @@ const renderChartPreview = (
             return null;
     }
 };
-
 
 export const SavedVisualizations = () => {
     const [visualizations, setVisualizations] = useState<SavedVisualization[]>([]);
@@ -144,7 +233,6 @@ export const SavedVisualizations = () => {
         setVisualizations(updated);
     };
 
-
     const downloadChartAsImage = async (id: string) => {
         const node = document.getElementById(`chart-${id}`);
         if (!node) return;
@@ -159,8 +247,6 @@ export const SavedVisualizations = () => {
         setFullscreenChart(chart);
     };
 
-
-
     const closeFullscreen = () => setFullscreenChart(null);
 
     return (
@@ -169,7 +255,7 @@ export const SavedVisualizations = () => {
                 <div className="flex justify-between items-center">
                     <h1 className="text-3xl font-bold text-gray-800">Gespeicherte Visualisierungen</h1>
                     <Button asChild>
-                        <Link to="/diagrams">+ Neue Visualisierung</Link>
+                        <Link to="/chart-visualization">+ Neue Visualisierung</Link>
                     </Button>
                 </div>
 
@@ -182,11 +268,16 @@ export const SavedVisualizations = () => {
                         <Card key={viz.id}>
                             <CardHeader>
                                 <CardTitle>{viz.title}</CardTitle>
-                                <CardDescription>Typ: {viz.type.toUpperCase()}</CardDescription>
+                                <CardDescription>
+                                    Typ: {viz.type.toUpperCase()}
+                                    {(viz.type === 'line' || viz.type === 'bar' || viz.type === 'scatter') && viz.selectedDatasets && viz.selectedDatasets.length > 1 &&
+                                        ` (${viz.selectedDatasets.length} Datensätze)`
+                                    }
+                                </CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <div id={`chart-${viz.id}`} className="bg-white p-2 rounded">
-                                    {renderChartPreview(viz.type, viz.data)}
+                                    {renderChartPreview(viz.type, viz.data, viz.selectedDatasets)}
                                 </div>
                             </CardContent>
                             <CardFooter className="flex justify-between">
@@ -199,13 +290,12 @@ export const SavedVisualizations = () => {
                                         Download
                                     </button>
                                     <button
-                                        onClick={() => openFullscreen(renderChartPreview(viz.type, viz.data, false))}
+                                        onClick={() => openFullscreen(renderChartPreview(viz.type, viz.data, viz.selectedDatasets, false))}
                                         className="flex items-center text-sm font-medium"
                                     >
                                         <Expand className="w-4 h-4 mr-1" strokeWidth={1.5} />
                                         Vollbild
                                     </button>
-
                                     <button
                                         onClick={() => deleteVisualization(viz.id)}
                                         className="flex items-center text-sm font-medium"

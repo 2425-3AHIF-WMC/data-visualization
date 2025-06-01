@@ -76,6 +76,23 @@ export const sampleDatasets = [
             { Quartal: "Q6", Gewinn: 39000 },
         ],
         fields: ["Quartal", "Gewinn"],
+    },
+    {
+        id: 5,
+        name: "Finanzbericht Q1 2025",
+        recordCount: 324,
+        createdAt: new Date(2024, 2, 1),
+        lastModified: new Date(2024, 2, 1),
+        fileType: "Excel",
+        data: [
+            { Quartal: "Q1", Gewinn: 25000 },
+            { Quartal: "Q2", Gewinn: 35000 },
+            { Quartal: "Q3", Gewinn: 50000 },
+            { Quartal: "Q4", Gewinn: 35000 },
+            { Quartal: "Q5", Gewinn: 27000 },
+            { Quartal: "Q6", Gewinn: 39000 },
+        ],
+        fields: ["Quartal", "Gewinn"],
     }
 ];
 
