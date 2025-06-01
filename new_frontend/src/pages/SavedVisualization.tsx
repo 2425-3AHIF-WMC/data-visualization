@@ -12,17 +12,19 @@ import {
     Line,
     Bar,
     AreaChart,
-    ScatterChart, Scatter, ComposedChart, Legend, CartesianGrid, Area
+    ScatterChart, Scatter, ComposedChart, Area
 } from 'recharts';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button.tsx';
 import { Layout } from '../components/Layout';
-import { Trash2, Pencil } from 'lucide-react';
+import { Trash2, Pencil, Expand, Download } from 'lucide-react';
+import { toJpeg } from 'html-to-image';
+import { createPortal } from 'react-dom';
 
 export interface SavedVisualization {
     id: string;
     title: string;
-    type: 'bar' | 'line' | 'pie';
+    type: 'bar' | 'line' | 'pie' | 'area' | 'scatter' | 'composed';
     data: any[];
     xAxis: string;
     yAxis: string;
@@ -39,41 +41,42 @@ const chartColors = [
 
 const renderChartPreview = (
     type: 'bar' | 'line' | 'pie' | 'area' | 'scatter' | 'composed',
-    data: any[]
+    data: any[],
+    preview = true
 ) => {
-    const sample = data.slice(0, 5);
+    const displayData = preview ? data.slice(0, 5) : data;
 
     switch (type) {
         case 'bar':
             return (
-                <BarChart width={250} height={150} data={sample}>
+                <BarChart width={preview ? 250 : 800} height={preview ? 150 : 500} data={displayData}>
                     <XAxis dataKey="name" />
                     <YAxis />
                     <Tooltip />
-                    <Bar dataKey="value" fill="hsl(var(--primary))" />
+                    <Bar dataKey="value" fill={chartColors[0]} />
                 </BarChart>
             );
         case 'line':
             return (
-                <LineChart width={250} height={150} data={sample}>
+                <LineChart width={preview ? 250 : 800} height={preview ? 150 : 500} data={displayData}>
                     <XAxis dataKey="name" />
                     <YAxis />
                     <Tooltip />
-                    <Line type="monotone" dataKey="value" stroke="hsl(var(--primary))" />
+                    <Line type="monotone" dataKey="value" stroke={chartColors[1]} />
                 </LineChart>
             );
         case 'pie':
             return (
-                <PieChart width={250} height={150}>
+                <PieChart width={preview ? 250 : 800} height={preview ? 150 : 500}>
                     <Tooltip />
                     <Pie
-                        data={sample}
+                        data={displayData}
                         dataKey="value"
                         nameKey="name"
-                        outerRadius={60}
-                        fill="hsl(var(--primary))"
+                        outerRadius={preview ? 60 : 100}
+                        fill={chartColors[0]}
                     >
-                        {sample.map((entry, index) => (
+                        {displayData.map((entry, index) => (
                             <Cell key={`cell-${index}`} fill={chartColors[index % chartColors.length]} />
                         ))}
                     </Pie>
@@ -81,35 +84,36 @@ const renderChartPreview = (
             );
         case 'area':
             return (
-                <AreaChart width={250} height={150} data={sample}>
+                <AreaChart width={preview ? 250 : 800} height={preview ? 150 : 500} data={displayData}>
                     <XAxis dataKey="name" />
                     <YAxis />
                     <Tooltip />
                     <Area
                         type="monotone"
                         dataKey="value"
-                        stroke="hsl(var(--primary))"
-                        fill="hsl(var(--primary) / 0.4)"
+                        stroke={chartColors[2]}
+                        fill={preview ? `${chartColors[2]}80` : chartColors[2]} // Beispiel mit Transparenz bei Preview
                     />
                 </AreaChart>
             );
         case 'scatter':
             return (
-                <ScatterChart width={250} height={150}>
+                <ScatterChart width={preview ? 250 : 800} height={preview ? 150 : 500}>
                     <XAxis dataKey="name" />
                     <YAxis dataKey="value" />
                     <Tooltip />
-                    <Scatter name="A" data={sample} fill="hsl(var(--primary))" />
+                    <Scatter name="A" data={displayData} fill={chartColors[3]} />
                 </ScatterChart>
             );
         case 'composed':
             return (
-                <ComposedChart width={250} height={150} data={sample}>
+                <ComposedChart width={preview ? 250 : 800} height={preview ? 150 : 500} data={displayData}>
                     <XAxis dataKey="name" />
                     <YAxis />
                     <Tooltip />
-                    <Bar dataKey="value" barSize={20} fill="hsl(var(--primary))" />
-                    <Line type="monotone" dataKey="value" stroke="hsl(var(--chart-colour1))" />
+                    <Bar dataKey="value" barSize={20} fill={chartColors[5]} />
+                    <Line type="monotone" dataKey="value" stroke={chartColors[1]} />
+                    <Area type="monotone" dataKey="value" fill={chartColors[4]} stroke={chartColors[4]} />
                 </ComposedChart>
             );
         default:
@@ -118,9 +122,9 @@ const renderChartPreview = (
 };
 
 
-
-    export const SavedVisualizations = () => {
+export const SavedVisualizations = () => {
     const [visualizations, setVisualizations] = useState<SavedVisualization[]>([]);
+    const [fullscreenChart, setFullscreenChart] = useState<React.ReactNode | null>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -140,22 +144,24 @@ const renderChartPreview = (
         setVisualizations(updated);
     };
 
-    const editVisualization = (viz: SavedVisualization) => {
-        navigate('/visualization/new', {
-            state: {
-                processedData: {
-                    fields: [viz.xAxis, viz.yAxis],
-                    data: viz.data.map(d => ({ [viz.xAxis]: d.name, [viz.yAxis]: d.value }))
-                },
-                initialSettings: {
-                    chartTitle: viz.title,
-                    chartType: viz.type,
-                    xAxis: viz.xAxis,
-                    yAxis: viz.yAxis
-                }
-            }
-        });
+
+    const downloadChartAsImage = async (id: string) => {
+        const node = document.getElementById(`chart-${id}`);
+        if (!node) return;
+        const dataUrl = await toJpeg(node, { quality: 0.95 });
+        const link = document.createElement('a');
+        link.download = `${id}.jpeg`;
+        link.href = dataUrl;
+        link.click();
     };
+
+    const openFullscreen = (chart: React.ReactNode) => {
+        setFullscreenChart(chart);
+    };
+
+
+
+    const closeFullscreen = () => setFullscreenChart(null);
 
     return (
         <Layout>
@@ -178,9 +184,28 @@ const renderChartPreview = (
                                 <CardTitle>{viz.title}</CardTitle>
                                 <CardDescription>Typ: {viz.type.toUpperCase()}</CardDescription>
                             </CardHeader>
-                            <CardContent>{renderChartPreview(viz.type, viz.data)}</CardContent>
+                            <CardContent>
+                                <div id={`chart-${viz.id}`} className="bg-white p-2 rounded">
+                                    {renderChartPreview(viz.type, viz.data)}
+                                </div>
+                            </CardContent>
                             <CardFooter className="flex justify-between">
-                                <CardFooter className="justify-end">
+                                <div className="flex gap-4">
+                                    <button
+                                        onClick={() => downloadChartAsImage(viz.id)}
+                                        className="flex items-center text-sm font-medium"
+                                    >
+                                        <Download className="w-4 h-4 mr-1" strokeWidth={1.5} />
+                                        Download
+                                    </button>
+                                    <button
+                                        onClick={() => openFullscreen(renderChartPreview(viz.type, viz.data, false))}
+                                        className="flex items-center text-sm font-medium"
+                                    >
+                                        <Expand className="w-4 h-4 mr-1" strokeWidth={1.5} />
+                                        Vollbild
+                                    </button>
+
                                     <button
                                         onClick={() => deleteVisualization(viz.id)}
                                         className="flex items-center text-sm font-medium"
@@ -188,13 +213,24 @@ const renderChartPreview = (
                                         <Trash2 className="w-4 h-4 mr-1" strokeWidth={1.5} />
                                         Löschen
                                     </button>
-                                </CardFooter>
-
+                                </div>
                             </CardFooter>
                         </Card>
                     ))}
                 </div>
             </div>
+
+            {fullscreenChart && createPortal(
+                <div className="fixed inset-0 z-50 bg-black bg-opacity-80 flex items-center justify-center">
+                    <div className="bg-white rounded p-4 max-w-5xl max-h-[90vh] overflow-auto">
+                        {fullscreenChart}
+                        <div className="text-right mt-4">
+                            <Button onClick={closeFullscreen}>Schließen</Button>
+                        </div>
+                    </div>
+                </div>,
+                document.body
+            )}
         </Layout>
     );
 };
