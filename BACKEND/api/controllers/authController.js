@@ -71,7 +71,7 @@ export const registerUser = async (req, res) => {
     const formattedFirstname = capitalizeFirstLetter(firstname);
     const formattedLastname = capitalizeFirstLetter(lastname);
     try {
-        const user = new User({ firstname: formattedFirstname, lastname: formattedLastname, email: email, telNr, profile_pic, password });
+        const user = new User({ firstname: formattedFirstname, lastname: formattedLastname, email: email, telnr: telNr, profile_pic, password });
         await user.save();
         const token = createToken(user.id, user.email, user.firstname, user.lastname);
         // erstelle einen folder für den user???: bsp: 1_Doe_J   (id: 1, lastname: Doe, firstname: Jane)
