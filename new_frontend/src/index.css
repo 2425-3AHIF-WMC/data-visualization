@@ -80,6 +80,16 @@
     }
   }
 
+  .sidebar {
+    background-color: hsl(var(--navbar-bg));
+    color: hsl(var(--navbar-text));
+  }
+
+  .sidebar a:hover {
+    background-color: hsl(var(--navbar-bg-hover, var(--navbar-bg)));
+  }
+
+
 
   /* Green Theme */
   .theme-green {

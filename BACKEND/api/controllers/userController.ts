@@ -7,7 +7,6 @@ Typische Funktionen:
     updateUserProfile(req, res) → erlaubt das Ändern von z. B. Name, E-Mail
 
     getAllUsers(req, res) → nur für Admins
-
     deleteUser(req, res) → User löschen*/
 
 import {RequestWithUser} from "./middlewares/verifyToken";

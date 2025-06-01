@@ -111,7 +111,7 @@ export function ThemeSwitcher() {
                       className="justify-start"
                       onClick={() => onColorSchemeChange(scheme)}
                   >
-                    
+
                     {colorSchemeNames[scheme]}
                     {currentColorScheme === scheme && <Check className="ml-auto h-3 w-3" />}
                   </Button>
