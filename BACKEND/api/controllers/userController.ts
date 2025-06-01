@@ -90,7 +90,7 @@ export const updateProfile = async (req: RequestWithUser, res: Response) => {
         }
 
         // Nur die übergebenen Felder updaten
-        await user.updateProfile({ firstname, lastname, email: mail, telNr, profile_pic });
+        await user.updateProfile({ firstname, lastname, email: mail, telnr: telNr, profile_pic });
 
         // Frisch serialisiertes Profil zurückgeben (ohne Passwort)
         res .status(StatusCodes.OK).json({ user: user.toJSON() });

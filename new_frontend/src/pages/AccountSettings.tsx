@@ -62,6 +62,9 @@ const [preview, setPreview]= useState<string>("");
                     Authorization: `Bearer ${token}`
                 });
 
+                console.log("TelNr vom Backend:", data.user.telNr);
+                console.log(data.user)
+
                 let profilePicUrl = "";
                 if (data.user.profile_pic) {
                     const blob = data.user.profile_pic;
@@ -73,7 +76,7 @@ const [preview, setPreview]= useState<string>("");
                     firstName: data.user.firstname || '',
                     lastName: data.user.lastname || '',
                     email: data.user.email || 'empty mail',
-                    phone: data.user.telNr || 'no telNr',
+                    phone: data.user.telnr || 'no telNr',
                     profile_pic: profilePicUrl,
                     currentPassword: '',
                     newPassword: '',

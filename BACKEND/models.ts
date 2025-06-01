@@ -8,7 +8,7 @@ export interface IUserProps {
     firstname: string;
     lastname: string;
     email: string;
-    telNr: string;
+    telnr: string;
     profile_pic?: string;
     password: string;
     is_confirmed?: boolean;
@@ -21,7 +21,7 @@ export class User implements IUserProps {
     firstname: string;
     lastname: string;
     email: string;
-    telNr: string;
+    telnr: string;
     profile_pic?: string;
     password: string;
     is_confirmed?: boolean;
@@ -33,7 +33,7 @@ export class User implements IUserProps {
         this.firstname = data.firstname;
         this.lastname = data.lastname;
         this.email = data.email;
-        this.telNr = data.telNr;
+        this.telnr = data.telnr;
         this.profile_pic = data.profile_pic;
         this.password = data.password;
         this.is_confirmed = data.is_confirmed;
@@ -58,7 +58,7 @@ export class User implements IUserProps {
             this.lastname,
             hashed,
             this.email,
-            this.telNr,
+            this.telnr,
             this.profile_pic || null,
         ];
         const result: any = await pool.query(sql, values);
@@ -75,6 +75,8 @@ export class User implements IUserProps {
         try {
             const { rows } = await pool.query('SELECT * FROM user_profiles WHERE id = $1', [id]);
             if (rows.length === 0) return null;
+            const user = new User(rows[0]);
+            console.log("user tel: ",user.telnr);
             return new User(rows[0]);
         } catch (error) {
             console.error('getUser error', error);
@@ -113,7 +115,7 @@ export class User implements IUserProps {
         if (partialProps.firstname !== undefined) this.firstname = partialProps.firstname;
         if (partialProps.lastname !== undefined) this.lastname = partialProps.lastname;
         if (partialProps.email !== undefined) this.email = partialProps.email;
-        if (partialProps.telNr !== undefined) this.telNr = partialProps.telNr;
+        if (partialProps.telnr !== undefined) this.telnr = partialProps.telnr;
         if (partialProps.profile_pic !== undefined) this.profile_pic = partialProps.profile_pic;
         // Persist changes
         await this.update();
@@ -130,7 +132,7 @@ export class User implements IUserProps {
                              telNr       = $4,
                              profile_pic = $5
                          WHERE id = $6`;
-            const values = [this.firstname, this.lastname, this.email, this.telNr, this.profile_pic || null, this.id];
+            const values = [this.firstname, this.lastname, this.email, this.telnr, this.profile_pic || null, this.id];
             await pool.query(sql, values);
         }catch (error){
             console.error("Fehler beim Update:", error);

@@ -91,7 +91,7 @@ export const registerUser = async (req: Request, res: Response) => {
    const formattedLastname= capitalizeFirstLetter(lastname);
 
     try {
-        const user = new User({firstname: formattedFirstname, lastname:formattedLastname, email: email, telNr, profile_pic, password});
+        const user = new User({firstname: formattedFirstname, lastname:formattedLastname, email: email, telnr: telNr, profile_pic, password});
         await user.save();
 
         const token = createToken(user.id!,user.email,user.firstname,user.lastname);
