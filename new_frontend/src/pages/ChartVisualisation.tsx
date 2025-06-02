@@ -79,15 +79,13 @@ const ChartVisualization = () => {
     const [allDatasets, setAllDatasets] = useState<typeof sampleDatasets>(sampleDatasets);
     const [chartType, setChartType] = useState<'bar' | 'line' | 'pie' | 'area' | 'scatter' | 'composed'>('line');
     const [xAxis, setXAxis] = useState<string>('');
-    const [yAxis, setYAxis] = useState<string>(''); // Für Single-Dataset Charts
+    const [yAxis, setYAxis] = useState<string>('');
     const [chartData, setChartData] = useState<any[]>([]);
     const [chartTitle, setChartTitle] = useState<string>('Neue Visualisierung');
     const [availableFields, setAvailableFields] = useState<string[]>([]);
     const [processedData, setProcessedData] = useState<any>(null);
     const [selectedDatasets, setSelectedDatasets] = useState<DatasetSelection[]>([]);
     const [selectedDatasetId, setSelectedDatasetId] = useState<string>('');
-
-    // ... keep existing code (useEffect for fetchUserDatasets) the same
 
     useEffect(() => {
         const fetchUserDatasets = async () => {
@@ -166,10 +164,8 @@ const ChartVisualization = () => {
         }
     }, [location, navigate, toast, chartType]);
 
-    // Wenn Chart-Typ geändert wird, entsprechende Daten setzen
     useEffect(() => {
         if (chartType === 'line' || chartType === 'bar' || chartType === 'scatter') {
-            // Multi-Dataset Mode für Line, Bar und Scatter Charts
             if (processedData && selectedDatasets.length === 0) {
                 const numericField = processedData.fields?.find((field: string) =>
                     processedData.data.length > 0 && typeof processedData.data[0][field] === 'number'
@@ -185,12 +181,11 @@ const ChartVisualization = () => {
                 setSelectedDatasets([newDataset]);
             }
         } else {
-            // Single-Dataset Mode für andere Charts
             setSelectedDatasets([]);
         }
     }, [chartType, processedData]);
 
-    // Single-Dataset Logic für Pie, Area und Composed Charts
+
     useEffect(() => {
         if ((chartType !== 'line' && chartType !== 'bar' && chartType !== 'scatter') && selectedDatasetId) {
             const selected = allDatasets.find(ds => ds.id.toString() === selectedDatasetId);
@@ -206,7 +201,6 @@ const ChartVisualization = () => {
         }
     }, [selectedDatasetId, allDatasets, chartType]);
 
-    // Multi-Dataset Logic für Line, Bar und Scatter Charts
     const addDataset = () => {
         if (!selectedDatasetId || (chartType !== 'line' && chartType !== 'bar' && chartType !== 'scatter')) return;
 
@@ -264,12 +258,9 @@ const ChartVisualization = () => {
         );
     };
 
-    // Chart Data Preparation - Multi vs Single Dataset
     useEffect(() => {
         if ((chartType === 'line' || chartType === 'bar' || chartType === 'scatter') && selectedDatasets.length > 0 && xAxis) {
-            // Multi-Dataset Logic für Line, Bar und Scatter Charts
             if (chartType === 'scatter') {
-                // Für Scatter Charts: Separates Array für jeden Datensatz
                 const scatterData = selectedDatasets.map((dataset, index) => ({
                     datasetIndex: index,
                     datasetName: dataset.name,
@@ -282,7 +273,6 @@ const ChartVisualization = () => {
                 }));
                 setChartData(scatterData);
             } else {
-                // Für Line und Bar Charts: Kombinierte Daten
                 const allXValues = new Set<string>();
                 selectedDatasets.forEach(dataset => {
                     dataset.data.forEach(item => {
@@ -319,7 +309,6 @@ const ChartVisualization = () => {
                 setChartData(prepared);
             }
         } else if ((chartType !== 'line' && chartType !== 'bar' && chartType !== 'scatter') && processedData && xAxis && yAxis) {
-            // Single-Dataset Logic für andere Charts
             const prepared = processedData.data.map((item: any) => ({
                 name: item[xAxis]?.toString() || '',
                 x: typeof item[xAxis] === 'number' ? item[xAxis] : undefined,
@@ -369,7 +358,6 @@ const ChartVisualization = () => {
         }
 
         if (chartType === 'line' || chartType === 'bar') {
-            // Multi-Dataset Charts für Line und Bar
             const CustomTooltip = ({ active, payload, label }: any) => {
                 if (active && payload && payload.length) {
                     return (
@@ -436,7 +424,6 @@ const ChartVisualization = () => {
         }
 
         if (chartType === 'scatter') {
-            // Multi-Dataset Scatter Chart
             return (
                 <ResponsiveContainer width="100%" height={300}>
                     <ScatterChart>
@@ -458,7 +445,6 @@ const ChartVisualization = () => {
             );
         }
 
-        // Single-Dataset Charts für alle anderen Typen
         switch (chartType) {
             case 'pie':
                 return (
@@ -536,11 +522,11 @@ const ChartVisualization = () => {
                                     </label>
                                     <Tabs value={chartType} onValueChange={(value) => setChartType(value as any)} className="w-full">
                                         <TabsList className="grid grid-cols-3 grid-rows-2 gap-1 w-full h-full">
-                                            <TabsTrigger value="line" className="flex items-center gap-1">
-                                                <ChartLine className="h-4 w-4" /> Linie
-                                            </TabsTrigger>
                                             <TabsTrigger value="bar" className="flex items-center gap-1">
                                                 <ChartBarBig className="h-4 w-4" /> Balken
+                                            </TabsTrigger>
+                                            <TabsTrigger value="line" className="flex items-center gap-1">
+                                                <ChartLine className="h-4 w-4" /> Linie
                                             </TabsTrigger>
                                             <TabsTrigger value="pie" className="flex items-center gap-1">
                                                 <ChartPie className="h-4 w-4" /> Kreis
@@ -680,7 +666,6 @@ const ChartVisualization = () => {
                                         )}
                                     </>
                                 ) : (
-                                    // Single-Dataset UI für andere Chart-Typen
                                     <>
                                         <div className="space-y-2">
                                             <label className="block text-sm font-medium mb-1">
@@ -778,7 +763,6 @@ const ChartVisualization = () => {
                         </Card>
 
                         {(((chartType === 'line' || chartType === 'bar' || chartType === 'scatter') && selectedDatasets.length > 0) || ((chartType !== 'line' && chartType !== 'bar' && chartType !== 'scatter') && processedData)) && (
-                            // ... keep existing code (data preview section) the same
                             <div className="mt-6">
                                 <Card>
                                     <CardHeader>
