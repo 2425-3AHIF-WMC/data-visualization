@@ -521,21 +521,12 @@ const ChartVisualization = () => {
                                         Diagrammtyp
                                     </label>
                                     <Tabs value={chartType} onValueChange={(value) => setChartType(value as any)} className="w-full">
-                                        <TabsList className="grid grid-cols-3 grid-rows-2 gap-1 w-full h-full">
-                                            <TabsTrigger value="bar" className="flex items-center gap-1">
-                                                <ChartBarBig className="h-4 w-4" /> Balken
-                                            </TabsTrigger>
-                                            <TabsTrigger value="line" className="flex items-center gap-1">
-                                                <ChartLine className="h-4 w-4" /> Linie
-                                            </TabsTrigger>
+                                        <TabsList className="grid grid-cols-3 grid-rows-1 gap-1 w-full h-full">
                                             <TabsTrigger value="pie" className="flex items-center gap-1">
                                                 <ChartPie className="h-4 w-4" /> Kreis
                                             </TabsTrigger>
                                             <TabsTrigger value="area" className="flex items-center gap-1">
                                                 <AreaChartIcon className="h-4 w-4" /> Fläche
-                                            </TabsTrigger>
-                                            <TabsTrigger value="scatter" className="flex items-center gap-1">
-                                                <ScatterChartIcon className="h-4 w-4" /> Punkt
                                             </TabsTrigger>
                                             <TabsTrigger value="composed" className="flex items-center gap-1">
                                                 <ChartLine className="h-4 w-4" /> Kombiniert
@@ -543,6 +534,25 @@ const ChartVisualization = () => {
                                         </TabsList>
                                     </Tabs>
                                 </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium mb-2">
+                                            erweiterte Diagrammtypen
+                                        </label>
+                                        <Tabs value={chartType} onValueChange={(value) => setChartType(value as any)} className="w-full">
+                                            <TabsList className="grid grid-cols-3 grid-rows-1 gap-1 w-full h-full">
+                                                <TabsTrigger value="bar" className="flex items-center gap-1">
+                                                    <ChartBarBig className="h-4 w-4" /> Balken
+                                                </TabsTrigger>
+                                                <TabsTrigger value="line" className="flex items-center gap-1">
+                                                    <ChartLine className="h-4 w-4" /> Linie
+                                                </TabsTrigger>
+                                                <TabsTrigger value="scatter" className="flex items-center gap-1">
+                                                    <ScatterChartIcon className="h-4 w-4" /> Punkt
+                                                </TabsTrigger>
+                                            </TabsList>
+                                        </Tabs>
+                                    </div>
 
                                 <div>
                                     <label className="block text-sm font-medium mb-1">
