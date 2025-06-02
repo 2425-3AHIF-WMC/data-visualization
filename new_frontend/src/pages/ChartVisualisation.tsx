@@ -805,7 +805,7 @@ const ChartVisualization = () => {
                                                                 </tr>
                                                                 </thead>
                                                                 <tbody>
-                                                                {dataset.data.slice(0, 3).map((row: any, rowIndex: number) => (
+                                                                {dataset.data.map((row: any, rowIndex: number) => (
                                                                     <tr key={rowIndex}>
                                                                         {dataset.fields.slice(0, 4).map((field, colIndex) => (
                                                                             <td key={colIndex} className="p-2 border text-xs">
@@ -819,11 +819,6 @@ const ChartVisualization = () => {
                                                                 ))}
                                                                 </tbody>
                                                             </table>
-                                                            {dataset.data.length > 3 && (
-                                                                <p className="text-xs text-center text-muted-foreground p-2">
-                                                                    Zeigt 3 von {dataset.data.length} Datensätzen
-                                                                </p>
-                                                            )}
                                                         </div>
                                                     </div>
                                                 ))}
@@ -839,7 +834,7 @@ const ChartVisualization = () => {
                                                     </tr>
                                                     </thead>
                                                     <tbody>
-                                                    {processedData?.data?.slice(0, 5).map((row: any, rowIndex: number) => (
+                                                    {processedData?.data?.map((row: any, rowIndex: number) => (
                                                         <tr key={rowIndex}>
                                                             {availableFields.map((field, colIndex) => (
                                                                 <td key={colIndex} className="p-2 border">
@@ -850,11 +845,6 @@ const ChartVisualization = () => {
                                                     ))}
                                                     </tbody>
                                                 </table>
-                                                {processedData?.data?.length > 5 && (
-                                                    <p className="text-xs text-center text-muted-foreground mt-2">
-                                                        Zeigt 5 von {processedData.data.length} Datensätzen
-                                                    </p>
-                                                )}
                                             </div>
                                         )}
                                     </CardContent>
