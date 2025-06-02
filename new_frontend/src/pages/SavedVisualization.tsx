@@ -88,7 +88,6 @@ const renderChartPreview = (
                     </ResponsiveContainer>
                 );
             } else {
-                // Single Dataset Line Chart (fallback)
                 return (
                     <LineChart width={width} height={height} data={displayData}>
                         <XAxis dataKey="name" />
@@ -100,7 +99,6 @@ const renderChartPreview = (
             }
         case 'bar':
             if (selectedDatasets && selectedDatasets.length > 0) {
-                // Multi-Dataset Bar Chart
                 return (
                     <ResponsiveContainer width={width} height={height}>
                         <BarChart data={displayData}>
@@ -121,7 +119,6 @@ const renderChartPreview = (
                     </ResponsiveContainer>
                 );
             } else {
-                // Single Dataset Bar Chart (fallback)
                 return (
                     <BarChart width={width} height={height} data={displayData}>
                         <XAxis dataKey="name" />
@@ -133,7 +130,6 @@ const renderChartPreview = (
             }
         case 'scatter':
             if (selectedDatasets && selectedDatasets.length > 0 && Array.isArray(data) && data.length > 0 && data[0].datasetIndex !== undefined) {
-                // Multi-Dataset Scatter Chart
                 return (
                     <ResponsiveContainer width={width} height={height}>
                         <ScatterChart>
@@ -154,7 +150,6 @@ const renderChartPreview = (
                     </ResponsiveContainer>
                 );
             } else {
-                // Single Dataset Scatter Chart (fallback)
                 return (
                     <ScatterChart width={width} height={height}>
                         <XAxis dataKey="name" />
