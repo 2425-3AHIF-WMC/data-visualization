@@ -382,8 +382,8 @@ const ChartVisualization = () => {
                     <ResponsiveContainer width="100%" height={300}>
                         <LineChart data={chartData}>
                             <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="name" />
-                            <YAxis />
+                            <XAxis dataKey="name" label={{ value: xAxis, position: 'bottom', offset: -10 }} />
+                            <YAxis label={{ value: yAxis, angle: -90, position: 'bottom', dy:0, dx:-15 }} />
                             <Tooltip content={<CustomTooltip />} />
                             <Legend />
                             {selectedDatasets.map((dataset, index) => (
@@ -405,8 +405,8 @@ const ChartVisualization = () => {
                     <ResponsiveContainer width="100%" height={300}>
                         <BarChart data={chartData}>
                             <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="name" />
-                            <YAxis />
+                            <XAxis dataKey="name" label={{ value: xAxis, position: 'bottom', offset: -10 }} />
+                            <YAxis label={{ value: yAxis, angle: -90, position: 'bottom', dy:0, dx:-15 }} />
                             <Tooltip content={<CustomTooltip />} />
                             <Legend />
                             {selectedDatasets.map((dataset, index) => (
@@ -465,8 +465,8 @@ const ChartVisualization = () => {
                     <ResponsiveContainer width="100%" height={300}>
                         <AreaChart data={chartData}>
                             <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="name" />
-                            <YAxis />
+                            <XAxis dataKey="name" label={{ value: xAxis, position: 'bottom', offset: -10 }} />
+                            <YAxis label={{ value: yAxis, angle: -90, position: 'bottom', dy:0, dx:-15 }} />
                             <Tooltip />
                             <Legend />
                             <Area type="monotone" dataKey="value" stroke={chartColors[2]} fill={chartColors[2]} />
@@ -478,11 +478,11 @@ const ChartVisualization = () => {
                     <ResponsiveContainer width="100%" height={300}>
                         <ComposedChart data={chartData}>
                             <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="name" />
-                            <YAxis />
+                            <XAxis dataKey="name" label={{ value: xAxis, position: 'bottom', offset: -5 }} />
+                            <YAxis label={{ value: yAxis, angle: -90, position: 'bottom', dy:0, dx:-15 }} />
                             <Tooltip />
-                            <Legend />
-                            <Area type="monotone" dataKey="value" fill={chartColors[4]} stroke={chartColors[4]} />
+                            <Legend/>
+                            <Area type="monotone" dataKey="value"  fill={chartColors[4]} stroke={chartColors[4]} />
                             <Bar dataKey="value" barSize={20} fill={chartColors[5]} />
                             <Line type="monotone" dataKey="value" stroke={chartColors[6]} />
                         </ComposedChart>
