@@ -1,323 +1,219 @@
+// src/pages/SavedVisualizations.tsx
 import React, { useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import {
-    BarChart,
-    LineChart,
-    PieChart,
-    Pie,
-    Cell,
-    XAxis,
-    YAxis,
-    Tooltip,
-    Line,
-    Bar,
-    AreaChart,
-    ScatterChart,
-    Scatter,
-    ComposedChart,
-    Area,
-    Legend,
-    ResponsiveContainer,
-    CartesianGrid
-} from 'recharts';
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardFooter,
+} from '@/components/ui/card';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Layout } from '../components/Layout';
-import { Trash2, Pencil, Expand, Download } from 'lucide-react';
+import { Trash2, Expand, Download } from 'lucide-react';
 import { toJpeg } from 'html-to-image';
 import { createPortal } from 'react-dom';
+import { useToast } from '@/hooks/use-toast';
+import { apiFetch } from '@/utils/api';
+import ChartFactory from '@/components/charts/ChartFactory';
+import { ChartConfig } from '@/components/charts/visualization'; // Müsst ihr evtl. anpassen, je nach Pfad
 
-export interface SavedVisualization {
+interface SavedVisualization {
+  id: string;
+  title: string;
+  type: 'bar' | 'line' | 'pie' | 'area' | 'scatter' | 'composed';
+  data: any[];
+  xaxis: string;
+  yaxis?: string;
+  /** 
+   * Wenn dein Backend z.B. ausgewählte Datensätze als "selectedDatasets" liefert,
+   * kannst du das hier mit aufnehmen. Für einen einfachen Single-Dataset-Chart
+   * brauchst du es nicht zwingend.
+   */
+  selectedDatasets?: {
     id: string;
-    title: string;
-    type: 'bar' | 'line' | 'pie' | 'area' | 'scatter' | 'composed';
-    data: any[];
-    xAxis: string;
-    yAxis?: string;
-    selectedDatasets?: {
-        id: string;
-        name: string;
-        yAxisField: string;
-        color: string;
-    }[];
+    name: string;
+    yAxisField: string;
+    color: string;
+  }[];
 }
 
-const chartColors = [
-    'hsl(var(--primary))',
-    'hsl(var(--chart-colour1))',
-    'hsl(var(--chart-colour2))',
-    'hsl(var(--chart-colour3))',
-    'hsl(var(--chart-colour4))',
-    'hsl(var(--chart-colour5))',
-];
+export const SavedVisualizations: React.FC = () => {
+  const [visualizations, setVisualizations] = useState<SavedVisualization[]>([]);
+  const [fullscreenConfig, setFullscreenConfig] = useState<ChartConfig | null>(null);
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  const token = localStorage.getItem('jwt');
 
-const renderChartPreview = (
-    type: 'bar' | 'line' | 'pie' | 'area' | 'scatter' | 'composed',
-    data: any[],
-    selectedDatasets?: any[],
-    preview = true
-) => {
-    const displayData = preview ? data.slice(0, 5) : data;
-    const width = preview ? 250 : 800;
-    const height = preview ? 150 : 500;
+  /** Erzeugt aus einer gespeicherten Visualisierung das ChartConfig-Objekt */
+  const buildChartConfig = (viz: SavedVisualization, preview: boolean): ChartConfig => {
+    return {
+      id: viz.id,
+      type: viz.type as any,
+      data: viz.data,
+      xAxis: viz.type !== 'pie' ? viz.xaxis : undefined,
+      yAxis: viz.yaxis,
+      title: viz.title,
+      library: 'recharts',
+      width: preview ? 250 : Math.round(window.innerWidth * 0.90),
+      height: preview ? 150 : Math.round(window.innerHeight * 0.7),
+      interactions: [
+        { type: 'tooltip', enabled: true },
+        { type: 'zoom', enabled: true },
+      ],
+      // optional: Aggregation / Filter etc. hier ergänzen, wenn gespeichert
+    };
+  };
 
-    switch (type) {
-        case 'line':
-            if (selectedDatasets && selectedDatasets.length > 0) {
-                // Multi-Dataset Line Chart
-                return (
-                    <ResponsiveContainer width={width} height={height}>
-                        <LineChart data={displayData}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="name" />
-                            <YAxis />
-                            <Tooltip />
-                            {!preview && <Legend />}
-                            {selectedDatasets.map((dataset, index) => (
-                                <Line
-                                    key={dataset.id}
-                                    type="monotone"
-                                    dataKey={`dataset_${index}`}
-                                    stroke={dataset.color}
-                                    strokeWidth={2}
-                                    name={dataset.name}
-                                    connectNulls={false}
-                                />
-                            ))}
-                        </LineChart>
-                    </ResponsiveContainer>
-                );
-            } else {
-                return (
-                    <LineChart width={width} height={height} data={displayData}>
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip />
-                        <Line type="monotone" dataKey="value" stroke={chartColors[1]} />
-                    </LineChart>
-                );
-            }
-        case 'bar':
-            if (selectedDatasets && selectedDatasets.length > 0) {
-                return (
-                    <ResponsiveContainer width={width} height={height}>
-                        <BarChart data={displayData}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="name" />
-                            <YAxis />
-                            <Tooltip />
-                            {!preview && <Legend />}
-                            {selectedDatasets.map((dataset, index) => (
-                                <Bar
-                                    key={dataset.id}
-                                    dataKey={`dataset_${index}`}
-                                    fill={dataset.color}
-                                    name={dataset.name}
-                                />
-                            ))}
-                        </BarChart>
-                    </ResponsiveContainer>
-                );
-            } else {
-                return (
-                    <BarChart width={width} height={height} data={displayData}>
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip />
-                        <Bar dataKey="value" fill={chartColors[0]} />
-                    </BarChart>
-                );
-            }
-        case 'scatter':
-            if (selectedDatasets && selectedDatasets.length > 0 && Array.isArray(data) && data.length > 0 && data[0].datasetIndex !== undefined) {
-                return (
-                    <ResponsiveContainer width={width} height={height}>
-                        <ScatterChart>
-                            <CartesianGrid />
-                            <XAxis dataKey="x" name="X" />
-                            <YAxis dataKey="y" name="Y" />
-                            <Tooltip cursor={{ strokeDasharray: '3 3' }} />
-                            {!preview && <Legend />}
-                            {data.map((datasetInfo: any) => (
-                                <Scatter
-                                    key={datasetInfo.datasetIndex}
-                                    name={datasetInfo.datasetName}
-                                    data={datasetInfo.data}
-                                    fill={selectedDatasets[datasetInfo.datasetIndex]?.color || chartColors[datasetInfo.datasetIndex]}
-                                />
-                            ))}
-                        </ScatterChart>
-                    </ResponsiveContainer>
-                );
-            } else {
-                return (
-                    <ScatterChart width={width} height={height}>
-                        <XAxis dataKey="name" />
-                        <YAxis dataKey="value" />
-                        <Tooltip />
-                        <Scatter name="A" data={displayData} fill={chartColors[3]} />
-                    </ScatterChart>
-                );
-            }
-        case 'pie':
-            return (
-                <PieChart width={width} height={height}>
-                    <Tooltip />
-                    <Pie
-                        data={displayData}
-                        dataKey="value"
-                        nameKey="name"
-                        outerRadius={preview ? 60 : 100}
-                        fill={chartColors[0]}
-                    >
-                        {displayData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={chartColors[index % chartColors.length]} />
-                        ))}
-                    </Pie>
-                </PieChart>
-            );
-        case 'area':
-            return (
-                <AreaChart width={width} height={height} data={displayData}>
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Area
-                        type="monotone"
-                        dataKey="value"
-                        stroke={chartColors[2]}
-                        fill={preview ? `${chartColors[2]}80` : chartColors[2]}
-                    />
-                </AreaChart>
-            );
-        case 'composed':
-            return (
-                <ComposedChart width={width} height={height} data={displayData}>
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="value" barSize={20} fill={chartColors[5]} />
-                    <Line type="monotone" dataKey="value" stroke={chartColors[1]} />
-                    <Area type="monotone" dataKey="value" fill={chartColors[4]} stroke={chartColors[4]} />
-                </ComposedChart>
-            );
-        default:
-            return null;
+  /** Lädt alle Visualisierungen vom Backend */
+  const loadVisualizations = async () => {
+    if (!token) {
+      toast({ title: 'Nicht angemeldet', description: 'Bitte melde dich an.' });
+      return;
     }
-};
+    try {
+      const data = await apiFetch<SavedVisualization[]>('visualizations', 'GET', undefined, {
+        Authorization: `Bearer ${token}`,
+      });
+      setVisualizations(data);
+    } catch (err: any) {
+      toast({ title: 'Fehler', description: err.message });
+      console.error('Fehler beim Laden der Visualizations:', err);
+    }
+  };
 
-export const SavedVisualizations = () => {
-    const [visualizations, setVisualizations] = useState<SavedVisualization[]>([]);
-    const [fullscreenChart, setFullscreenChart] = useState<React.ReactNode | null>(null);
-    const navigate = useNavigate();
+  /** Löscht eine Visualisierung über DELETE /api/visualizations/:id */
+  const deleteVisualization = async (id: string) => {
+    if (!token) return;
+    try {
+      await apiFetch(`visualizations/${id}`, 'DELETE', undefined, {
+        Authorization: `Bearer ${token}`,
+      });
+      loadVisualizations();
+      toast({ title: 'Gelöscht', description: 'Visualisierung wurde entfernt.' });
+    } catch (err: any) {
+      toast({ title: 'Fehler', description: err.message || 'Löschen fehlgeschlagen.' });
+      console.error('Fehler beim Löschen der Visualisierung:', err);
+    }
+  };
 
-    useEffect(() => {
-        loadVisualizations();
-    }, []);
+  /** Download-Funktion: rendert das DOM-Element als JPEG */
+  const downloadChartAsImage = async (id: string) => {
+    const node = document.getElementById(`chart-${id}`);
+    if (!node) return;
+    try {
+      const dataUrl = await toJpeg(node, { quality: 0.95 });
+      const link = document.createElement('a');
+      link.download = `${id}.jpeg`;
+      link.href = dataUrl;
+      link.click();
+    } catch (err) {
+      toast({ title: 'Fehler', description: 'Download fehlgeschlagen.' });
+      console.error('Fehler beim Erstellen des JPEGs:', err);
+    }
+  };
 
-    const loadVisualizations = () => {
-        const stored = localStorage.getItem('savedVisualizations');
-        if (stored) {
-            setVisualizations(JSON.parse(stored));
-        }
-    };
+  /** Öffnet das Chart per ChartConfig im Vollbild-Portal */
+  const openFullscreen = (config: ChartConfig) => {
+    setFullscreenConfig(config);
+  };
+  const closeFullscreen = () => {
+    setFullscreenConfig(null);
+  };
 
-    const deleteVisualization = (id: string) => {
-        const updated = visualizations.filter(v => v.id !== id);
-        localStorage.setItem('savedVisualizations', JSON.stringify(updated));
-        setVisualizations(updated);
-    };
+  useEffect(() => {
+    loadVisualizations();
+  }, []);
 
-    const downloadChartAsImage = async (id: string) => {
-        const node = document.getElementById(`chart-${id}`);
-        if (!node) return;
-        const dataUrl = await toJpeg(node, { quality: 0.95 });
-        const link = document.createElement('a');
-        link.download = `${id}.jpeg`;
-        link.href = dataUrl;
-        link.click();
-    };
+  return (
+    <Layout>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">Gespeicherte Visualisierungen</h1>
+          <Button asChild>
+            <Link to="/chart-visualization">+ Neue Visualisierung</Link>
+          </Button>
+        </div>
 
-    const openFullscreen = (chart: React.ReactNode) => {
-        setFullscreenChart(chart);
-    };
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {visualizations.length === 0 ? (
+            <p className="text-gray-600 col-span-full">Keine Visualisierungen gefunden. Erstelle zuerst welche!</p>
+          ) : (
+            visualizations.map((viz) => {
+              const previewConfig = buildChartConfig(viz, true);
+              const fullConfig = buildChartConfig(viz, false);
 
-    const closeFullscreen = () => setFullscreenChart(null);
+              return (
+                <Card key={viz.id} className="shadow-md hover:shadow-lg transition-shadow">
+                  <CardHeader>
+                    <CardTitle>{viz.title}</CardTitle>
+                    <CardDescription>{viz.type.toUpperCase()} Diagramm</CardDescription>
+                  </CardHeader>
 
-    return (
-        <Layout>
-            <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                    <h1 className="text-3xl font-bold text-gray-800">Gespeicherte Visualisierungen</h1>
-                    <Button asChild>
-                        <Link to="/chart-visualization">+ Neue Visualisierung</Link>
-                    </Button>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                    {visualizations.length === 0 && (
-                        <p className="text-gray-600">Noch keine gespeicherten Visualisierungen.</p>
-                    )}
-
-                    {visualizations.map((viz) => (
-                        <Card key={viz.id}>
-                            <CardHeader>
-                                <CardTitle>{viz.title}</CardTitle>
-                                <CardDescription>
-                                    Typ: {viz.type.toUpperCase()}
-                                    {(viz.type === 'line' || viz.type === 'bar' || viz.type === 'scatter') && viz.selectedDatasets && viz.selectedDatasets.length > 1 &&
-                                        ` (${viz.selectedDatasets.length} Datensätze)`
-                                    }
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <div id={`chart-${viz.id}`} className="bg-white p-2 rounded">
-                                    {renderChartPreview(viz.type, viz.data, viz.selectedDatasets)}
-                                </div>
-                            </CardContent>
-                            <CardFooter className="flex justify-between">
-                                <div className="flex gap-4">
-                                    <button
-                                        onClick={() => downloadChartAsImage(viz.id)}
-                                        className="flex items-center text-sm font-medium"
-                                    >
-                                        <Download className="w-4 h-4 mr-1" strokeWidth={1.5} />
-                                        Download
-                                    </button>
-                                    <button
-                                        onClick={() => openFullscreen(renderChartPreview(viz.type, viz.data, viz.selectedDatasets, false))}
-                                        className="flex items-center text-sm font-medium"
-                                    >
-                                        <Expand className="w-4 h-4 mr-1" strokeWidth={1.5} />
-                                        Vollbild
-                                    </button>
-                                    <button
-                                        onClick={() => deleteVisualization(viz.id)}
-                                        className="flex items-center text-sm font-medium"
-                                    >
-                                        <Trash2 className="w-4 h-4 mr-1" strokeWidth={1.5} />
-                                        Löschen
-                                    </button>
-                                </div>
-                            </CardFooter>
-                        </Card>
-                    ))}
-                </div>
-            </div>
-
-            {fullscreenChart && createPortal(
-                <div className="fixed inset-0 z-50 bg-black bg-opacity-80 flex items-center justify-center">
-                    <div className="bg-white rounded p-4 max-w-5xl max-h-[90vh] overflow-auto">
-                        {fullscreenChart}
-                        <div className="text-right mt-4">
-                            <Button onClick={closeFullscreen}>Schließen</Button>
-                        </div>
+                  <CardContent>
+                    <div
+                      id={`chart-${viz.id}`}
+                      className="bg-white p-2 rounded cursor-pointer hover:shadow-lg transition-shadow"
+                     style={{ height: '20rem' }}
+                      onClick={() => openFullscreen(fullConfig)}
+                    >
+                      {/* Vorschau im Card (klein) */}
+                      <ChartFactory config={previewConfig} />
                     </div>
-                </div>,
-                document.body
-            )}
-        </Layout>
-    );
+                  </CardContent>
+
+                  <CardFooter className="flex justify-between">
+                    <div className="flex gap-4">
+                      <button
+                        onClick={() => downloadChartAsImage(viz.id)}
+                        className="flex items-center text-sm font-medium"
+                      >
+                        <Download className="w-4 h-4 mr-1" strokeWidth={1.5} />
+                        Download
+                      </button>
+
+                      <button
+                        onClick={() => openFullscreen(fullConfig)}
+                        className="flex items-center text-sm font-medium"
+                      >
+                        <Expand className="w-4 h-4 mr-1" strokeWidth={1.5} />
+                        Vollbild
+                      </button>
+
+                      <button
+                        onClick={() => deleteVisualization(viz.id)}
+                        className="flex items-center text-sm font-medium"
+                      >
+                        <Trash2 className="w-4 h-4 mr-1" strokeWidth={1.5} />
+                        Löschen
+                      </button>
+                    </div>
+                  </CardFooter>
+                </Card>
+              );
+            })
+          )}
+        </div>
+
+        {fullscreenConfig &&
+          createPortal(
+            <div
+              onClick={closeFullscreen}
+              className="fixed inset-0 z-50 bg-black bg-opacity-70 flex justify-center items-center p-4 cursor-pointer"
+            >
+              <div onClick={(e) => e.stopPropagation()}
+                 className="bg-white rounded-lg overflow-auto"
+                  style={{ width: '95vw', height: '80vh' }}>
+                {/* Vollbild-Chart */}
+                <ChartFactory config={fullscreenConfig} />
+              </div>
+            </div>,
+            document.body
+          )}
+      </div>
+    </Layout>
+  );
 };
 
 export default SavedVisualizations;

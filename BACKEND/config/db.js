@@ -16,12 +16,30 @@ export const connectToDatabase = async () => {
         await client.query(`
             CREATE TABLE IF NOT EXISTS user_profiles (
                 id SERIAL PRIMARY KEY,
-                first_name VARCHAR(100) not null,
-                last_name VARCHAR(100) not null,
+                firstname VARCHAR(100) not null,
+                lastname VARCHAR(100) not null,
                 password varchar(100) not null,
-                phone_number VARCHAR(30),
+                telnr VARCHAR(30),
                 email VARCHAR(255) UNIQUE not null,
-                profile_picture BYTEA
+                profile_pic BYTEA
+                );
+
+
+            CREATE TABLE IF NOT EXISTS visualizations (
+                id            SERIAL PRIMARY KEY,
+                owner         TEXT    NOT NULL,
+                type          TEXT    NOT NULL,
+                title         TEXT    NOT NULL,
+                library       TEXT    NOT NULL,
+                width         INTEGER NOT NULL,
+                height        INTEGER NOT NULL,
+                data          JSONB   NOT NULL,
+                xaxis         TEXT,
+                yaxis         TEXT,
+                aggregation   TEXT,
+                filters       JSONB,
+                interactions  JSONB,
+                created_at    TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
                 );
         `);
         // Optional: client freigeben, wenn du ihn nicht brauchst

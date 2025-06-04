@@ -3,6 +3,7 @@ import cors from 'cors';
 import dataRouter from "../routes/dataRoutes";
 import userRouter from '../routes/userRoutes';
 //import analysisRoutes from '../routes/analysisRoutes';
+import visualizationRouter from '../routes/visualizationRoutes';
 //import systemRoutes from '../routes/systemRoutes';
 import authRoutes from "../routes/authRoutes";
 import { StatusCodes } from "http-status-codes";
@@ -17,6 +18,7 @@ app.use(express.json());
 // Routen
 app.use('/api/datasets', dataRouter);
 app.use('/api/user', userRouter);
+app.use('/api/visualizations', visualizationRouter);
 //app.use('/api/analysis', analysisRoutes);
 //app.use('/api/system', systemRoutes);
 app.use('/api/auth', authRoutes);

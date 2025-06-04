@@ -26,6 +26,24 @@ export const connectToDatabase = async () => {
                 email VARCHAR(255) UNIQUE not null,
                 profile_pic BYTEA
                 );
+
+
+            CREATE TABLE IF NOT EXISTS visualizations (
+                id            SERIAL PRIMARY KEY,
+                owner         TEXT    NOT NULL,
+                type          TEXT    NOT NULL,
+                title         TEXT    NOT NULL,
+                library       TEXT    NOT NULL,
+                width         INTEGER NOT NULL,
+                height        INTEGER NOT NULL,
+                data          JSONB   NOT NULL,
+                xaxis         TEXT,
+                yaxis         TEXT,
+                aggregation   TEXT,
+                filters       JSONB,
+                interactions  JSONB,
+                created_at    TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+                );
         `);
 
         // Optional: client freigeben, wenn du ihn nicht brauchst

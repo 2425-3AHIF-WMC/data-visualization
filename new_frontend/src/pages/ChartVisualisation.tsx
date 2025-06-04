@@ -226,14 +226,45 @@ const ChartVisualization: React.FC = () => {
       ]
     };
 
-    const existing = JSON.parse(localStorage.getItem('savedVisualizations') || '[]');
-    localStorage.setItem('savedVisualizations', JSON.stringify([...existing, config]));
-    
-    toast({ 
+    try{
+      apiFetch(
+        'visualizations',
+        'POST',
+        {
+          owner: localStorage.getItem('userId') || '',
+          type: chartType,
+          title,
+          library: 'recharts',
+          width: 800,
+          height: 400,
+          data: config.data,
+          xaxis: config.xAxis,
+          yaxis: config.yAxis,
+          aggregation,
+          filters: filters.length > 0 ? filters : undefined,
+          interactions: config.interactions
+        },
+        { Authorization: `Bearer ${token}` }
+      );
+
+       toast({ 
       title: 'Gespeichert', 
       description: 'Visualisierung wurde gespeichert' 
     });
-    
+    }
+    catch (error) {
+      console.error('Fehler beim Speichern der Visualisierung:', error);
+        toast({
+      title: 'Speichern fehlgeschlagen',
+      description: 'Beim Speichern auf dem Server ist ein Fehler aufgetreten.',
+      variant: 'destructive',
+    });}
+
+    /*const existing = JSON.parse(localStorage.getItem('savedVisualizations') || '[]');
+    localStorage.setItem('savedVisualizations', JSON.stringify([...existing, config]));
+    */
+   
+
     navigate('/visualizations');
   };
 
