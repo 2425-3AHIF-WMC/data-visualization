@@ -11,7 +11,7 @@ interface HomeHeroProps {
 export function HomeHero({ hasData = false }: HomeHeroProps) {
   return (
     <div className="py-12 px-4 text-center">
-      <h1 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-primary  to-primary/70 bg-clip-text text-transparent">
+      <h1 className="text-3xl md:text-4xl font-bold mb-4 pb-1 bg-gradient-to-r from-primary  to-primary/70 bg-clip-text text-transparent">
         Personalisierte Data Visualisierung
       </h1>
       <p className="text-muted-foreground max-w-md mx-auto mb-8">

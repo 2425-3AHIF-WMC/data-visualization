@@ -81,7 +81,7 @@ export function Dashboard({ data = sampleData, chartConfigs = [] }: DashboardPro
   // Otherwise render default charts
   return (
     <>
-      <div className="mb-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card className="bg-purple-50 dark:bg-purple-900/20 border-purple-100 dark:border-purple-800/30">
           <CardContent className="flex items-center justify-between p-6">
             <div>
@@ -97,7 +97,7 @@ export function Dashboard({ data = sampleData, chartConfigs = [] }: DashboardPro
         <Card className="bg-blue-50 dark:bg-blue-900/20 border-blue-100 dark:border-blue-800/30">
           <CardContent className="flex items-center justify-between p-6">
             <div>
-              <p className="text-sm font-medium text-blue-500 dark:text-blue-400">Visualisierungen</p>
+              <p className="text-sm font-medium text-blue-500 dark:text-blue-400">Erstellte Diagramme</p>
               <h3 className="text-2xl font-bold mt-1">7</h3>
             </div>
             <div className="bg-white dark:bg-blue-800/30 p-3 rounded-full">
@@ -106,17 +106,6 @@ export function Dashboard({ data = sampleData, chartConfigs = [] }: DashboardPro
           </CardContent>
         </Card>
 
-        <Card className="bg-green-50 dark:bg-green-900/20 border-green-100 dark:border-green-800/30">
-          <CardContent className="flex items-center justify-between p-6">
-            <div>
-              <p className="text-sm font-medium text-green-500 dark:text-green-400">Dashboards</p>
-              <h3 className="text-2xl font-bold mt-1">2</h3>
-            </div>
-            <div className="bg-white dark:bg-green-800/30 p-3 rounded-full">
-              <LineChartIcon className="h-6 w-6 text-green-500" />
-            </div>
-          </CardContent>
-        </Card>
       </div>
       
       <div className="dashboard-layout">
