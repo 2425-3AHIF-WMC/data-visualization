@@ -163,7 +163,7 @@ export const fetchDatasetsFromUser = async (req, res) => {
             const createdAt = new Date(+createdAtParts[2], +createdAtParts[1] - 1, +createdAtParts[0]);
             const lastModified = new Date(+modifiedAtParts[2], +modifiedAtParts[1] - 1, +modifiedAtParts[0]);
             const records = Array.isArray(parsed.data) ? parsed.data : [];
-            const previewData = records.slice(0, 5); // kleine Vorschau
+            //       const previewData = records; // kleine Vorschau
             return {
                 id: parsed.meta.id,
                 name: parsed.meta.datasetName,
@@ -171,8 +171,8 @@ export const fetchDatasetsFromUser = async (req, res) => {
                 createdAt,
                 lastModified,
                 fileType: 'JSON',
-                data: previewData,
-                fields: previewData.length > 0 ? Object.keys(previewData[0]) : []
+                data: records,
+                fields: records.length > 0 ? Object.keys(records[0]) : []
             };
         }));
         res.status(StatusCodes.OK).json({ datasets });

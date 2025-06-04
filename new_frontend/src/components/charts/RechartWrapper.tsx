@@ -16,7 +16,7 @@ import {
     Legend,
     ResponsiveContainer
 } from 'recharts';
-import { ChartConfig } from '@/types/visualization';
+import {ChartConfig} from "@/components/charts/visualization.ts";
 
 interface RechartsWrapperProps {
     config: ChartConfig;

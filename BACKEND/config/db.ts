@@ -19,12 +19,12 @@ export const connectToDatabase = async () => {
         await client.query(`
             CREATE TABLE IF NOT EXISTS user_profiles (
                 id SERIAL PRIMARY KEY,
-                first_name VARCHAR(100) not null,
-                last_name VARCHAR(100) not null,
+                firstname VARCHAR(100) not null,
+                lastname VARCHAR(100) not null,
                 password varchar(100) not null,
-                phone_number VARCHAR(30),
+                telnr VARCHAR(30),
                 email VARCHAR(255) UNIQUE not null,
-                profile_picture BYTEA
+                profile_pic BYTEA
                 );
         `);
 
