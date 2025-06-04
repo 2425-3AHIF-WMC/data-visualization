@@ -244,15 +244,12 @@ const [preview, setPreview]= useState<string>("");
                     </div>
 
                     <Tabs defaultValue="profile" className="w-full">
-                        <TabsList className="grid grid-cols-3 gap-2 mb-6">
+                        <TabsList className="grid grid-cols-2 gap-2 mb-6">
                             <TabsTrigger value="profile" className="flex items-center gap-2">
                                 <User size={16}/>
                                 <span className="hidden sm:inline">Profil</span>
                             </TabsTrigger>
-                            <TabsTrigger value="notifications" className="flex items-center gap-2">
-                                <Bell size={16}/>
-                                <span className="hidden sm:inline">Benachrichtigungen</span>
-                            </TabsTrigger>
+
                             <TabsTrigger value="privacy" className="flex items-center gap-2">
                                 <Shield size={16}/>
                                 <span className="hidden sm:inline">Datenschutz</span>
@@ -353,67 +350,18 @@ const [preview, setPreview]= useState<string>("");
                         </TabsContent>
 
 
-                        <TabsContent value="notifications">
-                            <div className="space-y-6">
-                                {[
-                                    {
-                                        title: "Neue Kommentare",
-                                        desc: "Benachrichtigungen über neue Kommentare zu deinen Visualisierungen"
-                                    },
-                                    {
-                                        title: "Dashboard Updates",
-                                        desc: "Benachrichtigungen über Änderungen an deinen Dashboards"
-                                    },
-                                    {
-                                        title: "Newsletter",
-                                        desc: "Monatliche Updates zu neuen Features"
-                                    }
-                                ].map((notif, index) => (
-                                    <div key={index} className="flex items-center justify-between">
-                                        <div>
-                                            <p className="font-medium">{notif.title}</p>
-                                            <p className="text-sm text-muted-foreground">{notif.desc}</p>
-                                        </div>
-                                        <div className="flex items-center space-x-2">
-                                            <Button variant="outline" size="sm">Aus</Button>
-                                            <Button variant="outline" size="sm" className="bg-purple-50">Ein</Button>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </TabsContent>
-
                         <TabsContent value="privacy">
                             <div className="space-y-6">
-                                {[
-                                    {
-                                        title: "Profil öffentlich sichtbar",
-                                        desc: "Andere Nutzer können dein Profil sehen"
-                                    },
-                                    {
-                                        title: "Datennutzung",
-                                        desc: "Anonyme Nutzungsdaten sammeln, um den Service zu verbessern"
-                                    }
-                                ].map((privacy, index) => (
-                                    <div key={index} className="flex items-center justify-between">
-                                        <div>
-                                            <p className="font-medium">{privacy.title}</p>
-                                            <p className="text-sm text-muted-foreground">{privacy.desc}</p>
-                                        </div>
-                                        <div className="flex items-center space-x-2">
-                                            <Button variant="outline" size="sm">Aus</Button>
-                                            <Button variant="outline" size="sm" className="bg-purple-50">Ein</Button>
-                                        </div>
+                                <div className="pt-4 border-t flex items-center justify-between">
+                                    <div>
+                                        <h3 className="font-medium mb-2">Datenlöschung</h3>
+                                        <p className="text-sm text-muted-foreground max-w-xs">
+                                            Das Löschen deines Kontos entfernt alle deine Daten und kann nicht rückgängig gemacht werden.
+                                        </p>
                                     </div>
-                                ))}
-
-                                <div className="pt-4 border-t">
-                                    <h3 className="font-medium mb-3">Datenlöschung</h3>
-                                    <p className="text-sm text-muted-foreground mb-4">
-                                        Das Löschen deines Kontos entfernt alle deine Daten und kann nicht rückgängig
-                                        gemacht werden.
-                                    </p>
-                                    <Button variant="destructive" onClick={handleDeleteAccount} size="sm">Account löschen</Button>
+                                    <Button variant="destructive" onClick={handleDeleteAccount} size="sm">
+                                        Account löschen
+                                    </Button>
                                 </div>
                             </div>
                         </TabsContent>
