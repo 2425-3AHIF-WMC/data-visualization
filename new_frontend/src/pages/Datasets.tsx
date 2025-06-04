@@ -252,7 +252,7 @@ const Datasets = () => {
                                 : "Importieren Sie Ihren ersten Datensatz, um loszulegen"}
                         </p>
                         <Button asChild>
-                            <Link to="/upload">Datensatz importieren</Link>
+                            <Link to="/import">Datensatz importieren</Link>
                         </Button>
                     </div>
                 ) : (
