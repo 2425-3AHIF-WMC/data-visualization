@@ -288,24 +288,15 @@ const ChartVisualization: React.FC = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50">
-        <div className="bg-white border-b border-gray-200 px-6 py-4">
+      <div className="min-h-screen ">
+        <div className="  px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <div className="flex items-center space-x-4">
-                <Button 
-                  variant="outline" 
-                  onClick={() => navigate('/')}
-                  className="flex items-center space-x-2"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                  <span>Zurück</span>
-                </Button>
-              </div>
-              <h1 className="text-2xl font-bold text-gray-900 mt-2">
+
+              <h1 className="text-2xl font-bold  mt-2">
                 Datenvisualisierung erstellen
               </h1>
-              <p className="text-gray-600 mt-1">
+              <p className="text-gray-400 mt-1">
                 Wählen Sie einen Datensatz und konfigurieren Sie Ihre Visualisierung
               </p>
             </div>
@@ -322,7 +313,7 @@ const ChartVisualization: React.FC = () => {
 
         <div className="flex">
           {/* Linke Sidebar - Konfiguration */}
-          <div className="w-96 bg-white border-r border-gray-200 h-screen overflow-y-auto">
+          <div className="w-96 h-screen overflow-y-auto">
             <div className="p-6">
               <ChartConfigPanel
                 selectedDataSource={selectedDataSource}
@@ -349,7 +340,7 @@ const ChartVisualization: React.FC = () => {
               {/* Datensatzauswahl */}
               <Card className="p-6 mb-6">
                 <div className="mb-6">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium mb-2">
                     Datensätze
                   </label>
                   <Select
@@ -378,7 +369,7 @@ const ChartVisualization: React.FC = () => {
                 {/* Datenbehandlung */}
                 {selectedDataSource && selectedDataSource.data.length > 100 && (
                   <div className="mb-6">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium  mb-2">
                       Datenbehandlung ({selectedDataSource.data.length} Datensätze)
                     </label>
                     <Select 
@@ -397,7 +388,7 @@ const ChartVisualization: React.FC = () => {
 
                     {dataHandling === 'sample' && (
                       <div className="mt-3">
-                        <label className="block text-xs text-gray-600 mb-1">
+                        <label className="block text-xs  mb-1">
                           Stichprobengröße
                         </label>
                         <Input
@@ -413,7 +404,7 @@ const ChartVisualization: React.FC = () => {
 
                     {dataHandling === 'every-nth' && (
                       <div className="mt-3">
-                        <label className="block text-xs text-gray-600 mb-1">
+                        <label className="block text-xs text-gray-400 mb-1">
                           Jeden n-ten Wert (z.B. 2 = jeden 2. Wert)
                         </label>
                         <Input
@@ -427,7 +418,7 @@ const ChartVisualization: React.FC = () => {
                       </div>
                     )}
 
-                    <div className="mt-2 text-xs text-gray-500">
+                    <div className="mt-2 text-xs text-gray-400">
                       Resultat: {previewData.length} Datenpunkte werden angezeigt
                       {filters.length > 0 && ` (${filters.length} Filter aktiv)`}
                     </div>
@@ -440,17 +431,17 @@ const ChartVisualization: React.FC = () => {
           {/* Hauptbereich - Vorschau */}
           <div className="flex-1 p-8">
             <div className="max-w-none mx-auto">
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-                <h2 className="text-xl font-semibold text-gray-900 mb-6">
+              <div className=" rounded-lg shadow-sm border p-8">
+                <h2 className="text-lg font-semibold mb-6">
                   {title}
                 </h2>
                 
                 {!selectedDataSource ? (
                   <div className="text-center py-16">
-                    <div className="text-gray-400 mb-4">
+                    <div className=" mb-4">
                       <BarChart3 className="w-16 h-16 mx-auto" />
                     </div>
-                    <p className="text-lg text-gray-600 mb-2">
+                    <p className="text-md text-gray-400 mb-2">
                       Wählen Sie einen Datensatz und konfigurieren Sie die Visualisierung
                     </p>
                   </div>
@@ -463,7 +454,7 @@ const ChartVisualization: React.FC = () => {
                     </div>
                     
                     <div className="border-t pt-6">
-                      <h4 className="font-medium text-gray-900 mb-3">
+                      <h4 className="font-medium  mb-3">
                         Aktive Konfiguration
                       </h4>
                       <div className="flex items-center space-x-4 flex-wrap">
