@@ -209,7 +209,7 @@ const VisualizationBuilder: React.FC<VisualizationBuilderProps> = ({
               </Button>
             </div>
             <h1 className="text-2xl font-bold text-gray-900 mt-2">Visualisierung erstellen</h1>
-            <p className="text-gray-600 mt-1">Wählen Sie einen Datensatz für Ihre Datenvisualisierung</p>
+            <p className="text-gray-400 mt-1">Wählen Sie einen Datensatz für Ihre Datenvisualisierung</p>
           </div>
         </div>
       </div>

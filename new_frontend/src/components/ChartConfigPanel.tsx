@@ -92,7 +92,7 @@ const ChartConfigPanel: React.FC<ChartConfigPanelProps> = ({
   return (
     <Card className="p-6 mb-6">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-semibold text-gray-900">Visualisierungseinstellungen</h3>
+        <h3 className="text-lg font-semibold ">Visualisierungseinstellungen</h3>
         {selectedDataSource && (
           <Button
             size="sm"
@@ -104,11 +104,11 @@ const ChartConfigPanel: React.FC<ChartConfigPanelProps> = ({
           </Button>
         )}
       </div>
-      <p className="text-sm text-gray-600 mb-6">Wählen Sie den Diagrammtyp und die Datenfelder</p>
+      <p className="text-gray-400 text-sm mb-6">Wählen Sie den Diagrammtyp und die Datenfelder</p>
       
       {/* Chart Type Selection */}
       <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-3">Diagrammtyp</label>
+        <label className="block text-sm font-medium  mb-3">Diagrammtyp</label>
         <div className="grid grid-cols-3 gap-2">
           {chartTypes.map((type) => {
             const Icon = type.icon;
@@ -134,7 +134,7 @@ const ChartConfigPanel: React.FC<ChartConfigPanelProps> = ({
 
       {/* Title */}
       <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Titel</label>
+        <label className="block text-sm font-medium  mb-2">Titel</label>
         <Input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
@@ -167,14 +167,14 @@ const ChartConfigPanel: React.FC<ChartConfigPanelProps> = ({
       {/* Interactive Features */}
       {selectedDataSource && (
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Interaktive Funktionen</label>
+          <label className="block text-sm font-medium  mb-2">Interaktive Funktionen</label>
           <div className="space-y-3">
             <div className="flex items-center space-x-2">
               <Checkbox
                 checked={enableZooming}
                 onCheckedChange={(checked) => setEnableZooming(checked === true)}
               />
-              <ZoomIn className="w-4 h-4 text-gray-600" />
+              <ZoomIn className="w-4 h-4 " />
               <Label className="text-sm">Zoomen aktivieren</Label>
             </div>
             
@@ -183,8 +183,8 @@ const ChartConfigPanel: React.FC<ChartConfigPanelProps> = ({
                 checked={enableFiltering}
                 onCheckedChange={(checked) => setEnableFiltering(checked === true)}
               />
-              <Filter className="w-4 h-4 text-gray-600" />
-              <Label className="text-sm">Filtern aktivieren</Label>
+              <Filter className="w-4 h-4 " />
+                <Label className="text-sm">Filtern aktivieren</Label>
             </div>
           </div>
         </div>
@@ -194,7 +194,7 @@ const ChartConfigPanel: React.FC<ChartConfigPanelProps> = ({
       {enableFiltering && selectedDataSource && (
         <div className="mb-6">
           <div className="flex justify-between items-center mb-2">
-            <label className="block text-sm font-medium text-gray-700">Filter</label>
+            <label className="block text-sm font-medium ">Filter</label>
             <Button size="sm" variant="outline" onClick={addFilter}>
               Filter hinzufügen
             </Button>
@@ -241,7 +241,7 @@ const ChartConfigPanel: React.FC<ChartConfigPanelProps> = ({
       {selectedDataSource && chartType !== 'pie' && (
         <>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">X-Achse</label>
+            <label className="block text-sm font-medium  mb-2">X-Achse</label>
             <Select value={xAxis} onValueChange={setXAxis}>
               <SelectTrigger>
                 <SelectValue />
@@ -255,7 +255,7 @@ const ChartConfigPanel: React.FC<ChartConfigPanelProps> = ({
           </div>
 
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Y-Achse</label>
+            <label className="block text-sm font-medium  mb-2">Y-Achse</label>
             <Select value={yAxis} onValueChange={setYAxis}>
               <SelectTrigger>
                 <SelectValue />
@@ -272,7 +272,7 @@ const ChartConfigPanel: React.FC<ChartConfigPanelProps> = ({
 
       {selectedDataSource && chartType === 'pie' && (
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Werte</label>
+          <label className="block text-sm font-medium  mb-2">Werte</label>
           <Select value={yAxis} onValueChange={setYAxis}>
             <SelectTrigger>
               <SelectValue />
@@ -288,7 +288,7 @@ const ChartConfigPanel: React.FC<ChartConfigPanelProps> = ({
 
       <Button 
         onClick={onSave} 
-        className="w-full bg-blue-600 hover:bg-blue-700"
+        className="w-full "
         disabled={!selectedDataSource || !yAxis}
       >
         Visualisierung speichern
