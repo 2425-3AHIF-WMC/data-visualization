@@ -23,8 +23,6 @@ app.use(express.json());
 app.use('/api/datasets', dataRouter);
 app.use('/api/user', userRouter);
 app.use('/api/visualizations', visualizationRouter);
-//app.use('/api/analysis', analysisRoutes);
-//app.use('/api/system', systemRoutes);
 app.use('/api/auth',authRoutes);
 // app use authroutes
 

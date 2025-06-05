@@ -361,6 +361,35 @@ export const updateDatasetById = async (req, res) => {
         return;
     }
 };
+export const getDatasetsCount = async (req, res) => {
+    console.log('getDatasetsCount wurde aufgerufen, req.user:', req.user);
+    const userId = req.user?.id;
+    if (!userId) {
+        res.status(StatusCodes.UNAUTHORIZED).json({ error: 'Not authenticated' });
+        return;
+    }
+    try {
+        const __filename = fileURLToPath(import.meta.url);
+        const __dirname = dirname(__filename);
+        const baseDir = path.join(__dirname, '..', '..', '..', 'user_data');
+        const userDirs = await readdirAsync(baseDir);
+        const userFolder = userDirs.find(dir => dir.startsWith(`${userId}_`));
+        if (!userFolder) {
+            res.status(StatusCodes.OK).json({ count: 0 });
+            return;
+        }
+        const userDirPath = path.join(baseDir, userFolder);
+        const files = await readdirAsync(userDirPath);
+        const jsonImportFiles = files.filter(f => f.startsWith('import_') && f.endsWith('.json'));
+        console.log(`Gefundene JSON-Importdateien für User ${userId}:`, jsonImportFiles);
+        res.status(StatusCodes.OK).json({ count: jsonImportFiles.length });
+        res.status(StatusCodes.OK).json({ count: jsonImportFiles.length });
+    }
+    catch (error) {
+        console.error('Fehler beim Zählen der Dateien:', error);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Fehler beim Zählen der Datensätze' });
+    }
+};
 /*export const importFromSQL = async (req: Request, res: Response) => {
     const {dbType, host, user, password, database, port} = req.body;
 

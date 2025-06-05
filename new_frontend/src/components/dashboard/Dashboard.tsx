@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   BarChart,
   Bar,
@@ -26,6 +26,7 @@ import { Card, CardContent } from '../ui/card';
 import { Button } from '../ui/button';
 import { Database, BarChart2, LineChart as LineChartIcon, PieChart as PieChartIcon, Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { apiFetch } from '@/utils/api';
 
 // Beispieldaten
 const sampleData = [
@@ -54,7 +55,43 @@ interface DashboardProps {
 
 
 export function Dashboard({ data = sampleData, chartConfigs = [] }: DashboardProps) {
-  // Check if there's no data
+  
+  const [datasetCount, setDatasetCount] = useState<number | null>(null);
+const [visualizationCount, setVisualizationCount] = useState<number | null>(null);
+
+ useEffect(() => {
+  const token = localStorage.getItem("jwt");
+  async function fetchCounts() {
+    if (!token) {
+      console.warn("Kein Token gefunden");
+      return;
+    }
+    try {
+      const datasetResponse = await apiFetch<{ count: number }>('datasets/count', 'GET', undefined, {
+        Authorization: `Bearer ${token}`,
+      });     
+      setDatasetCount(datasetResponse.count);
+    } catch (error) {
+      console.error('Fehler beim Abrufen der Dataset-Count:', error);
+      setDatasetCount(null);
+    }
+
+    try {
+      const visualizationResponse = await apiFetch<{ count: number }>('visualizations/count', 'GET', undefined, {
+        Authorization: `Bearer ${token}`,
+      });
+      setVisualizationCount(visualizationResponse.count);
+    } catch (error) {
+      console.error('Fehler beim Abrufen der Visualization-Count:', error);
+      setVisualizationCount(null);
+    }
+  }
+
+  fetchCounts();
+}, []);
+
+
+
   const showEmptyState = (!data || data.length === 0) && (!chartConfigs || chartConfigs.length === 0);
   
   if (showEmptyState) {
@@ -86,7 +123,7 @@ export function Dashboard({ data = sampleData, chartConfigs = [] }: DashboardPro
           <CardContent className="flex items-center justify-between p-6">
             <div>
               <p className="text-sm font-medium text-purple-500 dark:text-purple-400">Datensätze</p>
-              <h3 className="text-2xl font-bold mt-1">3</h3>
+              <h3 className="text-2xl font-bold mt-1">{datasetCount ?? "–"}</h3>
             </div>
             <div className="bg-white dark:bg-purple-800/30 p-3 rounded-full">
               <Database className="h-6 w-6 text-purple-500" />
@@ -98,7 +135,7 @@ export function Dashboard({ data = sampleData, chartConfigs = [] }: DashboardPro
           <CardContent className="flex items-center justify-between p-6">
             <div>
               <p className="text-sm font-medium text-blue-500 dark:text-blue-400">Erstellte Diagramme</p>
-              <h3 className="text-2xl font-bold mt-1">7</h3>
+              <h3 className="text-2xl font-bold mt-1">{visualizationCount ?? "–"}</h3>
             </div>
             <div className="bg-white dark:bg-blue-800/30 p-3 rounded-full">
               <BarChart2 className="h-6 w-6 text-blue-500" />

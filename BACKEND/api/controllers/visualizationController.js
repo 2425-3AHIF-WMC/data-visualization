@@ -141,3 +141,22 @@ export const getVisualizationsById = async (req, res) => {
         return;
     }
 };
+export const getVisualizationsCount = async (req, res) => {
+    const owner = req.user.id;
+    console.log(`[getVisualizationsCount] Zähle Visualizations für Benutzer ${owner}`);
+    try {
+        const sql = 'SELECT COUNT(*) AS count FROM visualizations WHERE owner = $1';
+        console.log('[getVisualizationsCount] Auszuführende SQL-Abfrage:', sql, 'mit owner=', owner);
+        const result = await pool.query(sql, [owner]);
+        const count = parseInt(result.rows[0].count, 10);
+        console.log(`[getVisualizationsCount] Gefundene Visualizations: ${count}`);
+        res.status(StatusCodes.OK).json({ count });
+    }
+    catch (error) {
+        console.error('[getVisualizationsCount] Fehler beim Zählen der Visualizations:', error);
+        res
+            .status(StatusCodes.INTERNAL_SERVER_ERROR)
+            .json({ error: 'Failed to count visualizations' });
+        return;
+    }
+};
